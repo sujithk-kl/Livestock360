@@ -1,5 +1,6 @@
 const Farmer = require("../models/Farmer");
 const bcrypt = require("bcryptjs");
+const jwtUtil = require("../utils/jwt");
 
 // Register a new farmer
 const registerFarmer = async (req, res) => {
@@ -21,7 +22,11 @@ const registerFarmer = async (req, res) => {
 		const out = farmer.toObject();
 		delete out.password;
 
-		res.status(201).json(out);
+		// Sign token on registration
+		const payload = { id: farmer._id };
+		const token = jwtUtil.signToken(payload);
+
+		res.status(201).json({ token, farmer: out });
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ message: "Server error" });
@@ -39,4 +44,41 @@ const getFarmers = async (req, res) => {
 	}
 };
 
-module.exports = { registerFarmer, getFarmers };
+// Get current farmer (protected)
+const getCurrentFarmer = async (req, res) => {
+	try {
+		const farmer = await Farmer.findById(req.farmerId).select("-password");
+		if (!farmer) return res.status(404).json({ message: "Farmer not found" });
+		res.json(farmer);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ message: "Server error" });
+	}
+};
+
+// Login a farmer and return JWT
+const loginFarmer = async (req, res) => {
+	try {
+		const { email, password } = req.body;
+		if (!email || !password) return res.status(400).json({ message: "Missing email or password" });
+
+		const farmer = await Farmer.findOne({ email });
+		if (!farmer) return res.status(401).json({ message: "Invalid credentials" });
+
+		const match = await bcrypt.compare(password, farmer.password);
+		if (!match) return res.status(401).json({ message: "Invalid credentials" });
+
+		const payload = { id: farmer._id };
+		const token = jwtUtil.signToken(payload);
+
+		const out = farmer.toObject();
+		delete out.password;
+
+		res.json({ token, farmer: out });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ message: "Server error" });
+	}
+};
+
+module.exports = { registerFarmer, getFarmers, loginFarmer, getCurrentFarmer };

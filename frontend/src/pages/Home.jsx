@@ -27,11 +27,11 @@ const styles = {
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f0f8ff",
+    backgroundColor: "#020520ff",
     textAlign: "center"
   },
   title: {
-    color: "#2c3e50"
+    color: "#2a05cfff"
   },
   text: {
     width: "60%",
