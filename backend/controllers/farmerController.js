@@ -107,10 +107,12 @@ const getCurrentFarmer = async (req, res) => {
 // Login a farmer and return JWT
 const loginFarmer = async (req, res) => {
 	try {
-		const { email, password } = req.body;
-		if (!email || !password) return res.status(400).json({ message: "Missing email or password" });
+		const { email, name, password } = req.body;
+		if ((!email && !name) || !password) return res.status(400).json({ message: "Missing identifier or password" });
 
-		const farmer = await Farmer.findOne({ email });
+		// Allow login by email OR name
+		const identifier = email || name;
+		const farmer = await Farmer.findOne({ $or: [{ email: identifier }, { name: identifier }] });
 		if (!farmer) return res.status(401).json({ message: "Invalid credentials" });
 
 		const match = await bcrypt.compare(password, farmer.password);

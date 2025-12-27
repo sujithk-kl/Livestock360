@@ -13,8 +13,10 @@ function Home() {
       </p>
 
       <div style={styles.buttonBox}>
-        <Link to="/login" style={styles.button}>Login</Link>
-        <Link to="/register" style={styles.button}>Register</Link>
+        <div style={styles.roleButtons}>
+          <Link to="/register" style={styles.roleButton}>Farmers</Link>
+          <Link to="/customer/register" style={styles.roleButton}>Customer</Link>
+        </div>
       </div>
     </div>
   );
@@ -41,6 +43,19 @@ const styles = {
   buttonBox: {
     display: "flex",
     gap: "20px"
+  },
+  roleButtons: {
+    display: "flex",
+    gap: "12px",
+    marginRight: "20px"
+  },
+  roleButton: {
+    padding: "12px 18px",
+    backgroundColor: "#3498db",
+    color: "white",
+    textDecoration: "none",
+    borderRadius: "6px",
+    fontWeight: 600
   },
   button: {
     padding: "10px 20px",

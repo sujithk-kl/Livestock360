@@ -12,6 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use("/api/farmers", require("./routes/farmerRoutes"));
+app.use("/api/customers", require("./routes/customerRoutes"));
 
 app.get("/", (req, res) => {
   res.send("Dairy Farmer Backend Running");
