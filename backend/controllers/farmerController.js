@@ -5,7 +5,20 @@ const jwtUtil = require("../utils/jwt");
 // Register a new farmer
 const registerFarmer = async (req, res) => {
 	try {
-		const { name, email, password, phone, village } = req.body;
+		// Handle both JSON and multipart/form-data (with optional file upload)
+		if ((!req.body || Object.keys(req.body).length === 0) && !req.file) {
+			console.warn('registerFarmer: empty req.body; headers:', req.headers);
+			return res.status(400).json({ message: 'Missing request body' });
+		}
+
+		// Normalize incoming field names from frontend FormData
+		const name = req.body.name || req.body.fullName || "";
+		const email = req.body.email || "";
+		const password = req.body.password || "";
+		const phone = req.body.phone || "";
+		// Map address or village fields into `village` expected by model
+		const village = req.body.village || req.body.address || "";
+
 		if (!name || !email || !password || !phone) {
 			return res.status(400).json({ message: "Missing required fields" });
 		}
