@@ -19,6 +19,25 @@ const registerFarmer = async (req, res) => {
 		// Map address or village fields into `village` expected by model
 		const village = req.body.village || req.body.address || "";
 
+		// Additional registration fields
+		const district = req.body.district || "";
+		const state = req.body.state || "";
+		const pincode = req.body.pincode || "";
+		const farmName = req.body.farmName || "";
+		const farmLocation = req.body.farmLocation || "";
+		const farmingType = req.body.farmingType || "";
+		const landArea = req.body.landArea || "";
+		const aadhaar = req.body.aadhaar || "";
+
+		// Parse acceptTerms from form (could be 'true' or 'on' or boolean)
+		const acceptTerms =
+			req.body.acceptTerms === true ||
+			req.body.acceptTerms === "true" ||
+			req.body.acceptTerms === "on";
+
+		// Uploaded id proof (multer)
+		const idProof = req.file ? (req.file.path || req.file.filename) : (req.body.idProof || "");
+
 		if (!name || !email || !password || !phone) {
 			return res.status(400).json({ message: "Missing required fields" });
 		}
@@ -29,7 +48,23 @@ const registerFarmer = async (req, res) => {
 		const salt = await bcrypt.genSalt(10);
 		const hashed = await bcrypt.hash(password, salt);
 
-		const farmer = new Farmer({ name, email, password: hashed, phone, village });
+		const farmer = new Farmer({
+			name,
+			email,
+			password: hashed,
+			phone,
+			village,
+			district,
+			state,
+			pincode,
+			farmName,
+			farmLocation,
+			farmingType,
+			landArea,
+			aadhaar,
+			idProof,
+			acceptTerms,
+		});
 		await farmer.save();
 
 		const out = farmer.toObject();

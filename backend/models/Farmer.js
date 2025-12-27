@@ -22,6 +22,37 @@ const farmerSchema = new mongoose.Schema(
     village: {
       type: String,
     },
+    district: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
+    pincode: {
+      type: String,
+    },
+    farmName: {
+      type: String,
+    },
+    farmLocation: {
+      type: String,
+    },
+    farmingType: {
+      type: String,
+    },
+    landArea: {
+      type: String,
+    },
+    aadhaar: {
+      type: String,
+    },
+    idProof: {
+      type: String,
+    },
+    acceptTerms: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
