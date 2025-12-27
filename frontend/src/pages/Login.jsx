@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import AuthCard from "../components/AuthCard";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -20,8 +21,8 @@ function Login() {
     try {
       const res = await axios.post(`${API_URL}/api/farmers/login`, { email, name, password });
       const { token, farmer } = res.data;
-      localStorage.setItem("token", token);
-      localStorage.setItem("farmer", JSON.stringify(farmer));
+      if (token) localStorage.setItem("token", token);
+      if (farmer) localStorage.setItem("farmer", JSON.stringify(farmer));
       navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
@@ -31,18 +32,17 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 p-6">
-      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-lg overflow-hidden grid grid-cols-1 md:grid-cols-2">
-
-        <div className="hidden md:flex items-center justify-center bg-gradient-to-br from-green-400 to-blue-500 p-8">
-          <div className="text-white text-center px-6">
+    <AuthCard title="Farmer Login" subtitle="Sign in to access your dashboard" maxWidth="720px">
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="hidden md:flex items-center justify-center bg-gradient-to-br from-green-400 to-blue-500 p-6 rounded-lg">
+          <div className="text-white text-center px-4">
             <h3 className="text-3xl font-bold mb-2">Livestock360</h3>
             <p className="opacity-90">Manage your farm, track milk production, and keep livestock data organized — all in one place.</p>
-            <img src="/assets/illustration.png" alt="farm" className="mx-auto mt-6 w-48 opacity-90" />
+            <img src="/assets/illustration.png" alt="farm" className="mx-auto mt-6 w-40 opacity-90" />
           </div>
         </div>
 
-        <div className="p-8">
+        <div>
           <h2 className="text-2xl font-bold text-gray-800">Farmer Login</h2>
           <p className="text-sm text-gray-500 mt-1">Sign in to access your dashboard</p>
 
@@ -111,7 +111,7 @@ function Login() {
           </form>
         </div>
       </div>
-    </div>
+    </AuthCard>
   );
 }
 
