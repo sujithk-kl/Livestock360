@@ -1,8 +1,9 @@
-require('dotenv').config();
+// Load environment variables from the root .env file
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path');
 
 // Import routes
 const authRoutes = require('./routes/auth');
