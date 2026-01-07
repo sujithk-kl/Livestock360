@@ -6,7 +6,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4">
       <div className="text-center mb-12">
         <h1 className="text-5xl font-bold text-green-600 mb-4">Livestock360</h1>
       </div>
@@ -20,7 +20,7 @@ const Home = () => {
         </button>
         
         <button
-          onClick={() => navigate('/customer')}
+          onClick={() => navigate('/customer/login')}
           className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-8 rounded-lg shadow-md transition duration-300 transform hover:scale-105"
         >
           Customer

@@ -1,21 +1,13 @@
 // Load environment variables
 require('dotenv').config();
 
-// ===================== DEBUG ENV =====================
-console.log('Environment variables loaded:', {
-  MONGODB_URI: process.env.MONGODB_URI ? 'Loaded' : 'Not found',
-  PORT: process.env.PORT || '4000 (default)',
-  JWT_SECRET: process.env.JWT_SECRET ? 'Loaded' : 'Not found',
-  NODE_ENV: process.env.NODE_ENV || 'development',
-});
-// ====================================================
-
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
 const authRoutes = require('./routes/auth');
 const farmerRoutes = require('./routes/farmer');
+const customerRoutes = require('./routes/customer');
 
 const app = express();
 
@@ -36,6 +28,7 @@ mongoose
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/farmers', farmerRoutes);
+app.use('/api/customers', customerRoutes);
 
 // Health check endpoint
 app.get('/', (req, res) => {

@@ -14,14 +14,11 @@ const generateToken = (id) => {
 // @route   POST /api/auth/register
 // @access  Public
 exports.register = async (req, res) => {
-    console.log('Register request received:', req.body);
-    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        console.log('Validation errors:', errors.array());
-        return res.status(400).json({ 
+        return res.status(400).json({
             success: false,
-            errors: errors.array() 
+            errors: errors.array()
         });
     }
 
@@ -31,10 +28,9 @@ exports.register = async (req, res) => {
         // Check if user exists
         let user = await User.findOne({ email });
         if (user) {
-            console.log('User already exists:', email);
-            return res.status(400).json({ 
+            return res.status(400).json({
                 success: false,
-                message: 'User already exists' 
+                message: 'User already exists'
             });
         }
 
@@ -47,7 +43,6 @@ exports.register = async (req, res) => {
         });
 
         await user.save();
-        console.log('User created successfully:', user.email);
 
         // Generate token
         const token = generateToken(user._id);
@@ -76,8 +71,6 @@ exports.register = async (req, res) => {
 // @route   POST /api/auth/login
 // @access  Public
 exports.login = async (req, res) => {
-    console.log('Login attempt for:', req.body.email);
-    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ 
@@ -90,28 +83,37 @@ exports.login = async (req, res) => {
         const { email, password } = req.body;
 
         // Check for user
-        const user = await User.findOne({ email }).select('+password');
+        const user = await User.findOne({ email }).select('+password +failedAttempts +lockUntil');
         if (!user) {
-            console.log('Login failed: User not found', email);
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
+            });
+        }
+
+        // Check if account is locked
+        if (user.isLocked) {
+            return res.status(401).json({
+                success: false,
+                message: 'Account locked due to too many failed attempts'
             });
         }
 
         // Check password
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
-            console.log('Login failed: Invalid password for', email);
+            await user.incLoginAttempts();
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
             });
         }
 
+        // Reset failed attempts on successful login
+        await user.resetLoginAttempts();
+
         // Generate token
         const token = generateToken(user._id);
-        console.log('Login successful for:', email);
 
         res.json({
             success: true,
