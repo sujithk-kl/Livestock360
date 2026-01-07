@@ -49,8 +49,17 @@ const FarmerRegistration = () => {
       newErrors.phone = 'Phone number must be exactly 10 digits';
     }
 
+    const cleanAadhar = formData.aadharNumber.replace(/\s/g, '');
+    if (!/^\d{12}$/.test(cleanAadhar)) {
+      newErrors.aadharNumber = 'Aadhar number must be exactly 12 digits';
+    }
+
     if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    if (!/\d/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one number';
     }
 
     if (formData.password !== formData.confirmPassword) {

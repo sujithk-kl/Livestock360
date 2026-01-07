@@ -1,5 +1,6 @@
 // controllers/authController.js
 const User = require('../models/User');
+const Customer = require('../models/Customer');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 
@@ -73,18 +74,26 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ 
+        return res.status(400).json({
             success: false,
-            errors: errors.array() 
+            errors: errors.array()
         });
     }
 
     try {
         const { email, password } = req.body;
 
-        // Check for user
-        const user = await User.findOne({ email }).select('+password +failedAttempts +lockUntil');
-        if (!user) {
+        // First check User collection (for farmers, admins, etc.)
+        let account = await User.findOne({ email }).select('+password +failedAttempts +lockUntil');
+        let accountType = 'user';
+
+        // If not found in User, check Customer collection
+        if (!account) {
+            account = await Customer.findOne({ email }).select('+password +failedAttempts +lockUntil');
+            accountType = 'customer';
+        }
+
+        if (!account) {
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
@@ -92,7 +101,7 @@ exports.login = async (req, res) => {
         }
 
         // Check if account is locked
-        if (user.isLocked) {
+        if (account.isLocked) {
             return res.status(401).json({
                 success: false,
                 message: 'Account locked due to too many failed attempts'
@@ -100,9 +109,9 @@ exports.login = async (req, res) => {
         }
 
         // Check password
-        const isMatch = await user.comparePassword(password);
+        const isMatch = await account.comparePassword(password);
         if (!isMatch) {
-            await user.incLoginAttempts();
+            await account.incLoginAttempts();
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
@@ -110,18 +119,18 @@ exports.login = async (req, res) => {
         }
 
         // Reset failed attempts on successful login
-        await user.resetLoginAttempts();
+        await account.resetLoginAttempts();
 
         // Generate token
-        const token = generateToken(user._id);
+        const token = generateToken(account._id);
 
         res.json({
             success: true,
             data: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                roles: user.roles,
+                id: account._id,
+                name: account.name,
+                email: account.email,
+                roles: account.roles,
                 token
             }
         });

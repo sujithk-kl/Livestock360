@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Customer = require('../models/Customer');
 
 const protect = async (req, res, next) => {
     // Get token from header
@@ -21,8 +22,19 @@ const protect = async (req, res, next) => {
         // Verify token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Add user from payload
-        req.user = await User.findById(decoded.id).select('-password');
+        // First try to find user in User collection (for farmers, admins, etc.)
+        let account = await User.findById(decoded.id).select('-password');
+
+        // If not found in User, try Customer collection
+        if (!account) {
+            account = await Customer.findById(decoded.id).select('-password');
+        }
+
+        if (!account) {
+            return res.status(401).json({ message: 'Token is not valid' });
+        }
+
+        req.user = account;
         next();
     } catch (err) {
         res.status(401).json({ message: 'Token is not valid' });
