@@ -1,6 +1,7 @@
 // src/pages/Login.js
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import authService from '../services/authService';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ const Login = () => {
     password: '',
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,17 +23,24 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
-      // Here you would typically make an API call to your backend
-      console.log('Login attempt with:', formData);
-      
-      // For demo purposes, just log in and redirect
-      // In a real app, you would verify credentials with your backend
-      navigate('/farmer/dashboard'); // Redirect to farmer dashboard after login
+      // Call backend API to authenticate user
+      const response = await authService.login({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      console.log('Login successful:', response);
+
+      // Redirect to farmer dashboard
+      navigate('/farmer/dashboard');
     } catch (err) {
-      setError('Invalid email or password. Please try again.');
+      setError(err.message || 'Invalid email or password. Please try again.');
       console.error('Login error:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -123,9 +132,10 @@ const Login = () => {
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                disabled={loading}
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                Sign in
+                {loading ? 'Signing in...' : 'Sign in'}
               </button>
             </div>
           </form>

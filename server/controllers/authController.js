@@ -1,3 +1,4 @@
+// controllers/authController.js
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
@@ -13,42 +14,61 @@ const generateToken = (id) => {
 // @route   POST /api/auth/register
 // @access  Public
 exports.register = async (req, res) => {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
+    console.log('Register request received:', req.body);
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        console.log('Validation errors:', errors.array());
+        return res.status(400).json({ 
+            success: false,
+            errors: errors.array() 
+        });
+    }
 
+    try {
         const { name, email, password } = req.body;
 
         // Check if user exists
         let user = await User.findOne({ email });
         if (user) {
-            return res.status(400).json({ message: 'User already exists' });
+            console.log('User already exists:', email);
+            return res.status(400).json({ 
+                success: false,
+                message: 'User already exists' 
+            });
         }
 
         // Create user
         user = new User({
             name,
             email,
-            password
+            password,
+            roles: ['user'] // Default role
         });
 
         await user.save();
+        console.log('User created successfully:', user.email);
 
         // Generate token
         const token = generateToken(user._id);
 
         res.status(201).json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            token
+            success: true,
+            data: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                roles: user.roles,
+                token
+            }
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        console.error('Registration error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error during registration',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 };
 
@@ -56,46 +76,59 @@ exports.register = async (req, res) => {
 // @route   POST /api/auth/login
 // @access  Public
 exports.login = async (req, res) => {
+    console.log('Login attempt for:', req.body.email);
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ 
+            success: false,
+            errors: errors.array() 
+        });
+    }
+
     try {
         const { email, password } = req.body;
 
-        // Check if user exists
+        // Check for user
         const user = await User.findOne({ email }).select('+password');
         if (!user) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+            console.log('Login failed: User not found', email);
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid credentials'
+            });
         }
 
         // Check password
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+            console.log('Login failed: Invalid password for', email);
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid credentials'
+            });
         }
 
         // Generate token
         const token = generateToken(user._id);
+        console.log('Login successful for:', email);
 
         res.json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            token
+            success: true,
+            data: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                roles: user.roles,
+                token
+            }
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
-    }
-};
-
-// @desc    Get user profile
-// @route   GET /api/auth/me
-// @access  Private
-exports.getMe = async (req, res) => {
-    try {
-        const user = await User.findById(req.user.id).select('-password');
-        res.json(user);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        console.error('Login error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error during login',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 };

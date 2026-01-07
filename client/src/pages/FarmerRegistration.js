@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import authService from '../services/authService';
+import farmerService from '../services/farmerService';
 
 const FarmerRegistration = () => {
   const navigate = useNavigate();
@@ -22,6 +24,8 @@ const FarmerRegistration = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,6 +45,10 @@ const FarmerRegistration = () => {
   const validateForm = () => {
     const newErrors = {};
 
+    if (!/^[0-9]{10}$/.test(formData.phone)) {
+      newErrors.phone = 'Phone number must be exactly 10 digits';
+    }
+
     if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
@@ -53,14 +61,75 @@ const FarmerRegistration = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (validateForm()) {
-      // Here you would typically send the data to your backend
-      console.log('Form submitted:', formData);
-      // For now, just navigate back to home
-      navigate('/');
+
+    if (loading) return; // Prevent double submission
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+    setErrors({});
+
+    try {
+      // Register farmer (creates user account and farmer profile in one request)
+      // Clean Aadhar number: remove spaces
+      const cleanAadhar = formData.aadharNumber.replace(/\s/g, '');
+
+      const farmerRegistrationData = {
+        name: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone,
+        address: {
+          street: formData.address, // Using address as street for now
+          city: 'Default City', // Placeholder
+          state: 'Default State', // Placeholder
+          pincode: '123456', // Placeholder
+          country: 'India'
+        },
+        farmSize: parseFloat(formData.farmSize),
+        aadharNumber: cleanAadhar,
+        bankDetails: {
+          accountNumber: '1234567890', // Placeholder
+          bankName: 'Default Bank', // Placeholder
+          ifscCode: 'ABCD0123456', // Placeholder
+          accountHolderName: formData.fullName
+        },
+        crops: [], // Empty array
+        livestock: [] // Empty array
+      };
+
+      const response = await farmerService.registerFarmer(farmerRegistrationData);
+      console.log('Farmer registered:', response);
+
+      // Store token and user data for auto-login
+      if (response.data && response.data.user && response.data.user.token) {
+        localStorage.setItem('token', response.data.user.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+      }
+
+      // Show success message
+      setSuccessMessage('Registration successful! Redirecting to dashboard...');
+
+      // Redirect to dashboard after 2 seconds
+      setTimeout(() => {
+        navigate('/farmer/dashboard');
+      }, 2000);
+
+    } catch (err) {
+      console.error('Registration error:', err);
+
+      // Handle validation errors
+      if (err.errors && Array.isArray(err.errors)) {
+        setErrors({ general: err.errors.join(', ') });
+      } else {
+        setErrors({ general: err.message || 'Registration failed. Please try again.' });
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -72,6 +141,38 @@ const FarmerRegistration = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-8">
+          {/* Success Message */}
+          {successMessage && (
+            <div className="mb-6 bg-green-50 border-l-4 border-green-500 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-green-700">{successMessage}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Error Message */}
+          {errors.general && (
+            <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">{errors.general}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Personal Details Section */}
           <div className="mb-10">
             <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">Personal Details</h3>
@@ -248,15 +349,17 @@ const FarmerRegistration = () => {
               <button
                 type="button"
                 onClick={() => navigate('/')}
-                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                disabled={loading}
+                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 disabled:bg-gray-200 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                disabled={loading}
+                className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                Register
+                {loading ? 'Registering...' : 'Register'}
               </button>
             </div>
 
