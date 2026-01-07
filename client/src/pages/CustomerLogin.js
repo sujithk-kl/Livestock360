@@ -37,7 +37,7 @@ const CustomerLogin = () => {
       // Redirect to customer dashboard or home
       navigate('/customer/dashboard'); // Assuming we'll create this later
     } catch (err) {
-      setError(err.message || 'Invalid email or password. Please try again.');
+      setError(err.message || 'Invalid credentials');
       console.error('Customer login error:', err);
     } finally {
       setLoading(false);

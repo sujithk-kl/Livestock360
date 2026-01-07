@@ -9,7 +9,6 @@ const CustomerDashboard = () => {
 
   const handleLogout = () => {
     authService.logout();
-    navigate('/');
   };
 
   return (

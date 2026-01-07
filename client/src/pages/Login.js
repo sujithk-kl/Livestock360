@@ -37,7 +37,7 @@ const Login = () => {
       // Redirect to farmer dashboard
       navigate('/farmer/dashboard');
     } catch (err) {
-      setError(err.message || 'Invalid email or password. Please try again.');
+      setError(err.message || 'Invalid credentials');
       console.error('Login error:', err);
     } finally {
       setLoading(false);
