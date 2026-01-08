@@ -31,16 +31,6 @@ const farmerService = {
       throw error.response?.data || { message: 'Failed to update profile' };
     }
   },
-
-  // Upload document
-  uploadDocument: async (documentData) => {
-    try {
-      const response = await api.post('/farmers/documents', documentData);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { message: 'Failed to upload document' };
-    }
-  },
 };
 
 export default farmerService;

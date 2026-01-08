@@ -39,6 +39,26 @@ const farmerSchema = new mongoose.Schema({
         required: [true, 'Please provide farm size in acres'],
         min: [0.1, 'Farm size must be at least 0.1 acres']
     },
+    farmName: {
+        type: String,
+        required: [true, 'Please provide farm name'],
+        trim: true
+    },
+    farmAddress: {
+        type: String,
+        required: [true, 'Please provide farm address'],
+        trim: true
+    },
+    farmType: {
+        type: String,
+        enum: ['Dairy', 'Livestock', 'Both', 'Other'],
+        default: 'Dairy'
+    },
+    yearsOfFarming: {
+        type: Number,
+        required: [true, 'Please provide years of farming experience'],
+        min: [0, 'Years of farming cannot be negative']
+    },
     crops: [{
         type: String,
         trim: true
@@ -51,49 +71,7 @@ const farmerSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide Aadhar number'],
         match: [/^\d{12}$/, 'Aadhar number must be exactly 12 digits']
-    },
-    bankDetails: {
-        accountNumber: {
-            type: String,
-            required: [true, 'Please provide bank account number']
-        },
-        bankName: {
-            type: String,
-            required: [true, 'Please provide bank name']
-        },
-        ifscCode: {
-            type: String,
-            required: [true, 'Please provide IFSC code'],
-            match: [/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Please provide a valid IFSC code']
-        },
-        accountHolderName: {
-            type: String,
-            required: [true, 'Please provide account holder name']
-        }
-    },
-    isVerified: {
-        type: Boolean,
-        default: false
-    },
-    documents: [{
-        documentType: {
-            type: String,
-            enum: ['aadhar', 'landRecord', 'bankPassbook', 'other'],
-            required: true
-        },
-        documentUrl: {
-            type: String,
-            required: true
-        },
-        uploadDate: {
-            type: Date,
-            default: Date.now
-        },
-        isVerified: {
-            type: Boolean,
-            default: false
-        }
-    }]
+    }
 }, {
     timestamps: true
 });
@@ -101,7 +79,6 @@ const farmerSchema = new mongoose.Schema({
 // Index for faster queries
 farmerSchema.index({ user: 1 }, { unique: true });
 farmerSchema.index({ aadharNumber: 1 }, { unique: true });
-farmerSchema.index({ 'bankDetails.accountNumber': 1 });
 
 // Add text index for search functionality
 farmerSchema.index({

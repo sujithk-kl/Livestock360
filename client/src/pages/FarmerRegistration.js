@@ -128,13 +128,11 @@ const FarmerRegistration = () => {
           country: 'India'
         },
         farmSize: parseFloat(formData.farmSize),
+        farmName: formData.farmName,
+        farmAddress: formData.farmAddress,
+        farmType: formData.farmType,
+        yearsOfFarming: parseInt(formData.yearsOfFarming),
         aadharNumber: cleanAadhar,
-        bankDetails: {
-          accountNumber: '1234567890', // Placeholder
-          bankName: 'Default Bank', // Placeholder
-          ifscCode: 'ABCD0123456', // Placeholder
-          accountHolderName: formData.fullName
-        },
         crops: [], // Empty array
         livestock: [] // Empty array
       };

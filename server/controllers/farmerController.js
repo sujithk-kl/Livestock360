@@ -26,11 +26,13 @@ const registerFarmer = async (req, res) => {
             phone,
             address,
             farmSize,
+            farmName,
+            farmAddress,
+            farmType,
+            yearsOfFarming,
             crops,
             livestock,
-            aadharNumber,
-            bankDetails,
-            documents
+            aadharNumber
         } = req.body;
 
         // Check if user already exists
@@ -71,12 +73,13 @@ const registerFarmer = async (req, res) => {
             phone,
             address,
             farmSize,
+            farmName,
+            farmAddress,
+            farmType,
+            yearsOfFarming,
             crops: crops || [],
             livestock: livestock || [],
-            aadharNumber,
-            bankDetails,
-            documents: documents || [],
-            isVerified: false
+            aadharNumber
         });
 
         await farmer.save();
@@ -127,7 +130,6 @@ const registerFarmer = async (req, res) => {
 const getMyProfile = async (req, res) => {
     try {
         const farmer = await Farmer.findOne({ user: req.user.id })
-            .select('-documents.documentUrl') // Don't include document URLs by default
             .populate('user', 'name email');
 
         if (!farmer) {
@@ -162,7 +164,6 @@ const updateProfile = async (req, res) => {
         delete updates._id;
         delete updates.user;
         delete updates.aadharNumber; // Aadhar number should not be changed
-        delete updates.isVerified;   // Verification status should be managed separately
 
         const farmer = await Farmer.findOneAndUpdate(
             { user: req.user.id },
@@ -191,58 +192,9 @@ const updateProfile = async (req, res) => {
     }
 };
 
-// @desc    Upload document for verification
-// @route   POST /api/farmers/documents
-// @access  Private (Farmer only)
-const uploadDocument = async (req, res) => {
-    try {
-        const { documentType, documentUrl } = req.body;
-
-        if (!documentType || !documentUrl) {
-            return res.status(400).json({
-                success: false,
-                message: 'Document type and URL are required'
-            });
-        }
-
-        const farmer = await Farmer.findOneAndUpdate(
-            { user: req.user.id },
-            {
-                $push: {
-                    documents: {
-                        documentType,
-                        documentUrl,
-                        isVerified: false
-                    }
-                }
-            },
-            { new: true, runValidators: true }
-        );
-
-        if (!farmer) {
-            return res.status(404).json({
-                success: false,
-                message: 'Farmer profile not found'
-            });
-        }
-
-        res.status(201).json({
-            success: true,
-            data: farmer.documents[farmer.documents.length - 1] // Return the newly added document
-        });
-    } catch (error) {
-        console.error('Error uploading document:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error',
-            error: process.env.NODE_ENV === 'development' ? error.message : undefined
-        });
-    }
-};
-
 module.exports = {
     registerFarmer,
     getMyProfile,
-    updateProfile,
-    uploadDocument
+    updateProfile
 };
+

@@ -38,26 +38,26 @@ const registerFarmerValidation = [
         .notEmpty().withMessage('Farm size is required')
         .isFloat({ min: 0.1 }).withMessage('Farm size must be at least 0.1 acres'),
 
+    body('farmName')
+        .notEmpty().withMessage('Farm name is required')
+        .isLength({ min: 2, max: 100 }).withMessage('Farm name must be between 2 and 100 characters'),
+
+    body('farmAddress')
+        .notEmpty().withMessage('Farm address is required')
+        .isLength({ max: 200 }).withMessage('Farm address cannot be longer than 200 characters'),
+
+    body('farmType')
+        .optional()
+        .isIn(['Dairy', 'Livestock', 'Both', 'Other']).withMessage('Invalid farm type'),
+
+    body('yearsOfFarming')
+        .notEmpty().withMessage('Years of farming is required')
+        .isInt({ min: 0 }).withMessage('Years of farming must be a non-negative integer'),
+
     body('aadharNumber')
         .notEmpty().withMessage('Aadhar number is required')
         .matches(/^\d{12}$/)
         .withMessage('Aadhar number must be exactly 12 digits'),
-
-    body('bankDetails.accountNumber')
-        .notEmpty().withMessage('Account number is required')
-        .isLength({ min: 9, max: 18 }).withMessage('Account number must be between 9 and 18 digits'),
-
-    body('bankDetails.bankName')
-        .optional()
-        .isLength({ max: 100 }).withMessage('Bank name cannot be longer than 100 characters'),
-
-    body('bankDetails.ifscCode')
-        .optional()
-        .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/).withMessage('Please provide a valid IFSC code'),
-
-    body('bankDetails.accountHolderName')
-        .optional()
-        .isLength({ max: 100 }).withMessage('Account holder name cannot be longer than 100 characters'),
 
     body('crops')
         .optional({ checkFalsy: true })
@@ -73,22 +73,7 @@ const registerFarmerValidation = [
 
     body('livestock.*')
         .isString().withMessage('Each livestock item must be a string')
-        .trim().notEmpty().withMessage('Livestock name cannot be empty'),
-
-    body('documents')
-        .optional({ checkFalsy: true })
-        .isArray().withMessage('Documents must be an array')
-];
-
-// Validation for document upload
-const documentUploadValidation = [
-    body('documentType')
-        .isIn(['aadhar', 'landRecord', 'bankPassbook', 'other'])
-        .withMessage('Invalid document type'),
-    
-    body('documentUrl')
-        .notEmpty().withMessage('Document URL is required')
-        .isURL().withMessage('Invalid document URL')
+        .trim().notEmpty().withMessage('Livestock name cannot be empty')
 ];
 
 // Validation for profile update
@@ -96,56 +81,56 @@ const updateProfileValidation = [
     body('phone')
         .optional()
         .matches(/^[0-9]{10}$/).withMessage('Please provide a valid 10-digit phone number'),
-    
+
     body('address.street')
         .optional()
         .isLength({ max: 200 }).withMessage('Street address cannot be longer than 200 characters'),
-    
+
     body('address.city')
         .optional()
         .isLength({ max: 100 }).withMessage('City name cannot be longer than 100 characters'),
-    
+
     body('address.state')
         .optional()
         .isLength({ max: 50 }).withMessage('State name cannot be longer than 50 characters'),
-    
+
     body('address.pincode')
         .optional()
         .matches(/^[1-9][0-9]{5}$/).withMessage('Please provide a valid 6-digit pincode'),
-    
+
     body('farmSize')
         .optional()
         .isFloat({ min: 0.1 }).withMessage('Farm size must be at least 0.1 acres'),
-    
-    body('bankDetails.accountNumber')
+
+    body('farmName')
         .optional()
-        .isLength({ min: 9, max: 18 }).withMessage('Account number must be between 9 and 18 digits'),
-    
-    body('bankDetails.bankName')
+        .isLength({ min: 2, max: 100 }).withMessage('Farm name must be between 2 and 100 characters'),
+
+    body('farmAddress')
         .optional()
-        .isLength({ max: 100 }).withMessage('Bank name cannot be longer than 100 characters'),
-    
-    body('bankDetails.ifscCode')
+        .isLength({ max: 200 }).withMessage('Farm address cannot be longer than 200 characters'),
+
+    body('farmType')
         .optional()
-        .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/).withMessage('Please provide a valid IFSC code'),
-    
-    body('bankDetails.accountHolderName')
+        .isIn(['Dairy', 'Livestock', 'Both', 'Other']).withMessage('Invalid farm type'),
+
+    body('yearsOfFarming')
         .optional()
-        .isLength({ max: 100 }).withMessage('Account holder name cannot be longer than 100 characters'),
-    
+        .isInt({ min: 0 }).withMessage('Years of farming must be a non-negative integer'),
+
     body('crops')
         .optional({ checkFalsy: true })
         .isArray().withMessage('Crops must be an array of strings'),
-    
+
     body('crops.*')
         .optional()
         .isString().withMessage('Each crop must be a string')
         .trim().notEmpty().withMessage('Crop name cannot be empty'),
-    
+
     body('livestock')
         .optional({ checkFalsy: true })
         .isArray().withMessage('Livestock must be an array of strings'),
-    
+
     body('livestock.*')
         .optional()
         .isString().withMessage('Each livestock item must be a string')
@@ -154,6 +139,5 @@ const updateProfileValidation = [
 
 module.exports = {
     registerFarmerValidation,
-    documentUploadValidation,
     updateProfileValidation
 };

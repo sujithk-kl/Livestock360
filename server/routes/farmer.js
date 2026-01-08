@@ -35,14 +35,4 @@ router.put(
   farmerController.updateProfile
 );
 
-// @route   POST /api/farmers/documents
-// @desc    Upload document for verification
-// @access  Private (Farmer only)
-router.post(
-  '/documents',
-  authorize('farmer', 'admin'),
-  farmerValidator.documentUploadValidation,
-  farmerController.uploadDocument
-);
-
 module.exports = router;
