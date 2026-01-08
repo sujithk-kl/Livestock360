@@ -44,19 +44,19 @@ const registerFarmerValidation = [
         .withMessage('Aadhar number must be exactly 12 digits'),
 
     body('bankDetails.accountNumber')
-        .notEmpty().withMessage('Bank account number is required')
+        .notEmpty().withMessage('Account number is required')
         .isLength({ min: 9, max: 18 }).withMessage('Account number must be between 9 and 18 digits'),
 
     body('bankDetails.bankName')
-        .notEmpty().withMessage('Bank name is required')
+        .optional()
         .isLength({ max: 100 }).withMessage('Bank name cannot be longer than 100 characters'),
 
     body('bankDetails.ifscCode')
-        .notEmpty().withMessage('IFSC code is required')
+        .optional()
         .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/).withMessage('Please provide a valid IFSC code'),
 
     body('bankDetails.accountHolderName')
-        .notEmpty().withMessage('Account holder name is required')
+        .optional()
         .isLength({ max: 100 }).withMessage('Account holder name cannot be longer than 100 characters'),
 
     body('crops')

@@ -45,6 +45,14 @@ const FarmerRegistration = () => {
   const validateForm = () => {
     const newErrors = {};
 
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = 'Full name is required';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    }
+
     if (!/^[0-9]{10}$/.test(formData.phone)) {
       newErrors.phone = 'Phone number must be exactly 10 digits';
     }
@@ -64,6 +72,26 @@ const FarmerRegistration = () => {
 
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    if (!formData.address.trim()) {
+      newErrors.address = 'Address is required';
+    }
+
+    if (!formData.farmSize || isNaN(parseFloat(formData.farmSize)) || parseFloat(formData.farmSize) < 0.1) {
+      newErrors.farmSize = 'Farm size must be at least 0.1 acres';
+    }
+
+    if (!formData.farmName.trim()) {
+      newErrors.farmName = 'Farm name is required';
+    }
+
+    if (!formData.farmAddress.trim()) {
+      newErrors.farmAddress = 'Farm address is required';
+    }
+
+    if (!formData.yearsOfFarming || isNaN(parseInt(formData.yearsOfFarming)) || parseInt(formData.yearsOfFarming) < 0) {
+      newErrors.yearsOfFarming = 'Years of farming must be a valid number';
     }
 
     setErrors(newErrors);
@@ -194,9 +222,14 @@ const FarmerRegistration = () => {
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className={`w-full px-4 py-2 border ${
+                    errors.fullName ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
                   required
                 />
+                {errors.fullName && (
+                  <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
+                )}
               </div>
 
               <div>
@@ -206,9 +239,14 @@ const FarmerRegistration = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className={`w-full px-4 py-2 border ${
+                    errors.email ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
                   required
                 />
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                )}
               </div>
 
               <div>
@@ -295,9 +333,14 @@ const FarmerRegistration = () => {
                   name="farmName"
                   value={formData.farmName}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className={`w-full px-4 py-2 border ${
+                    errors.farmName ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
                   required
                 />
+                {errors.farmName && (
+                  <p className="mt-1 text-sm text-red-600">{errors.farmName}</p>
+                )}
               </div>
 
               <div>
@@ -307,9 +350,14 @@ const FarmerRegistration = () => {
                   name="farmSize"
                   value={formData.farmSize}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className={`w-full px-4 py-2 border ${
+                    errors.farmSize ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
                   required
                 />
+                {errors.farmSize && (
+                  <p className="mt-1 text-sm text-red-600">{errors.farmSize}</p>
+                )}
               </div>
 
               <div>
@@ -334,9 +382,14 @@ const FarmerRegistration = () => {
                   name="yearsOfFarming"
                   value={formData.yearsOfFarming}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className={`w-full px-4 py-2 border ${
+                    errors.yearsOfFarming ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
                   required
                 />
+                {errors.yearsOfFarming && (
+                  <p className="mt-1 text-sm text-red-600">{errors.yearsOfFarming}</p>
+                )}
               </div>
 
               <div className="md:col-span-2">
@@ -346,9 +399,14 @@ const FarmerRegistration = () => {
                   value={formData.farmAddress}
                   onChange={handleChange}
                   rows="2"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className={`w-full px-4 py-2 border ${
+                    errors.farmAddress ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
                   required
                 ></textarea>
+                {errors.farmAddress && (
+                  <p className="mt-1 text-sm text-red-600">{errors.farmAddress}</p>
+                )}
               </div>
             </div>
           </div>

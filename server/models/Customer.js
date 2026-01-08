@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const customerSchema = new mongoose.Schema({
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     name: {
         type: String,
         required: [true, 'Please provide a name'],
@@ -119,6 +124,7 @@ customerSchema.methods.resetLoginAttempts = function() {
 };
 
 // Index for faster queries
+customerSchema.index({ user: 1 }, { unique: true });
 customerSchema.index({ phone: 1 }, { unique: true });
 
 
