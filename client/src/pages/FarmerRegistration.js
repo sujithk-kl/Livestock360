@@ -223,7 +223,6 @@ const FarmerRegistration = () => {
                   className={`w-full px-4 py-2 border ${
                     errors.fullName ? 'border-red-500' : 'border-gray-300'
                   } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
-                  required
                 />
                 {errors.fullName && (
                   <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
@@ -240,7 +239,6 @@ const FarmerRegistration = () => {
                   className={`w-full px-4 py-2 border ${
                     errors.email ? 'border-red-500' : 'border-gray-300'
                   } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
-                  required
                 />
                 {errors.email && (
                   <p className="mt-1 text-sm text-red-600">{errors.email}</p>
@@ -255,7 +253,6 @@ const FarmerRegistration = () => {
                   value={formData.phone}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                  required
                 />
               </div>
 
@@ -267,7 +264,6 @@ const FarmerRegistration = () => {
                   value={formData.aadharNumber}
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                  required
                 />
               </div>
 
@@ -281,7 +277,6 @@ const FarmerRegistration = () => {
                   className={`w-full px-4 py-2 border ${
                     errors.password ? 'border-red-500' : 'border-gray-300'
                   } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
-                  required
                 />
                 {errors.password && (
                   <p className="mt-1 text-sm text-red-600">{errors.password}</p>
@@ -298,7 +293,6 @@ const FarmerRegistration = () => {
                   className={`w-full px-4 py-2 border ${
                     errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
                   } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
-                  required
                 />
                 {errors.confirmPassword && (
                   <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
@@ -313,7 +307,6 @@ const FarmerRegistration = () => {
                   onChange={handleChange}
                   rows="2"
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                  required
                 ></textarea>
               </div>
             </div>
@@ -334,7 +327,6 @@ const FarmerRegistration = () => {
                   className={`w-full px-4 py-2 border ${
                     errors.farmName ? 'border-red-500' : 'border-gray-300'
                   } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
-                  required
                 />
                 {errors.farmName && (
                   <p className="mt-1 text-sm text-red-600">{errors.farmName}</p>
@@ -351,7 +343,6 @@ const FarmerRegistration = () => {
                   className={`w-full px-4 py-2 border ${
                     errors.farmSize ? 'border-red-500' : 'border-gray-300'
                   } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
-                  required
                 />
                 {errors.farmSize && (
                   <p className="mt-1 text-sm text-red-600">{errors.farmSize}</p>
@@ -383,7 +374,6 @@ const FarmerRegistration = () => {
                   className={`w-full px-4 py-2 border ${
                     errors.yearsOfFarming ? 'border-red-500' : 'border-gray-300'
                   } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
-                  required
                 />
                 {errors.yearsOfFarming && (
                   <p className="mt-1 text-sm text-red-600">{errors.yearsOfFarming}</p>
@@ -400,7 +390,6 @@ const FarmerRegistration = () => {
                   className={`w-full px-4 py-2 border ${
                     errors.farmAddress ? 'border-red-500' : 'border-gray-300'
                   } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
-                  required
                 ></textarea>
                 {errors.farmAddress && (
                   <p className="mt-1 text-sm text-red-600">{errors.farmAddress}</p>

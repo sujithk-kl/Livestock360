@@ -68,9 +68,6 @@ const registerCustomer = async (req, res) => {
         // Create new customer profile
         const customer = new Customer({
             user: user._id,
-            name,
-            email,
-            password,
             phone,
             preferences: {
                 preferredProducts: preferences?.preferredProducts || [],
@@ -121,7 +118,6 @@ const registerCustomer = async (req, res) => {
 const getMyProfile = async (req, res) => {
     try {
         const customer = await Customer.findOne({ user: req.user.id })
-            .select('-password')
             .populate('user', 'name email');
 
         if (!customer) {
