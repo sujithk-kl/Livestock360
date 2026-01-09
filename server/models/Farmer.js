@@ -93,6 +93,30 @@ const farmerSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide Aadhar number'],
         match: [/^\d{12}$/, 'Aadhar number must be exactly 12 digits']
+    },
+    bankDetails: {
+        bankName: {
+            type: String,
+            required: [true, 'Please provide bank name'],
+            trim: true
+        },
+        accountNumber: {
+            type: String,
+            required: [true, 'Please provide account number'],
+            trim: true
+        },
+        ifscCode: {
+            type: String,
+            required: [true, 'Please provide IFSC code'],
+            trim: true,
+            uppercase: true,
+            match: [/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Please provide a valid IFSC code']
+        },
+        accountHolderName: {
+            type: String,
+            required: [true, 'Please provide account holder name'],
+            trim: true
+        }
     }
 }, {
     timestamps: true

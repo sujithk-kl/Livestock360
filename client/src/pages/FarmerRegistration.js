@@ -14,13 +14,19 @@ const FarmerRegistration = () => {
     aadharNumber: '',
     password: '',
     confirmPassword: '',
-    
+
     // Farm Details
     farmName: '',
     farmAddress: '',
     farmSize: '',
     farmType: 'Dairy',
     yearsOfFarming: '',
+
+    // Bank Details
+    bankName: '',
+    accountNumber: '',
+    ifscCode: '',
+    accountHolderName: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -94,6 +100,26 @@ const FarmerRegistration = () => {
       newErrors.yearsOfFarming = 'Years of farming must be a valid number';
     }
 
+    if (!formData.bankName.trim()) {
+      newErrors.bankName = 'Bank name is required';
+    }
+
+    if (!formData.accountNumber.trim()) {
+      newErrors.accountNumber = 'Account number is required';
+    } else if (!/^\d{9,18}$/.test(formData.accountNumber)) {
+      newErrors.accountNumber = 'Account number must be between 9 and 18 digits';
+    }
+
+    if (!formData.ifscCode.trim()) {
+      newErrors.ifscCode = 'IFSC code is required';
+    } else if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(formData.ifscCode)) {
+      newErrors.ifscCode = 'Please provide a valid IFSC code';
+    }
+
+    if (!formData.accountHolderName.trim()) {
+      newErrors.accountHolderName = 'Account holder name is required';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -134,7 +160,13 @@ const FarmerRegistration = () => {
         yearsOfFarming: parseInt(formData.yearsOfFarming),
         aadharNumber: cleanAadhar,
         crops: [], // Empty array
-        livestock: [] // Empty array
+        livestock: [], // Empty array
+        bankDetails: {
+          bankName: formData.bankName,
+          accountNumber: formData.accountNumber,
+          ifscCode: formData.ifscCode.toUpperCase(),
+          accountHolderName: formData.accountHolderName
+        }
       };
 
       const response = await farmerService.registerFarmer(farmerRegistrationData);
@@ -315,7 +347,7 @@ const FarmerRegistration = () => {
           {/* Farm Details Section */}
           <div className="mb-10">
             <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">Farm Details</h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Farm Name *</label>
@@ -393,6 +425,78 @@ const FarmerRegistration = () => {
                 ></textarea>
                 {errors.farmAddress && (
                   <p className="mt-1 text-sm text-red-600">{errors.farmAddress}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Bank Details Section */}
+          <div className="mb-10">
+            <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">Bank Details</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Bank Name *</label>
+                <input
+                  type="text"
+                  name="bankName"
+                  value={formData.bankName}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2 border ${
+                    errors.bankName ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                />
+                {errors.bankName && (
+                  <p className="mt-1 text-sm text-red-600">{errors.bankName}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Account Number *</label>
+                <input
+                  type="text"
+                  name="accountNumber"
+                  value={formData.accountNumber}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2 border ${
+                    errors.accountNumber ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                />
+                {errors.accountNumber && (
+                  <p className="mt-1 text-sm text-red-600">{errors.accountNumber}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">IFSC Code *</label>
+                <input
+                  type="text"
+                  name="ifscCode"
+                  value={formData.ifscCode}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2 border ${
+                    errors.ifscCode ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  style={{ textTransform: 'uppercase' }}
+                />
+                {errors.ifscCode && (
+                  <p className="mt-1 text-sm text-red-600">{errors.ifscCode}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Account Holder Name *</label>
+                <input
+                  type="text"
+                  name="accountHolderName"
+                  value={formData.accountHolderName}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2 border ${
+                    errors.accountHolderName ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                />
+                {errors.accountHolderName && (
+                  <p className="mt-1 text-sm text-red-600">{errors.accountHolderName}</p>
                 )}
               </div>
             </div>

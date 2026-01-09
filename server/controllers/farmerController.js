@@ -32,7 +32,8 @@ const registerFarmer = async (req, res) => {
             yearsOfFarming,
             crops,
             livestock,
-            aadharNumber
+            aadharNumber,
+            bankDetails
         } = req.body;
 
         // Check if user already exists
@@ -82,7 +83,8 @@ const registerFarmer = async (req, res) => {
             yearsOfFarming,
             crops: crops || [],
             livestock: livestock || [],
-            aadharNumber
+            aadharNumber,
+            bankDetails
         });
 
         await farmer.save();

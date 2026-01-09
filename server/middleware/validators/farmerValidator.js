@@ -73,7 +73,24 @@ const registerFarmerValidation = [
 
     body('livestock.*')
         .isString().withMessage('Each livestock item must be a string')
-        .trim().notEmpty().withMessage('Livestock name cannot be empty')
+        .trim().notEmpty().withMessage('Livestock name cannot be empty'),
+
+    body('bankDetails.bankName')
+        .notEmpty().withMessage('Bank name is required')
+        .isLength({ min: 2, max: 100 }).withMessage('Bank name must be between 2 and 100 characters'),
+
+    body('bankDetails.accountNumber')
+        .notEmpty().withMessage('Account number is required')
+        .isLength({ min: 9, max: 18 }).withMessage('Account number must be between 9 and 18 digits')
+        .matches(/^\d+$/).withMessage('Account number must contain only digits'),
+
+    body('bankDetails.ifscCode')
+        .notEmpty().withMessage('IFSC code is required')
+        .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/).withMessage('Please provide a valid IFSC code'),
+
+    body('bankDetails.accountHolderName')
+        .notEmpty().withMessage('Account holder name is required')
+        .isLength({ min: 2, max: 50 }).withMessage('Account holder name must be between 2 and 50 characters')
 ];
 
 // Validation for profile update
@@ -134,7 +151,24 @@ const updateProfileValidation = [
     body('livestock.*')
         .optional()
         .isString().withMessage('Each livestock item must be a string')
-        .trim().notEmpty().withMessage('Livestock name cannot be empty')
+        .trim().notEmpty().withMessage('Livestock name cannot be empty'),
+
+    body('bankDetails.bankName')
+        .optional()
+        .isLength({ min: 2, max: 100 }).withMessage('Bank name must be between 2 and 100 characters'),
+
+    body('bankDetails.accountNumber')
+        .optional()
+        .isLength({ min: 9, max: 18 }).withMessage('Account number must be between 9 and 18 digits')
+        .matches(/^\d+$/).withMessage('Account number must contain only digits'),
+
+    body('bankDetails.ifscCode')
+        .optional()
+        .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/).withMessage('Please provide a valid IFSC code'),
+
+    body('bankDetails.accountHolderName')
+        .optional()
+        .isLength({ min: 2, max: 50 }).withMessage('Account holder name must be between 2 and 50 characters')
 ];
 
 module.exports = {
