@@ -70,6 +70,8 @@ const registerFarmer = async (req, res) => {
         // Create new farmer profile
         const farmer = new Farmer({
             user: user._id,
+            name,
+            email,
             phone,
             address,
             farmSize,
