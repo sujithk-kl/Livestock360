@@ -29,6 +29,75 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'farmer', 'customer', 'admin'],
         default: ['user']
     }],
+    // Farmer specific fields
+    phone: {
+        type: String,
+        match: [/^[0-9]{10}$/, 'Please provide a valid 10-digit phone number']
+    },
+    address: {
+        street: String,
+        city: String,
+        state: String,
+        pincode: {
+            type: String,
+            match: [/^[1-9][0-9]{5}$/, 'Please provide a valid 6-digit pincode']
+        },
+        country: {
+            type: String,
+            default: 'India'
+        }
+    },
+    farmSize: Number,
+    farmName: String,
+    farmAddress: String,
+    farmType: {
+        type: String,
+        enum: ['Dairy', 'Livestock', 'Both', 'Other']
+    },
+    yearsOfFarming: Number,
+    crops: [{
+        type: String,
+        trim: true
+    }],
+    livestock: [{
+        type: String,
+        trim: true
+    }],
+    aadharNumber: {
+        type: String,
+        match: [/^\d{12}$/, 'Aadhar number must be exactly 12 digits']
+    },
+    bankDetails: {
+        bankName: String,
+        accountNumber: String,
+        ifscCode: {
+            type: String,
+            uppercase: true,
+            match: [/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Please provide a valid IFSC code']
+        },
+        accountHolderName: String
+    },
+    // Customer specific fields
+    preferences: {
+        preferredProducts: [{
+            type: String,
+            trim: true
+        }],
+        budgetRange: {
+            min: Number,
+            max: Number
+        },
+        notifications: {
+            email: {
+                type: Boolean,
+                default: true
+            },
+            sms: {
+                type: Boolean,
+                default: false
+            }
+        }
+    },
     failedAttempts: {
         type: Number,
         default: 0
@@ -87,5 +156,17 @@ userSchema.methods.resetLoginAttempts = function() {
         $unset: { failedAttempts: 1, lockUntil: 1 }
     }).exec();
 };
+
+// Indexes for faster queries
+userSchema.index({ aadharNumber: 1 }, { sparse: true, unique: true });
+userSchema.index({ phone: 1 }, { sparse: true, unique: true });
+
+// Add text index for search functionality
+userSchema.index({
+    'address.city': 'text',
+    'address.state': 'text',
+    crops: 'text',
+    livestock: 'text'
+});
 
 module.exports = mongoose.model('User', userSchema);

@@ -1,8 +1,7 @@
-const Farmer = require('../models/Farmer');
 const User = require('../models/User');
 const { validationResult } = require('express-validator');
 
-// @desc    Register a new farmer (creates user account if needed)
+// @desc    Register a new farmer (creates user account with farmer data)
 // @route   POST /api/farmers/register
 // @access  Public
 const registerFarmer = async (req, res) => {
@@ -38,29 +37,15 @@ const registerFarmer = async (req, res) => {
 
         // Check if user already exists
         let user = await User.findOne({ email });
-        if (!user) {
-            // Create user account
-            user = new User({
-                name,
-                email,
-                password,
-                roles: ['user']
-            });
-            await user.save();
-            console.log('User created successfully:', user.email);
-        }
-
-        // Check if user already has a farmer profile
-        const existingFarmer = await Farmer.findOne({ user: user._id });
-        if (existingFarmer) {
+        if (user) {
             return res.status(400).json({
                 success: false,
-                message: 'Farmer profile already exists for this user'
+                message: 'User already exists with this email'
             });
         }
 
         // Check if Aadhar number is already registered
-        const existingAadhar = await Farmer.findOne({ aadharNumber });
+        const existingAadhar = await User.findOne({ aadharNumber });
         if (existingAadhar) {
             return res.status(400).json({
                 success: false,
@@ -68,11 +53,12 @@ const registerFarmer = async (req, res) => {
             });
         }
 
-        // Create new farmer profile
-        const farmer = new Farmer({
-            user: user._id,
+        // Create new farmer user with all data in User collection
+        const newUser = new User({
             name,
             email,
+            password,
+            roles: ['user', 'farmer'],
             phone,
             address,
             farmSize,
@@ -86,14 +72,8 @@ const registerFarmer = async (req, res) => {
             bankDetails
         });
 
-        await farmer.save();
-
-        // Update user role to 'farmer' if not already
-        const updatedUser = await User.findByIdAndUpdate(
-            user._id,
-            { $addToSet: { roles: 'farmer' } },
-            { new: true, runValidators: true }
-        );
+        await newUser.save();
+        console.log('Farmer user created successfully:', newUser.email);
 
         // Generate token for auto-login
         const jwt = require('jsonwebtoken');
@@ -102,17 +82,27 @@ const registerFarmer = async (req, res) => {
                 expiresIn: '30d'
             });
         };
-        const token = generateToken(user._id);
+        const token = generateToken(newUser._id);
 
         res.status(201).json({
             success: true,
             data: {
-                farmer,
                 user: {
-                    id: updatedUser._id,
-                    name: updatedUser.name,
-                    email: updatedUser.email,
-                    roles: updatedUser.roles,
+                    id: newUser._id,
+                    name: newUser.name,
+                    email: newUser.email,
+                    roles: newUser.roles,
+                    phone: newUser.phone,
+                    address: newUser.address,
+                    farmSize: newUser.farmSize,
+                    farmName: newUser.farmName,
+                    farmAddress: newUser.farmAddress,
+                    farmType: newUser.farmType,
+                    yearsOfFarming: newUser.yearsOfFarming,
+                    crops: newUser.crops,
+                    livestock: newUser.livestock,
+                    aadharNumber: newUser.aadharNumber,
+                    bankDetails: newUser.bankDetails,
                     token
                 }
             }
@@ -133,10 +123,9 @@ const registerFarmer = async (req, res) => {
 // @access  Private (Farmer only)
 const getMyProfile = async (req, res) => {
     try {
-        const farmer = await Farmer.findOne({ user: req.user.id })
-            .populate('user', 'name email');
+        const user = await User.findById(req.user.id);
 
-        if (!farmer) {
+        if (!user || !user.roles.includes('farmer')) {
             return res.status(404).json({
                 success: false,
                 message: 'Farmer profile not found'
@@ -145,7 +134,25 @@ const getMyProfile = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            data: farmer
+            data: {
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    roles: user.roles,
+                    phone: user.phone,
+                    address: user.address,
+                    farmSize: user.farmSize,
+                    farmName: user.farmName,
+                    farmAddress: user.farmAddress,
+                    farmType: user.farmType,
+                    yearsOfFarming: user.yearsOfFarming,
+                    crops: user.crops,
+                    livestock: user.livestock,
+                    aadharNumber: user.aadharNumber,
+                    bankDetails: user.bankDetails
+                }
+            }
         });
     } catch (error) {
         console.error('Error fetching farmer profile:', error);
@@ -162,29 +169,51 @@ const getMyProfile = async (req, res) => {
 // @access  Private (Farmer only)
 const updateProfile = async (req, res) => {
     try {
-        const updates = { ...req.body };
-        
-        // Remove fields that shouldn't be updated directly
-        delete updates._id;
-        delete updates.user;
-        delete updates.aadharNumber; // Aadhar number should not be changed
+        const user = await User.findById(req.user.id);
 
-        const farmer = await Farmer.findOneAndUpdate(
-            { user: req.user.id },
-            { $set: updates },
-            { new: true, runValidators: true }
-        );
-
-        if (!farmer) {
+        if (!user || !user.roles.includes('farmer')) {
             return res.status(404).json({
                 success: false,
                 message: 'Farmer profile not found'
             });
         }
 
+        const updates = { ...req.body };
+
+        // Remove fields that shouldn't be updated directly
+        delete updates._id;
+        delete updates.email; // Email should not be changed
+        delete updates.password; // Password should be updated via separate endpoint
+        delete updates.roles; // Roles should not be updated directly
+        delete updates.aadharNumber; // Aadhar number should not be changed
+
+        const updatedUser = await User.findByIdAndUpdate(
+            req.user.id,
+            { $set: updates },
+            { new: true, runValidators: true }
+        );
+
         res.status(200).json({
             success: true,
-            data: farmer
+            data: {
+                user: {
+                    id: updatedUser._id,
+                    name: updatedUser.name,
+                    email: updatedUser.email,
+                    roles: updatedUser.roles,
+                    phone: updatedUser.phone,
+                    address: updatedUser.address,
+                    farmSize: updatedUser.farmSize,
+                    farmName: updatedUser.farmName,
+                    farmAddress: updatedUser.farmAddress,
+                    farmType: updatedUser.farmType,
+                    yearsOfFarming: updatedUser.yearsOfFarming,
+                    crops: updatedUser.crops,
+                    livestock: updatedUser.livestock,
+                    aadharNumber: updatedUser.aadharNumber,
+                    bankDetails: updatedUser.bankDetails
+                }
+            }
         });
     } catch (error) {
         console.error('Error updating farmer profile:', error);
@@ -201,4 +230,3 @@ module.exports = {
     getMyProfile,
     updateProfile
 };
-

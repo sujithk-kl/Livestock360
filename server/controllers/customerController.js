@@ -1,4 +1,3 @@
-const Customer = require('../models/Customer');
 const User = require('../models/User');
 const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
@@ -35,29 +34,15 @@ const registerCustomer = async (req, res) => {
 
         // Check if user already exists
         let user = await User.findOne({ email });
-        if (!user) {
-            // Create user account
-            user = new User({
-                name,
-                email,
-                password,
-                roles: ['user']
-            });
-            await user.save();
-            console.log('User created successfully:', user.email);
-        }
-
-        // Check if user already has a customer profile
-        const existingCustomer = await Customer.findOne({ user: user._id });
-        if (existingCustomer) {
+        if (user) {
             return res.status(400).json({
                 success: false,
-                message: 'Customer profile already exists for this user'
+                message: 'User already exists with this email'
             });
         }
 
         // Check if phone number is already registered
-        const existingPhone = await Customer.findOne({ phone });
+        const existingPhone = await User.findOne({ phone });
         if (existingPhone) {
             return res.status(400).json({
                 success: false,
@@ -65,9 +50,12 @@ const registerCustomer = async (req, res) => {
             });
         }
 
-        // Create new customer profile
-        const customer = new Customer({
-            user: user._id,
+        // Create new customer user with all data in User collection
+        const newUser = new User({
+            name,
+            email,
+            password,
+            roles: ['user', 'customer'],
             phone,
             preferences: {
                 preferredProducts: preferences?.preferredProducts || [],
@@ -76,27 +64,22 @@ const registerCustomer = async (req, res) => {
             }
         });
 
-        await customer.save();
-
-        // Update user role to 'customer' if not already
-        const updatedUser = await User.findByIdAndUpdate(
-            user._id,
-            { $addToSet: { roles: 'customer' } },
-            { new: true, runValidators: true }
-        );
+        await newUser.save();
+        console.log('Customer user created successfully:', newUser.email);
 
         // Generate token for auto-login
-        const token = generateToken(user._id);
+        const token = generateToken(newUser._id);
 
         res.status(201).json({
             success: true,
             data: {
-                customer,
                 user: {
-                    id: updatedUser._id,
-                    name: updatedUser.name,
-                    email: updatedUser.email,
-                    roles: updatedUser.roles,
+                    id: newUser._id,
+                    name: newUser.name,
+                    email: newUser.email,
+                    roles: newUser.roles,
+                    phone: newUser.phone,
+                    preferences: newUser.preferences,
                     token
                 }
             }
@@ -117,10 +100,9 @@ const registerCustomer = async (req, res) => {
 // @access  Private (Customer only)
 const getMyProfile = async (req, res) => {
     try {
-        const customer = await Customer.findOne({ user: req.user.id })
-            .populate('user', 'name email');
+        const user = await User.findById(req.user.id);
 
-        if (!customer) {
+        if (!user || !user.roles.includes('customer')) {
             return res.status(404).json({
                 success: false,
                 message: 'Customer profile not found'
@@ -129,7 +111,16 @@ const getMyProfile = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            data: customer
+            data: {
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    roles: user.roles,
+                    phone: user.phone,
+                    preferences: user.preferences
+                }
+            }
         });
     } catch (error) {
         console.error('Error fetching customer profile:', error);
@@ -146,30 +137,42 @@ const getMyProfile = async (req, res) => {
 // @access  Private (Customer only)
 const updateProfile = async (req, res) => {
     try {
-        const updates = { ...req.body };
+        const user = await User.findById(req.user.id);
 
-        // Remove fields that shouldn't be updated directly
-        delete updates._id;
-        delete updates.user;
-        delete updates.email; // Email should not be changed
-        delete updates.phone; // Phone number should not be changed (for verification purposes)
-
-        const customer = await Customer.findOneAndUpdate(
-            { user: req.user.id },
-            { $set: updates },
-            { new: true, runValidators: true }
-        );
-
-        if (!customer) {
+        if (!user || !user.roles.includes('customer')) {
             return res.status(404).json({
                 success: false,
                 message: 'Customer profile not found'
             });
         }
 
+        const updates = { ...req.body };
+
+        // Remove fields that shouldn't be updated directly
+        delete updates._id;
+        delete updates.email; // Email should not be changed
+        delete updates.password; // Password should be updated via separate endpoint
+        delete updates.roles; // Roles should not be updated directly
+        delete updates.phone; // Phone number should not be changed (for verification purposes)
+
+        const updatedUser = await User.findByIdAndUpdate(
+            req.user.id,
+            { $set: updates },
+            { new: true, runValidators: true }
+        );
+
         res.status(200).json({
             success: true,
-            data: customer
+            data: {
+                user: {
+                    id: updatedUser._id,
+                    name: updatedUser.name,
+                    email: updatedUser.email,
+                    roles: updatedUser.roles,
+                    phone: updatedUser.phone,
+                    preferences: updatedUser.preferences
+                }
+            }
         });
     } catch (error) {
         console.error('Error updating customer profile:', error);
