@@ -73,7 +73,6 @@ const registerFarmer = async (req, res) => {
             user: user._id,
             name,
             email,
-            password,
             phone,
             address,
             farmSize,

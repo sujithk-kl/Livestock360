@@ -10,7 +10,10 @@ const FarmerRegistration = () => {
     fullName: '',
     email: '',
     phone: '',
-    address: '',
+    addressStreet: '',
+    addressCity: '',
+    addressState: '',
+    addressPincode: '',
     aadharNumber: '',
     password: '',
     confirmPassword: '',
@@ -80,8 +83,22 @@ const FarmerRegistration = () => {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
-    if (!formData.address.trim()) {
-      newErrors.address = 'Address is required';
+    if (!formData.addressStreet.trim()) {
+      newErrors.addressStreet = 'Street address is required';
+    }
+
+    if (!formData.addressCity.trim()) {
+      newErrors.addressCity = 'City is required';
+    }
+
+    if (!formData.addressState.trim()) {
+      newErrors.addressState = 'State is required';
+    }
+
+    if (!formData.addressPincode.trim()) {
+      newErrors.addressPincode = 'Pincode is required';
+    } else if (!/^[1-9][0-9]{5}$/.test(formData.addressPincode)) {
+      newErrors.addressPincode = 'Please provide a valid 6-digit pincode';
     }
 
     if (!formData.farmSize || isNaN(parseFloat(formData.farmSize)) || parseFloat(formData.farmSize) < 0.1) {
@@ -147,10 +164,10 @@ const FarmerRegistration = () => {
         password: formData.password,
         phone: formData.phone,
         address: {
-          street: formData.address, // Using address as street for now
-          city: 'Default City', // Placeholder
-          state: 'Default State', // Placeholder
-          pincode: '123456', // Placeholder
+          street: formData.addressStreet,
+          city: formData.addressCity,
+          state: formData.addressState,
+          pincode: formData.addressPincode,
           country: 'India'
         },
         farmSize: parseFloat(formData.farmSize),
@@ -331,15 +348,68 @@ const FarmerRegistration = () => {
                 )}
               </div>
 
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
-                <textarea
-                  name="address"
-                  value={formData.address}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Street Address *</label>
+                <input
+                  type="text"
+                  name="addressStreet"
+                  value={formData.addressStreet}
                   onChange={handleChange}
-                  rows="2"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                ></textarea>
+                  className={`w-full px-4 py-2 border ${
+                    errors.addressStreet ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                />
+                {errors.addressStreet && (
+                  <p className="mt-1 text-sm text-red-600">{errors.addressStreet}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                <input
+                  type="text"
+                  name="addressCity"
+                  value={formData.addressCity}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2 border ${
+                    errors.addressCity ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                />
+                {errors.addressCity && (
+                  <p className="mt-1 text-sm text-red-600">{errors.addressCity}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">State *</label>
+                <input
+                  type="text"
+                  name="addressState"
+                  value={formData.addressState}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2 border ${
+                    errors.addressState ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                />
+                {errors.addressState && (
+                  <p className="mt-1 text-sm text-red-600">{errors.addressState}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Pincode *</label>
+                <input
+                  type="text"
+                  name="addressPincode"
+                  value={formData.addressPincode}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2 border ${
+                    errors.addressPincode ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                />
+                {errors.addressPincode && (
+                  <p className="mt-1 text-sm text-red-600">{errors.addressPincode}</p>
+                )}
               </div>
             </div>
           </div>

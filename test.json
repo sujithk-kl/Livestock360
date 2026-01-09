@@ -1,0 +1,27 @@
+{
+  "name": "Test Farmer",
+  "email": "testfarmer@example.com",
+  "password": "password123",
+  "phone": "1234567890",
+  "address": {
+    "street": "123 Main St",
+    "city": "Test City",
+    "state": "Test State",
+    "pincode": "123456",
+    "country": "India"
+  },
+  "farmSize": 5.0,
+  "farmName": "Test Farm",
+  "farmAddress": "Farm Address",
+  "farmType": "Dairy",
+  "yearsOfFarming": 10,
+  "crops": [],
+  "livestock": [],
+  "aadharNumber": "123456789012",
+  "bankDetails": {
+    "bankName": "Test Bank",
+    "accountNumber": "123456789012",
+    "ifscCode": "ABCD0123456",
+    "accountHolderName": "Test Holder"
+  }
+}
