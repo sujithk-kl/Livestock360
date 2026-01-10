@@ -117,12 +117,31 @@ const CustomerRegistration = () => {
 
     } catch (err) {
       console.error('Registration error:', err);
+      console.error('Error details:', JSON.stringify(err, null, 2));
 
-      // Handle validation errors
+      // Handle different types of errors
       if (err.errors && Array.isArray(err.errors)) {
-        setErrors({ general: err.errors.join(', ') });
+        // Express-validator errors
+        setErrors({ general: err.errors.map(e => e.msg).join(', ') });
+      } else if (err.message) {
+        // Standard error message
+        setErrors({ general: err.message });
+      } else if (err.response && err.response.data) {
+        // Axios error with response
+        const errorData = err.response.data;
+        if (errorData.errors && Array.isArray(errorData.errors)) {
+          setErrors({ general: errorData.errors.map(e => e.msg || e.message).join(', ') });
+        } else if (errorData.message) {
+          setErrors({ general: errorData.message });
+        } else {
+          setErrors({ general: 'Registration failed. Please try again.' });
+        }
+      } else if (err.request) {
+        // Network error
+        setErrors({ general: 'Network error. Please check your connection and try again.' });
       } else {
-        setErrors({ general: err.message || 'Registration failed. Please try again.' });
+        // Unknown error
+        setErrors({ general: 'Registration failed. Please try again.' });
       }
     } finally {
       setLoading(false);

@@ -4,6 +4,15 @@ const { protect, authorize } = require('../middleware/auth');
 const farmerController = require('../controllers/farmerController');
 const farmerValidator = require('../middleware/validators/farmerValidator');
 
+// @route   POST /api/farmers/login
+// @desc    Login farmer
+// @access  Public
+router.post(
+  '/login',
+  farmerValidator.loginValidation,
+  farmerController.loginFarmer
+);
+
 // @route   POST /api/farmers/register
 // @desc    Register a new farmer (creates user account if needed)
 // @access  Public

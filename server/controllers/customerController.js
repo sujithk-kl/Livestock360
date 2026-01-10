@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const Customer = require('../models/Customer');
 const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 
@@ -7,6 +7,75 @@ const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: '30d'
     });
+};
+
+// Login customer
+const loginCustomer = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            success: false,
+            errors: errors.array()
+        });
+    }
+
+    try {
+        const { email, password } = req.body;
+
+        // Check customer
+        const customer = await Customer.findOne({ email }).select('+password +failedAttempts +lockUntil');
+
+        if (!customer) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid credentials'
+            });
+        }
+
+        // Check if account is locked
+        if (customer.isLocked) {
+            return res.status(401).json({
+                success: false,
+                message: 'Account locked due to too many failed attempts'
+            });
+        }
+
+        // Check password
+        const isMatch = await customer.comparePassword(password);
+        if (!isMatch) {
+            await customer.incLoginAttempts();
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid credentials'
+            });
+        }
+
+        // Reset failed attempts on successful login
+        await customer.resetLoginAttempts();
+
+        // Generate token
+        const token = generateToken(customer._id);
+
+        res.json({
+            success: true,
+            data: {
+                id: customer._id,
+                name: customer.name,
+                email: customer.email,
+                roles: ['customer'],
+                phone: customer.phone,
+                preferences: customer.preferences,
+                token
+            }
+        });
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error during login',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
 };
 
 
@@ -32,17 +101,17 @@ const registerCustomer = async (req, res) => {
             preferences
         } = req.body;
 
-        // Check if user already exists
-        let user = await User.findOne({ email });
-        if (user) {
+        // Check if customer already exists
+        let customer = await Customer.findOne({ email });
+        if (customer) {
             return res.status(400).json({
                 success: false,
-                message: 'User already exists with this email'
+                message: 'Customer already exists with this email'
             });
         }
 
         // Check if phone number is already registered
-        const existingPhone = await User.findOne({ phone });
+        const existingPhone = await Customer.findOne({ phone });
         if (existingPhone) {
             return res.status(400).json({
                 success: false,
@@ -50,12 +119,11 @@ const registerCustomer = async (req, res) => {
             });
         }
 
-        // Create new customer user with all data in User collection
-        const newUser = new User({
+        // Create customer
+        const newCustomer = new Customer({
             name,
             email,
             password,
-            roles: ['user', 'customer'],
             phone,
             preferences: {
                 preferredProducts: preferences?.preferredProducts || [],
@@ -64,22 +132,22 @@ const registerCustomer = async (req, res) => {
             }
         });
 
-        await newUser.save();
-        console.log('Customer user created successfully:', newUser.email);
+        await newCustomer.save();
+        console.log('Customer created successfully:', newCustomer.email);
 
         // Generate token for auto-login
-        const token = generateToken(newUser._id);
+        const token = generateToken(newCustomer._id);
 
         res.status(201).json({
             success: true,
             data: {
                 user: {
-                    id: newUser._id,
-                    name: newUser.name,
-                    email: newUser.email,
-                    roles: newUser.roles,
-                    phone: newUser.phone,
-                    preferences: newUser.preferences,
+                    id: newCustomer._id,
+                    name: newCustomer.name,
+                    email: newCustomer.email,
+                    roles: ['customer'],
+                    phone: newCustomer.phone,
+                    preferences: newCustomer.preferences,
                     token
                 }
             }
@@ -100,9 +168,9 @@ const registerCustomer = async (req, res) => {
 // @access  Private (Customer only)
 const getMyProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        const customer = await Customer.findById(req.user.id);
 
-        if (!user || !user.roles.includes('customer')) {
+        if (!customer) {
             return res.status(404).json({
                 success: false,
                 message: 'Customer profile not found'
@@ -113,12 +181,12 @@ const getMyProfile = async (req, res) => {
             success: true,
             data: {
                 user: {
-                    id: user._id,
-                    name: user.name,
-                    email: user.email,
-                    roles: user.roles,
-                    phone: user.phone,
-                    preferences: user.preferences
+                    id: customer._id,
+                    name: customer.name,
+                    email: customer.email,
+                    roles: ['customer'],
+                    phone: customer.phone,
+                    preferences: customer.preferences
                 }
             }
         });
@@ -137,9 +205,9 @@ const getMyProfile = async (req, res) => {
 // @access  Private (Customer only)
 const updateProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        const customer = await Customer.findById(req.user.id);
 
-        if (!user || !user.roles.includes('customer')) {
+        if (!customer) {
             return res.status(404).json({
                 success: false,
                 message: 'Customer profile not found'
@@ -148,14 +216,14 @@ const updateProfile = async (req, res) => {
 
         const updates = { ...req.body };
 
-        // Remove fields that shouldn't be updated directly
+        // Remove fields that shouldn't be updated
         delete updates._id;
         delete updates.email; // Email should not be changed
         delete updates.password; // Password should be updated via separate endpoint
-        delete updates.roles; // Roles should not be updated directly
         delete updates.phone; // Phone number should not be changed (for verification purposes)
 
-        const updatedUser = await User.findByIdAndUpdate(
+        // Update customer
+        const updatedCustomer = await Customer.findByIdAndUpdate(
             req.user.id,
             { $set: updates },
             { new: true, runValidators: true }
@@ -165,12 +233,12 @@ const updateProfile = async (req, res) => {
             success: true,
             data: {
                 user: {
-                    id: updatedUser._id,
-                    name: updatedUser.name,
-                    email: updatedUser.email,
-                    roles: updatedUser.roles,
-                    phone: updatedUser.phone,
-                    preferences: updatedUser.preferences
+                    id: updatedCustomer._id,
+                    name: updatedCustomer.name,
+                    email: updatedCustomer.email,
+                    roles: ['customer'],
+                    phone: updatedCustomer.phone,
+                    preferences: updatedCustomer.preferences
                 }
             }
         });
@@ -185,6 +253,7 @@ const updateProfile = async (req, res) => {
 };
 
 module.exports = {
+    loginCustomer,
     registerCustomer,
     getMyProfile,
     updateProfile

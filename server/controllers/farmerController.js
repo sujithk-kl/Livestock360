@@ -1,7 +1,93 @@
-const User = require('../models/User');
+const Farmer = require('../models/Farmer');
+const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 
-// @desc    Register a new farmer (creates user account with farmer data)
+// Login farmer
+const loginFarmer = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            success: false,
+            errors: errors.array()
+        });
+    }
+
+    try {
+        const { email, password } = req.body;
+
+        // Check farmer
+        const farmer = await Farmer.findOne({ email }).select('+password +failedAttempts +lockUntil');
+
+        if (!farmer) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid credentials'
+            });
+        }
+
+        // Check if account is locked
+        if (farmer.isLocked) {
+            return res.status(401).json({
+                success: false,
+                message: 'Account locked due to too many failed attempts'
+            });
+        }
+
+        // Check password
+        const isMatch = await farmer.comparePassword(password);
+        if (!isMatch) {
+            await farmer.incLoginAttempts();
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid credentials'
+            });
+        }
+
+        // Reset failed attempts on successful login
+        await farmer.resetLoginAttempts();
+
+        // Generate token
+        const token = generateToken(farmer._id);
+
+        res.json({
+            success: true,
+            data: {
+                id: farmer._id,
+                name: farmer.name,
+                email: farmer.email,
+                roles: ['farmer'],
+                phone: farmer.phone,
+                address: farmer.address,
+                farmSize: farmer.farmSize,
+                farmName: farmer.farmName,
+                farmAddress: farmer.farmAddress,
+                farmType: farmer.farmType,
+                yearsOfFarming: farmer.yearsOfFarming,
+                crops: farmer.crops,
+                livestock: farmer.livestock,
+                aadharNumber: farmer.aadharNumber,
+                bankDetails: farmer.bankDetails,
+                token
+            }
+        });
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error during login',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+};
+
+// Generate JWT Token
+const generateToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, {
+        expiresIn: '30d'
+    });
+};
+
+// @desc    Register a new farmer
 // @route   POST /api/farmers/register
 // @access  Public
 const registerFarmer = async (req, res) => {
@@ -35,17 +121,17 @@ const registerFarmer = async (req, res) => {
             bankDetails
         } = req.body;
 
-        // Check if user already exists
-        let user = await User.findOne({ email });
-        if (user) {
+        // Check if farmer already exists
+        let farmer = await Farmer.findOne({ email });
+        if (farmer) {
             return res.status(400).json({
                 success: false,
-                message: 'User already exists with this email'
+                message: 'Farmer already exists with this email'
             });
         }
 
         // Check if Aadhar number is already registered
-        const existingAadhar = await User.findOne({ aadharNumber });
+        const existingAadhar = await Farmer.findOne({ aadharNumber });
         if (existingAadhar) {
             return res.status(400).json({
                 success: false,
@@ -53,12 +139,11 @@ const registerFarmer = async (req, res) => {
             });
         }
 
-        // Create new farmer user with all data in User collection
-        const newUser = new User({
+        // Create farmer
+        const newFarmer = new Farmer({
             name,
             email,
             password,
-            roles: ['user', 'farmer'],
             phone,
             address,
             farmSize,
@@ -72,37 +157,31 @@ const registerFarmer = async (req, res) => {
             bankDetails
         });
 
-        await newUser.save();
-        console.log('Farmer user created successfully:', newUser.email);
+        await newFarmer.save();
+        console.log('Farmer created successfully:', newFarmer.email);
 
         // Generate token for auto-login
-        const jwt = require('jsonwebtoken');
-        const generateToken = (id) => {
-            return jwt.sign({ id }, process.env.JWT_SECRET, {
-                expiresIn: '30d'
-            });
-        };
-        const token = generateToken(newUser._id);
+        const token = generateToken(newFarmer._id);
 
         res.status(201).json({
             success: true,
             data: {
                 user: {
-                    id: newUser._id,
-                    name: newUser.name,
-                    email: newUser.email,
-                    roles: newUser.roles,
-                    phone: newUser.phone,
-                    address: newUser.address,
-                    farmSize: newUser.farmSize,
-                    farmName: newUser.farmName,
-                    farmAddress: newUser.farmAddress,
-                    farmType: newUser.farmType,
-                    yearsOfFarming: newUser.yearsOfFarming,
-                    crops: newUser.crops,
-                    livestock: newUser.livestock,
-                    aadharNumber: newUser.aadharNumber,
-                    bankDetails: newUser.bankDetails,
+                    id: newFarmer._id,
+                    name: newFarmer.name,
+                    email: newFarmer.email,
+                    roles: ['farmer'],
+                    phone: newFarmer.phone,
+                    address: newFarmer.address,
+                    farmSize: newFarmer.farmSize,
+                    farmName: newFarmer.farmName,
+                    farmAddress: newFarmer.farmAddress,
+                    farmType: newFarmer.farmType,
+                    yearsOfFarming: newFarmer.yearsOfFarming,
+                    crops: newFarmer.crops,
+                    livestock: newFarmer.livestock,
+                    aadharNumber: newFarmer.aadharNumber,
+                    bankDetails: newFarmer.bankDetails,
                     token
                 }
             }
@@ -123,9 +202,9 @@ const registerFarmer = async (req, res) => {
 // @access  Private (Farmer only)
 const getMyProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        const farmer = await Farmer.findById(req.user.id);
 
-        if (!user || !user.roles.includes('farmer')) {
+        if (!farmer) {
             return res.status(404).json({
                 success: false,
                 message: 'Farmer profile not found'
@@ -136,21 +215,21 @@ const getMyProfile = async (req, res) => {
             success: true,
             data: {
                 user: {
-                    id: user._id,
-                    name: user.name,
-                    email: user.email,
-                    roles: user.roles,
-                    phone: user.phone,
-                    address: user.address,
-                    farmSize: user.farmSize,
-                    farmName: user.farmName,
-                    farmAddress: user.farmAddress,
-                    farmType: user.farmType,
-                    yearsOfFarming: user.yearsOfFarming,
-                    crops: user.crops,
-                    livestock: user.livestock,
-                    aadharNumber: user.aadharNumber,
-                    bankDetails: user.bankDetails
+                    id: farmer._id,
+                    name: farmer.name,
+                    email: farmer.email,
+                    roles: ['farmer'],
+                    phone: farmer.phone,
+                    address: farmer.address,
+                    farmSize: farmer.farmSize,
+                    farmName: farmer.farmName,
+                    farmAddress: farmer.farmAddress,
+                    farmType: farmer.farmType,
+                    yearsOfFarming: farmer.yearsOfFarming,
+                    crops: farmer.crops,
+                    livestock: farmer.livestock,
+                    aadharNumber: farmer.aadharNumber,
+                    bankDetails: farmer.bankDetails
                 }
             }
         });
@@ -169,9 +248,9 @@ const getMyProfile = async (req, res) => {
 // @access  Private (Farmer only)
 const updateProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        const farmer = await Farmer.findById(req.user.id);
 
-        if (!user || !user.roles.includes('farmer')) {
+        if (!farmer) {
             return res.status(404).json({
                 success: false,
                 message: 'Farmer profile not found'
@@ -180,14 +259,14 @@ const updateProfile = async (req, res) => {
 
         const updates = { ...req.body };
 
-        // Remove fields that shouldn't be updated directly
+        // Remove fields that shouldn't be updated
         delete updates._id;
         delete updates.email; // Email should not be changed
         delete updates.password; // Password should be updated via separate endpoint
-        delete updates.roles; // Roles should not be updated directly
         delete updates.aadharNumber; // Aadhar number should not be changed
 
-        const updatedUser = await User.findByIdAndUpdate(
+        // Update farmer
+        const updatedFarmer = await Farmer.findByIdAndUpdate(
             req.user.id,
             { $set: updates },
             { new: true, runValidators: true }
@@ -197,21 +276,21 @@ const updateProfile = async (req, res) => {
             success: true,
             data: {
                 user: {
-                    id: updatedUser._id,
-                    name: updatedUser.name,
-                    email: updatedUser.email,
-                    roles: updatedUser.roles,
-                    phone: updatedUser.phone,
-                    address: updatedUser.address,
-                    farmSize: updatedUser.farmSize,
-                    farmName: updatedUser.farmName,
-                    farmAddress: updatedUser.farmAddress,
-                    farmType: updatedUser.farmType,
-                    yearsOfFarming: updatedUser.yearsOfFarming,
-                    crops: updatedUser.crops,
-                    livestock: updatedUser.livestock,
-                    aadharNumber: updatedUser.aadharNumber,
-                    bankDetails: updatedUser.bankDetails
+                    id: updatedFarmer._id,
+                    name: updatedFarmer.name,
+                    email: updatedFarmer.email,
+                    roles: ['farmer'],
+                    phone: updatedFarmer.phone,
+                    address: updatedFarmer.address,
+                    farmSize: updatedFarmer.farmSize,
+                    farmName: updatedFarmer.farmName,
+                    farmAddress: updatedFarmer.farmAddress,
+                    farmType: updatedFarmer.farmType,
+                    yearsOfFarming: updatedFarmer.yearsOfFarming,
+                    crops: updatedFarmer.crops,
+                    livestock: updatedFarmer.livestock,
+                    aadharNumber: updatedFarmer.aadharNumber,
+                    bankDetails: updatedFarmer.bankDetails
                 }
             }
         });
@@ -226,6 +305,7 @@ const updateProfile = async (req, res) => {
 };
 
 module.exports = {
+    loginFarmer,
     registerFarmer,
     getMyProfile,
     updateProfile

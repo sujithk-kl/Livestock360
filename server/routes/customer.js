@@ -4,6 +4,15 @@ const { protect, authorize } = require('../middleware/auth');
 const customerController = require('../controllers/customerController');
 const customerValidator = require('../middleware/validators/customerValidator');
 
+// @route   POST /api/customers/login
+// @desc    Login customer
+// @access  Public
+router.post(
+  '/login',
+  customerValidator.loginValidation,
+  customerController.loginCustomer
+);
+
 // @route   POST /api/customers/register
 // @desc    Register a new customer (creates user account if needed)
 // @access  Public

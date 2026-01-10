@@ -1,5 +1,14 @@
 const { body } = require('express-validator');
 
+// Validation for customer login
+const loginValidation = [
+    body('email')
+        .isEmail().withMessage('Please provide a valid email')
+        .normalizeEmail(),
+    body('password')
+        .notEmpty().withMessage('Password is required')
+];
+
 // Validation for customer registration
 const registerCustomerValidation = [
     body('name')
@@ -93,6 +102,7 @@ const updateProfileValidation = [
 ];
 
 module.exports = {
+    loginValidation,
     registerCustomerValidation,
     updateProfileValidation
 };

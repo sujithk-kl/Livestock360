@@ -1,7 +1,7 @@
 // src/pages/CustomerLogin.js
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import authService from '../services/authService';
+import customerService from '../services/customerService';
 
 const CustomerLogin = () => {
   const navigate = useNavigate();
@@ -26,19 +26,19 @@ const CustomerLogin = () => {
     setLoading(true);
 
     try {
-      // Call backend API to authenticate user
-      const response = await authService.login({
+      // Call backend API to authenticate customer
+      const response = await customerService.login({
         email: formData.email,
         password: formData.password,
       });
 
-      console.log('Customer login successful:', response);
+      console.log('Login successful:', response);
 
-      // Redirect to customer dashboard or home
-      navigate('/customer/dashboard'); // Assuming we'll create this later
+      // Redirect to customer dashboard
+      navigate('/customer/dashboard');
     } catch (err) {
       setError(err.message || 'Invalid credentials');
-      console.error('Customer login error:', err);
+      console.error('Login error:', err);
     } finally {
       setLoading(false);
     }

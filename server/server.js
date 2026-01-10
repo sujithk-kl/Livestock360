@@ -5,7 +5,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
-const authRoutes = require('./routes/auth');
 const farmerRoutes = require('./routes/farmer');
 const customerRoutes = require('./routes/customer');
 
@@ -26,7 +25,6 @@ mongoose
 // ================================================
 
 // API Routes
-app.use('/api/auth', authRoutes);
 app.use('/api/farmers', farmerRoutes);
 app.use('/api/customers', customerRoutes);
 

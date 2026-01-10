@@ -1,5 +1,14 @@
 const { body, param, query } = require('express-validator');
 
+// Validation for farmer login
+const loginValidation = [
+    body('email')
+        .isEmail().withMessage('Please provide a valid email')
+        .normalizeEmail(),
+    body('password')
+        .notEmpty().withMessage('Password is required')
+];
+
 // Validation for farmer registration
 const registerFarmerValidation = [
     body('name')
@@ -172,6 +181,7 @@ const updateProfileValidation = [
 ];
 
 module.exports = {
+    loginValidation,
     registerFarmerValidation,
     updateProfileValidation
 };

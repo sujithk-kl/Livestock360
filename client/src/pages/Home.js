@@ -13,7 +13,7 @@ const Home = () => {
       
       <div className="w-full max-w-md space-y-4">
         <button
-          onClick={() => navigate('/login')}  // Changed from '/farmer/register' to '/login'
+          onClick={() => navigate('/farmer/login')}
           className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-8 rounded-lg shadow-md transition duration-300 transform hover:scale-105"
         >
           Farmer

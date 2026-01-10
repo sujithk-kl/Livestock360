@@ -1,9 +1,9 @@
-// src/pages/Login.js
+// src/pages/FarmerLogin.js
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import authService from '../services/authService';
+import farmerService from '../services/farmerService';
 
-const Login = () => {
+const FarmerLogin = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
@@ -26,8 +26,8 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Call backend API to authenticate user
-      const response = await authService.login({
+      // Call backend API to authenticate farmer
+      const response = await farmerService.login({
         email: formData.email,
         password: formData.password,
       });
@@ -51,7 +51,7 @@ const Login = () => {
           Farmer Login
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Access your Livestock360 account
+          Access your Livestock360 farmer account
         </p>
       </div>
 
@@ -167,4 +167,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default FarmerLogin;

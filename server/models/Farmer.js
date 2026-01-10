@@ -2,11 +2,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const farmerSchema = new mongoose.Schema({
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
     name: {
         type: String,
         required: [true, 'Please provide a name'],
@@ -16,17 +11,23 @@ const farmerSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, 'Please provide an email'],
-        unique: true,
-        match: [
-            /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-            'Please provide a valid email'
-        ]
+        unique: true
     },
+    password: {
+        type: String,
+        required: [true, 'Please provide a password'],
+        minlength: [6, 'Password must be at least 6 characters long'],
+        select: false
+    },
+    failedAttempts: {
+        type: Number,
+        default: 0
+    },
+    lockUntil: Date,
 
     phone: {
         type: String,
-        required: [true, 'Please provide a phone number'],
-        match: [/^[0-9]{10}$/, 'Please provide a valid 10-digit phone number']
+        required: [true, 'Please provide a phone number']
     },
     address: {
         street: {
@@ -43,8 +44,7 @@ const farmerSchema = new mongoose.Schema({
         },
         pincode: {
             type: String,
-            required: [true, 'Please provide pincode'],
-            match: [/^[1-9][0-9]{5}$/, 'Please provide a valid 6-digit pincode']
+            required: [true, 'Please provide pincode']
         },
         country: {
             type: String,
@@ -86,8 +86,7 @@ const farmerSchema = new mongoose.Schema({
     }],
     aadharNumber: {
         type: String,
-        required: [true, 'Please provide Aadhar number'],
-        match: [/^\d{12}$/, 'Aadhar number must be exactly 12 digits']
+        required: [true, 'Please provide Aadhar number']
     },
     bankDetails: {
         bankName: {
@@ -103,9 +102,7 @@ const farmerSchema = new mongoose.Schema({
         ifscCode: {
             type: String,
             required: [true, 'Please provide IFSC code'],
-            trim: true,
-            uppercase: true,
-            match: [/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Please provide a valid IFSC code']
+            trim: true
         },
         accountHolderName: {
             type: String,
@@ -117,18 +114,50 @@ const farmerSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// Hash password before saving
+farmerSchema.pre('save', async function() {
+    // Only hash the password if it has been modified (or is new)
+    if (!this.isModified('password')) return;
 
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+});
+
+// Method to compare password
+farmerSchema.methods.comparePassword = async function(candidatePassword) {
+    try {
+        return await bcrypt.compare(candidatePassword, this.password);
+    } catch (error) {
+        console.error('Error comparing passwords:', error);
+        return false;
+    }
+};
+
+// Virtual for account lock status
+farmerSchema.virtual('isLocked').get(function() {
+    return !!(this.lockUntil && this.lockUntil > Date.now());
+});
+
+// Method to increment failed login attempts
+farmerSchema.methods.incLoginAttempts = function() {
+    // if we have a previous lock that has expired, restart at 1
+    if (this.lockUntil && this.lockUntil < Date.now()) {
+        return this.updateOne({
+            $unset: { lockUntil: 1 },
+            $set: { failedAttempts: 1 }
+        }).exec();
+    }
+    const updates = { $inc: { failedAttempts: 1 } };
+    // lock account after 5 failed attempts for 2 hours
+    if (this.failedAttempts + 1 >= 5 && !this.isLocked) {
+        updates.$set = {
+            lockUntil: Date.now() + 2 * 60 * 60 * 1000
+        };
+    }
+    return this.updateOne(updates).exec();
+};
 
 // Index for faster queries
-farmerSchema.index({ user: 1 }, { unique: true });
 farmerSchema.index({ aadharNumber: 1 }, { unique: true });
-
-// Add text index for search functionality
-farmerSchema.index({
-    'address.city': 'text',
-    'address.state': 'text',
-    crops: 'text',
-    livestock: 'text'
-});
 
 module.exports = mongoose.model('Farmer', farmerSchema);
