@@ -34,11 +34,11 @@ api.interceptors.response.use(
       // Server responded with error status
       if (error.response.status === 401) {
         // Don't redirect on login failures - let the component handle it
-        if (!error.config.url.includes('/auth/login')) {
-          // Unauthorized - clear token and redirect to login
+        if (!error.config.url.includes('/login')) {
+          // Unauthorized - clear token and redirect to home
           localStorage.removeItem('token');
           localStorage.removeItem('user');
-          window.location.href = '/login';
+          window.location.href = '/';
         }
       }
     } else if (error.request) {

@@ -157,6 +157,14 @@ farmerSchema.methods.incLoginAttempts = function() {
     return this.updateOne(updates).exec();
 };
 
+// Method to reset failed login attempts
+farmerSchema.methods.resetLoginAttempts = function() {
+    return this.updateOne({
+        $unset: { lockUntil: 1 },
+        $set: { failedAttempts: 0 }
+    }).exec();
+};
+
 // Index for faster queries
 farmerSchema.index({ aadharNumber: 1 }, { unique: true });
 
