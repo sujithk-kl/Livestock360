@@ -208,7 +208,7 @@ const FarmerRegistration = () => {
 
       // Handle validation errors
       if (err.errors && Array.isArray(err.errors)) {
-        setErrors({ general: err.errors.join(', ') });
+        setErrors({ general: err.errors.map(e => e.msg || e.message || e).join(', ') });
       } else {
         setErrors({ general: err.message || 'Registration failed. Please try again.' });
       }
