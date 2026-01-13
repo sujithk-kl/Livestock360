@@ -35,6 +35,7 @@ const FarmerRegistration = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -144,14 +145,16 @@ const FarmerRegistration = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (loading) return; // Prevent double submission
+    if (loading || isSubmitting) return; // Prevent double submission
 
     if (!validateForm()) {
       return;
     }
 
     setLoading(true);
+    setIsSubmitting(true);
     setErrors({});
+    setSuccessMessage('');
 
     try {
       // Register farmer (creates user account and farmer profile in one request)
@@ -190,9 +193,19 @@ const FarmerRegistration = () => {
       console.log('Farmer registered:', response);
 
       // Store token and user data for auto-login
+      // Handle different response structures
+      let token, userData;
       if (response.data && response.data.user && response.data.user.token) {
-        localStorage.setItem('token', response.data.user.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        token = response.data.user.token;
+        userData = response.data.user;
+      } else if (response.data && response.data.token) {
+        token = response.data.token;
+        userData = response.data;
+      }
+
+      if (token) {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(userData));
       }
 
       // Show success message
@@ -206,14 +219,22 @@ const FarmerRegistration = () => {
     } catch (err) {
       console.error('Registration error:', err);
 
-      // Handle validation errors
+      // Handle different error types with specific messages
+      let errorMessage = 'Registration failed. Please try again.';
+
       if (err.errors && Array.isArray(err.errors)) {
-        setErrors({ general: err.errors.map(e => e.msg || e.message || e).join(', ') });
-      } else {
-        setErrors({ general: err.message || 'Registration failed. Please try again.' });
+        // Validation errors from server
+        errorMessage = err.errors.map(e => e.msg || e.message || e).join(', ');
+      } else if (err.message) {
+        errorMessage = err.message;
+      } else if (typeof err === 'string') {
+        errorMessage = err;
       }
+
+      setErrors({ general: errorMessage });
     } finally {
       setLoading(false);
+      setIsSubmitting(false);
     }
   };
 

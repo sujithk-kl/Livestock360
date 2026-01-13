@@ -14,6 +14,29 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10kb' })); // Limit JSON body size to 10kb
 
+// Request timeout middleware (30 seconds for all routes)
+app.use((req, res, next) => {
+  // Set timeout for all requests
+  const timeout = 30000; // 30 seconds
+
+  const timeoutId = setTimeout(() => {
+    if (!res.headersSent) {
+      console.log(`Request timeout for ${req.method} ${req.path}`);
+      res.status(408).json({
+        success: false,
+        message: 'Request timeout. Please try again.'
+      });
+    }
+  }, timeout);
+
+  // Clear timeout when response is finished
+  res.on('finish', () => {
+    clearTimeout(timeoutId);
+  });
+
+  next();
+});
+
 // ===================== MONGODB =====================
 mongoose
   .connect(process.env.MONGODB_URI)

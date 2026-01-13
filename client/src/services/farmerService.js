@@ -19,20 +19,70 @@ const farmerService = {
     }
   },
 
-  // Register a new farmer
-  registerFarmer: async (farmerData) => {
-    try {
-      const response = await api.post('/farmers/register', farmerData);
+  // Register a new farmer with retry logic
+  registerFarmer: async (farmerData, maxRetries = 2) => {
+    let lastError;
 
-      // Store token and user data for auto-login
-      if (response.data.data && response.data.data.user && response.data.data.user.token) {
-        localStorage.setItem('token', response.data.data.user.token);
-        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const response = await api.post('/farmers/register', farmerData);
+
+        // Store token and user data for auto-login
+        if (response.data.data && response.data.data.user && response.data.data.user.token) {
+          localStorage.setItem('token', response.data.data.user.token);
+          localStorage.setItem('user', JSON.stringify(response.data.data.user));
+        }
+
+        return response.data;
+      } catch (error) {
+        console.error(`Registration attempt ${attempt + 1} failed:`, error);
+        lastError = error;
+
+        // Don't retry for client errors (4xx)
+        if (error.response && error.response.status >= 400 && error.response.status < 500) {
+          break;
+        }
+
+        // Don't retry on the last attempt
+        if (attempt === maxRetries) {
+          break;
+        }
+
+        // Wait before retrying (exponential backoff)
+        const delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s...
+        console.log(`Retrying registration in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
       }
+    }
 
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || { message: 'Farmer registration failed' };
+    // Handle different error types after all retries
+    if (lastError.response) {
+      // Server responded with error status
+      const status = lastError.response.status;
+      const errorData = lastError.response.data;
+
+      if (status === 400) {
+        // Validation errors
+        if (errorData.errors && Array.isArray(errorData.errors)) {
+          throw {
+            message: 'Validation failed',
+            errors: errorData.errors
+          };
+        }
+        throw { message: errorData.message || 'Invalid registration data' };
+      } else if (status === 409) {
+        // Conflict (duplicate email/aadhar)
+        throw { message: errorData.message || 'Account already exists' };
+      } else if (status >= 500) {
+        // Server error
+        throw { message: 'Server error. Please try again later.' };
+      }
+    } else if (lastError.request) {
+      // Network error
+      throw { message: 'Network error. Please check your connection and try again.' };
+    } else {
+      // Other error
+      throw { message: 'Registration failed. Please try again.' };
     }
   },
 
