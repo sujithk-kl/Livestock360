@@ -32,7 +32,7 @@ const createLivestock = async (req, res) => {
 // @access  Private (Farmer)
 const getLivestockList = async (req, res) => {
   try {
-    const livestock = await Livestock.find({ farmer: req.user.id }).sort({ createdAt: -1 });
+    const livestock = await Livestock.find({ farmer: req.user.id }).sort({ date: -1 });
 
     res.status(200).json({
       success: true,
