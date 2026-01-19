@@ -7,6 +7,11 @@ const cors = require('cors');
 
 const farmerRoutes = require('./routes/farmer');
 const customerRoutes = require('./routes/customer');
+const livestockRoutes = require('./routes/livestock');
+const productRoutes = require('./routes/products');
+const milkProductionRoutes = require('./routes/milkProduction');
+const staffRoutes = require('./routes/staff');
+const reportRoutes = require('./routes/reports');
 
 const app = express();
 
@@ -50,6 +55,11 @@ mongoose
 // API Routes
 app.use('/api/farmers', farmerRoutes);
 app.use('/api/customers', customerRoutes);
+app.use('/api/livestock', livestockRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/milk-production', milkProductionRoutes);
+app.use('/api/staff', staffRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Health check endpoint
 app.get('/', (req, res) => {
