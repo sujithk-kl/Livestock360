@@ -105,6 +105,58 @@ const farmerService = {
       throw error.response?.data || { message: 'Failed to update profile' };
     }
   },
+
+  // ============= LIVESTOCK MANAGEMENT =============
+
+  // Create livestock entry
+  createLivestock: async (livestockData) => {
+    try {
+      const response = await api.post('/livestock', livestockData);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to create livestock entry' };
+    }
+  },
+
+  // Get all livestock for current farmer
+  getLivestockList: async () => {
+    try {
+      const response = await api.get('/livestock');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to fetch livestock list' };
+    }
+  },
+
+  // Get single livestock by ID
+  getLivestockById: async (id) => {
+    try {
+      const response = await api.get(`/livestock/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to fetch livestock details' };
+    }
+  },
+
+  // Update livestock entry
+  updateLivestock: async (id, updateData) => {
+    try {
+      const response = await api.put(`/livestock/${id}`, updateData);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to update livestock entry' };
+    }
+  },
+
+  // Delete livestock entry
+  deleteLivestock: async (id) => {
+    try {
+      const response = await api.delete(`/livestock/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to delete livestock entry' };
+    }
+  },
 };
 
 export default farmerService;

@@ -1,12 +1,533 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import farmerService from '../services/farmerService';
 
 const FarmerLivestock = () => {
+  const [livestockList, setLivestockList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingLivestock, setEditingLivestock] = useState(null);
+
+  // Form state
+  const [formData, setFormData] = useState({
+    animalType: '',
+    count: '',
+    healthNotes: '',
+    totalVaccinations: '',
+    latestVaccination: ''
+  });
+
+  // Common animal types
+  const animalTypes = [
+    'Cow',
+    'Buffalo',
+    'Goat',
+    'Sheep',
+    'Pig',
+    'Chicken',
+    'Duck',
+    'Horse',
+    'Camel',
+    'Other'
+  ];
+
+  // Vaccination list by animal type
+  const vaccinationList = {
+    Cow: [
+      "FMD (Foot and Mouth Disease)",
+      "HS (Haemorrhagic Septicaemia)",
+      "BQ (Black Quarter)",
+      "Brucellosis",
+      "Anthrax",
+      "Rabies"
+    ],
+    Buffalo: [
+      "FMD (Foot and Mouth Disease)",
+      "HS (Haemorrhagic Septicaemia)",
+      "BQ (Black Quarter)",
+      "Brucellosis",
+      "Anthrax"
+    ],
+    Goat: [
+      "PPR (Peste des Petits Ruminants)",
+      "ET (Enterotoxaemia)",
+      "FMD (Foot and Mouth Disease)",
+      "Goat Pox",
+      "Brucellosis"
+    ],
+    Sheep: [
+      "PPR (Peste des Petits Ruminants)",
+      "ET (Enterotoxaemia)",
+      "Sheep Pox",
+      "FMD (Foot and Mouth Disease)",
+      "Brucellosis"
+    ],
+    Pig: [
+      "Swine Fever",
+      "FMD (Foot and Mouth Disease)",
+      "Swine Pox",
+      "Erysipelas"
+    ],
+    Chicken: [
+      "Ranikhet (Newcastle Disease)",
+      "IBD (Infectious Bursal Disease)",
+      "Fowl Pox",
+      "Marek's Disease",
+      "Infectious Bronchitis"
+    ],
+    Duck: [
+      "Duck Plague",
+      "Duck Viral Hepatitis",
+      "Fowl Cholera",
+      "Riemerella Anatipestifer"
+    ],
+    Horse: [
+      "Tetanus",
+      "Equine Influenza",
+      "Rabies",
+      "Strangles"
+    ],
+    Camel: [
+      "Camel Pox",
+      "Anthrax",
+      "Rabies",
+      "Trypanosomiasis"
+    ],
+    Other: [
+      "General Vaccination",
+      "Custom Vaccination"
+    ]
+  };
+
+  // Get available vaccinations based on selected animal type
+  const getAvailableVaccinations = () => {
+    return vaccinationList[formData.animalType] || [];
+  };
+
+  // Fetch livestock list on component mount
+  useEffect(() => {
+    fetchLivestockList();
+  }, []);
+
+  const fetchLivestockList = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const response = await farmerService.getLivestockList();
+      setLivestockList(response.data || []);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch livestock data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const resetForm = () => {
+    setFormData({
+      animalType: '',
+      count: '',
+      healthNotes: '',
+      totalVaccinations: '',
+      latestVaccination: ''
+    });
+    setShowAddForm(false);
+    setEditingLivestock(null);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    try {
+      // Validate
+      if (!formData.animalType || !formData.count) {
+        setError('Animal type and count are required');
+        return;
+      }
+
+      if (formData.count <= 0) {
+        setError('Count must be greater than 0');
+        return;
+      }
+
+      if (editingLivestock) {
+        // Update existing livestock
+        await farmerService.updateLivestock(editingLivestock._id, formData);
+        setSuccess('Livestock updated successfully!');
+      } else {
+        // Create new livestock
+        await farmerService.createLivestock(formData);
+        setSuccess('Livestock added successfully!');
+      }
+
+      resetForm();
+      fetchLivestockList();
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError(err.message || 'Failed to save livestock data');
+    }
+  };
+
+  const handleEdit = (livestock) => {
+    setFormData({
+      animalType: livestock.animalType,
+      count: livestock.count,
+      healthNotes: livestock.healthNotes || '',
+      totalVaccinations: livestock.totalVaccinations || '',
+      latestVaccination: livestock.latestVaccination || ''
+    });
+    setEditingLivestock(livestock);
+    setShowAddForm(true);
+    setError('');
+    setSuccess('');
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this livestock record?')) {
+      return;
+    }
+
+    try {
+      setError('');
+      await farmerService.deleteLivestock(id);
+      setSuccess('Livestock deleted successfully!');
+      fetchLivestockList();
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError(err.message || 'Failed to delete livestock');
+    }
+  };
+
+  const getTotalCount = () => {
+    return livestockList.reduce((total, livestock) => total + livestock.count, 0);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold text-gray-900">Livestock</h1>
-      <p className="mt-2 text-gray-600">
-        Manage your livestock records here. This page is a placeholder for upcoming features.
-      </p>
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Livestock Management</h1>
+              <p className="mt-2 text-gray-600">
+                Manage your livestock records - track animals, health, and vaccinations
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setShowAddForm(!showAddForm);
+                if (showAddForm) {
+                  resetForm();
+                }
+              }}
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
+            >
+              {showAddForm ? 'Cancel' : '+ Add Livestock'}
+            </button>
+          </div>
+
+          {/* Summary Stats */}
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-600">Total Types</p>
+              <p className="text-2xl font-bold text-blue-600">{livestockList.length}</p>
+            </div>
+            <div className="bg-green-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-600">Total Animals</p>
+              <p className="text-2xl font-bold text-green-600">{getTotalCount()}</p>
+            </div>
+            <div className="bg-purple-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-600">Last Updated</p>
+              <p className="text-2xl font-bold text-purple-600">
+                {livestockList.length > 0 
+                  ? new Date(livestockList[0].updatedAt).toLocaleDateString() 
+                  : 'N/A'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Success Message */}
+        {success && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+            {success}
+          </div>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            {error}
+          </div>
+        )}
+
+        {/* Add/Edit Form */}
+        {showAddForm && (
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              {editingLivestock ? 'Edit Livestock' : 'Add New Livestock'}
+            </h2>
+            <form onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Animal Type */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Animal Type <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="animalType"
+                    value={formData.animalType}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    required
+                  >
+                    <option value="">Select Animal Type</option>
+                    {animalTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Count */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Count <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="count"
+                    value={formData.count}
+                    onChange={handleInputChange}
+                    min="1"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="Enter animal count"
+                    required
+                  />
+                </div>
+
+                {/* Health Notes */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Health Notes
+                  </label>
+                  <textarea
+                    name="healthNotes"
+                    value={formData.healthNotes}
+                    onChange={handleInputChange}
+                    rows="3"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="Enter health observations, conditions, treatments, etc."
+                  ></textarea>
+                </div>
+
+                {/* Vaccination Section - 2 Columns */}
+                <div className="md:col-span-2">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
+                    Vaccination Information
+                  </h3>
+                </div>
+
+                {/* Total Vaccinations Count */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Total Vaccinations Count
+                  </label>
+                  <input
+                    type="number"
+                    name="totalVaccinations"
+                    value={formData.totalVaccinations}
+                    onChange={handleInputChange}
+                    min="0"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="e.g., 3"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    How many vaccinations the animal has received till now
+                  </p>
+                </div>
+
+                {/* Latest Vaccination */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Latest Vaccination
+                  </label>
+                  <select
+                    name="latestVaccination"
+                    value={formData.latestVaccination}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    disabled={!formData.animalType}
+                  >
+                    <option value="">
+                      {formData.animalType 
+                        ? 'Select Latest Vaccination' 
+                        : 'Select Animal Type First'}
+                    </option>
+                    {getAvailableVaccinations().map((vaccine, index) => (
+                      <option key={index} value={vaccine}>
+                        {vaccine}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Most recent vaccination given to the animal
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 flex gap-4">
+                <button
+                  type="submit"
+                  className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
+                >
+                  {editingLivestock ? 'Update Livestock' : 'Add Livestock'}
+                </button>
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded-lg transition duration-200"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* Livestock List */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+            Livestock Records
+          </h2>
+
+          {loading ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600">Loading livestock data...</p>
+            </div>
+          ) : livestockList.length === 0 ? (
+            <div className="text-center py-12">
+              <svg
+                className="mx-auto h-12 w-12 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                />
+              </svg>
+              <h3 className="mt-2 text-lg font-medium text-gray-900">No livestock records</h3>
+              <p className="mt-1 text-gray-500">Get started by adding your first livestock entry.</p>
+              <div className="mt-6">
+                <button
+                  onClick={() => setShowAddForm(true)}
+                  className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
+                >
+                  + Add Livestock
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Animal Type
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Count
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Health Notes
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Total Vaccinations
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Latest Vaccination
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Last Updated
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {livestockList.map((livestock) => (
+                    <tr key={livestock._id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="text-sm font-medium text-gray-900">
+                            {livestock.animalType}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                          {livestock.count}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-900 max-w-xs truncate">
+                          {livestock.healthNotes || '-'}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                          {livestock.totalVaccinations || 0}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-900 max-w-xs truncate">
+                          {livestock.latestVaccination || '-'}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {new Date(livestock.updatedAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button
+                          onClick={() => handleEdit(livestock)}
+                          className="text-blue-600 hover:text-blue-900 mr-4"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(livestock._id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
