@@ -22,15 +22,14 @@ const livestockSchema = new mongoose.Schema({
     trim: true,
     default: ''
   },
-  totalVaccinations: {
-    type: Number,
-    default: 0,
-    min: [0, 'Total vaccinations cannot be negative']
-  },
-  latestVaccination: {
+  vaccination: {
     type: String,
     trim: true,
     default: ''
+  },
+  vaccinationDate: {
+    type: Date,
+    default: null
   }
 }, {
   timestamps: true

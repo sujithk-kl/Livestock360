@@ -9,13 +9,34 @@ const FarmerLivestock = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingLivestock, setEditingLivestock] = useState(null);
 
+  // Time ago calculation function
+  const timeAgo = (date) => {
+    if (!date) return '';
+    
+    const now = new Date();
+    const diffMs = now - new Date(date);
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (days < 7) return `${days} day${days === 1 ? '' : 's'} ago`;
+    if (days < 30) {
+      const weeks = Math.floor(days / 7);
+      return `${weeks} week${weeks === 1 ? '' : 's'} ago`;
+    }
+    if (days < 365) {
+      const months = Math.floor(days / 30);
+      return `${months} month${months === 1 ? '' : 's'} ago`;
+    }
+    const years = Math.floor(days / 365);
+    return `${years} year${years === 1 ? '' : 's'} ago`;
+  };
+
   // Form state
   const [formData, setFormData] = useState({
     animalType: '',
     count: '',
     healthNotes: '',
-    totalVaccinations: '',
-    latestVaccination: ''
+    vaccination: '',
+    vaccinationDate: ''
   });
 
   // Common animal types
@@ -136,8 +157,8 @@ const FarmerLivestock = () => {
       animalType: '',
       count: '',
       healthNotes: '',
-      totalVaccinations: '',
-      latestVaccination: ''
+      vaccination: '',
+      vaccinationDate: ''
     });
     setShowAddForm(false);
     setEditingLivestock(null);
@@ -159,6 +180,10 @@ const FarmerLivestock = () => {
         setError('Count must be greater than 0');
         return;
       }
+
+      // Clear any old vaccination data
+      formData.vaccination = formData.vaccination || '';
+      formData.vaccinationDate = formData.vaccinationDate || '';
 
       if (editingLivestock) {
         // Update existing livestock
@@ -185,8 +210,10 @@ const FarmerLivestock = () => {
       animalType: livestock.animalType,
       count: livestock.count,
       healthNotes: livestock.healthNotes || '',
-      totalVaccinations: livestock.totalVaccinations || '',
-      latestVaccination: livestock.latestVaccination || ''
+      vaccination: livestock.vaccination || '',
+      vaccinationDate: livestock.vaccinationDate 
+        ? new Date(livestock.vaccinationDate).toISOString().split('T')[0]
+        : ''
     });
     setEditingLivestock(livestock);
     setShowAddForm(true);
@@ -335,47 +362,21 @@ const FarmerLivestock = () => {
                   ></textarea>
                 </div>
 
-                {/* Vaccination Section - 2 Columns */}
-                <div className="md:col-span-2">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">
-                    Vaccination Information
-                  </h3>
-                </div>
-
-                {/* Total Vaccinations Count */}
+                {/* Vaccination */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Total Vaccinations Count
-                  </label>
-                  <input
-                    type="number"
-                    name="totalVaccinations"
-                    value={formData.totalVaccinations}
-                    onChange={handleInputChange}
-                    min="0"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="e.g., 3"
-                  />
-                  <p className="mt-1 text-xs text-gray-500">
-                    How many vaccinations the animal has received till now
-                  </p>
-                </div>
-
-                {/* Latest Vaccination */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Latest Vaccination
+                    Vaccination
                   </label>
                   <select
-                    name="latestVaccination"
-                    value={formData.latestVaccination}
+                    name="vaccination"
+                    value={formData.vaccination}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     disabled={!formData.animalType}
                   >
                     <option value="">
                       {formData.animalType 
-                        ? 'Select Latest Vaccination' 
+                        ? 'Select Vaccination' 
                         : 'Select Animal Type First'}
                     </option>
                     {getAvailableVaccinations().map((vaccine, index) => (
@@ -384,9 +385,21 @@ const FarmerLivestock = () => {
                       </option>
                     ))}
                   </select>
-                  <p className="mt-1 text-xs text-gray-500">
-                    Most recent vaccination given to the animal
-                  </p>
+                </div>
+
+                {/* Vaccination Date */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Vaccination Date
+                  </label>
+                  <input
+                    type="date"
+                    name="vaccinationDate"
+                    value={formData.vaccinationDate}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    max={new Date().toISOString().split('T')[0]}
+                  />
                 </div>
               </div>
 
@@ -446,7 +459,7 @@ const FarmerLivestock = () => {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="bg-white rounded-lg shadow overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -457,16 +470,13 @@ const FarmerLivestock = () => {
                       Count
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Vaccination
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Vaccination Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Health Notes
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Total Vaccinations
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Latest Vaccination
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Last Updated
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
@@ -477,34 +487,27 @@ const FarmerLivestock = () => {
                   {livestockList.map((livestock) => (
                     <tr key={livestock._id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="text-sm font-medium text-gray-900">
-                            {livestock.animalType}
-                          </div>
+                        <div className="text-sm text-gray-900">{livestock.animalType}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{livestock.count}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-900">
+                          {livestock.vaccination || 'Not vaccinated'}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                          {livestock.count}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900 max-w-xs truncate">
-                          {livestock.healthNotes || '-'}
+                        <div className="text-sm text-gray-900">
+                          {livestock.vaccinationDate 
+                            ? new Date(livestock.vaccinationDate).toLocaleDateString()
+                            : 'N/A'}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                          {livestock.totalVaccinations || 0}
-                        </span>
-                      </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900 max-w-xs truncate">
-                          {livestock.latestVaccination || '-'}
+                        <div className="text-sm text-gray-900">
+                          {livestock.healthNotes || 'No notes'}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(livestock.updatedAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button
