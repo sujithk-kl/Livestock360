@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import farmerService from '../services/farmerService';
 
 const FarmerLivestock = () => {
+  const navigate = useNavigate();
   const [livestockList, setLivestockList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -12,7 +14,7 @@ const FarmerLivestock = () => {
   // Time ago calculation function
   const timeAgo = (date) => {
     if (!date) return '';
-    
+
     const now = new Date();
     const diffMs = now - new Date(date);
     const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -197,7 +199,7 @@ const FarmerLivestock = () => {
 
       resetForm();
       fetchLivestockList();
-      
+
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
@@ -211,7 +213,7 @@ const FarmerLivestock = () => {
       count: livestock.count,
       healthNotes: livestock.healthNotes || '',
       vaccination: livestock.vaccination || '',
-      vaccinationDate: livestock.vaccinationDate 
+      vaccinationDate: livestock.vaccinationDate
         ? new Date(livestock.vaccinationDate).toISOString().split('T')[0]
         : ''
     });
@@ -231,7 +233,7 @@ const FarmerLivestock = () => {
       await farmerService.deleteLivestock(id);
       setSuccess('Livestock deleted successfully!');
       fetchLivestockList();
-      
+
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
@@ -250,6 +252,16 @@ const FarmerLivestock = () => {
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex justify-between items-center">
             <div>
+              <button
+                onClick={() => navigate(-1)}
+                className="mb-4 flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+                aria-label="Go back"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                </svg>
+                Back
+              </button>
               <h1 className="text-3xl font-bold text-gray-900">Livestock Management</h1>
               <p className="mt-2 text-gray-600">
                 Manage your livestock records - track animals, health, and vaccinations
@@ -281,8 +293,8 @@ const FarmerLivestock = () => {
             <div className="bg-purple-50 p-4 rounded-lg">
               <p className="text-sm text-gray-600">Last Updated</p>
               <p className="text-2xl font-bold text-purple-600">
-                {livestockList.length > 0 
-                  ? new Date(livestockList[0].updatedAt).toLocaleDateString() 
+                {livestockList.length > 0
+                  ? new Date(livestockList[0].updatedAt).toLocaleDateString()
                   : 'N/A'}
               </p>
             </div>
@@ -375,8 +387,8 @@ const FarmerLivestock = () => {
                     disabled={!formData.animalType}
                   >
                     <option value="">
-                      {formData.animalType 
-                        ? 'Select Vaccination' 
+                      {formData.animalType
+                        ? 'Select Vaccination'
                         : 'Select Animal Type First'}
                     </option>
                     {getAvailableVaccinations().map((vaccine, index) => (
@@ -499,7 +511,7 @@ const FarmerLivestock = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {livestock.vaccinationDate 
+                          {livestock.vaccinationDate
                             ? new Date(livestock.vaccinationDate).toLocaleDateString()
                             : 'N/A'}
                         </div>
