@@ -10,7 +10,8 @@ const createLivestock = async (req, res) => {
       animalType: req.body.animalType,
       count: req.body.count,
       healthNotes: req.body.healthNotes,
-      vaccinationNotes: req.body.vaccinationNotes
+      vaccination: req.body.vaccination,
+      vaccinationDate: req.body.vaccinationDate
     });
 
     res.status(201).json({
