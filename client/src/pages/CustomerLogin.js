@@ -35,7 +35,8 @@ const CustomerLogin = () => {
       console.log('Login successful:', response);
 
       // Redirect to customer dashboard
-      navigate('/customer/dashboard');
+      // Redirect to customer products page
+      navigate('/customer/products');
     } catch (err) {
       setError(err.message || 'Invalid credentials');
       console.error('Login error:', err);

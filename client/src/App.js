@@ -12,7 +12,7 @@ import FarmerStaff from './pages/FarmerStaff';
 import FarmerReports from './pages/FarmerReports';
 import CustomerLogin from './pages/CustomerLogin';
 import CustomerRegistration from './pages/CustomerRegistration';
-import CustomerDashboard from './pages/CustomerDashboard';
+
 import CustomerProducts from './pages/CustomerProducts';
 
 function App() {
@@ -31,7 +31,7 @@ function App() {
           <Route path="/farmer/reports" element={<FarmerReports />} />
           <Route path="/customer/login" element={<CustomerLogin />} />
           <Route path="/customer/register" element={<CustomerRegistration />} />
-          <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+
           <Route path="/customer/products" element={<CustomerProducts />} />
         </Routes>
       </div>
