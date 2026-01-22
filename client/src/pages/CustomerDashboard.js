@@ -34,9 +34,15 @@ const CustomerDashboard = () => {
               <h3 className="text-lg font-medium text-gray-900 mb-2">
                 Welcome to Livestock360, {user?.name || 'Customer'}!
               </h3>
-              <p className="text-gray-500">
-                Customer dashboard is under development. Coming soon!
+              <p className="text-gray-500 mb-6">
+                Browse our fresh products directly from local farmers.
               </p>
+              <button
+                onClick={() => navigate('/customer/products')}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full transition duration-300 transform hover:scale-105"
+              >
+                Browse Products
+              </button>
             </div>
           </div>
         </div>

@@ -1,66 +1,102 @@
 const Product = require('../models/Product');
+const Farmer = require('../models/Farmer');
 
-// @desc    Create product
+// @desc    Create new product
 // @route   POST /api/products
 // @access  Private (Farmer)
-const createProduct = async (req, res) => {
+exports.createProduct = async (req, res, next) => {
   try {
-    const product = await Product.create({
-      farmer: req.user.id,
-      name: req.body.name,
-      price: req.body.price,
-      availableQuantity: req.body.availableQuantity,
-      unit: req.body.unit,
-      description: req.body.description,
-      soldQuantity: req.body.soldQuantity || 0
-    });
+    // Add farmer to req.body
+    req.body.farmer = req.user.id;
+
+    // Calculate totalValue explicitly if needed, though model pre-save hook handles it too.
+    // However, for the response to be immediate without re-fetching, we can set it here or rely on the return value of create.
+    const product = await Product.create(req.body);
 
     res.status(201).json({
       success: true,
       data: product
     });
-  } catch (error) {
-    console.error('Error creating product:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while creating product',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+  } catch (err) {
+    next(err);
   }
 };
 
-// @desc    Get products for current farmer
-// @route   GET /api/products
+// @desc    Get products for logged-in farmer
+// @route   GET /api/products/farmer
 // @access  Private (Farmer)
-const getProducts = async (req, res) => {
+exports.getFarmerProducts = async (req, res, next) => {
   try {
-    const products = await Product.find({ farmer: req.user.id }).sort({ createdAt: -1 });
+    const products = await Product.find({ farmer: req.user.id }).sort('-createdAt');
 
     res.status(200).json({
       success: true,
+      count: products.length,
       data: products
     });
-  } catch (error) {
-    console.error('Error fetching products:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while fetching products',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+  } catch (err) {
+    next(err);
   }
 };
 
-// @desc    Get product by id
-// @route   GET /api/products/:id
-// @access  Private (Farmer)
-const getProductById = async (req, res) => {
+// @desc    Get all products (Public/Customer view)
+// @route   GET /api/products
+// @access  Public
+exports.getAllProducts = async (req, res, next) => {
   try {
-    const product = await Product.findOne({ _id: req.params.id, farmer: req.user.id });
+    let query;
+
+    // Copy req.query
+    const reqQuery = { ...req.query };
+
+    // Fields to exclude
+    const removeFields = ['select', 'sort', 'page', 'limit'];
+
+    // Loop over removeFields and delete them from reqQuery
+    removeFields.forEach(param => delete reqQuery[param]);
+
+    // Create query string
+    let queryStr = JSON.stringify(reqQuery);
+
+    // Create operators ($gt, $gte, etc)
+    queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
+
+    // Finding resource
+    // Populate farmer name if needed for the card
+    query = Product.find(JSON.parse(queryStr)).populate('farmer', 'firstName lastName district city address');
+
+    // Sort
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' ');
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort('-createdAt');
+    }
+
+    // Executing query
+    const products = await query;
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      data: products
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Get single product
+// @route   GET /api/products/:id
+// @access  Public
+exports.getProductById = async (req, res, next) => {
+  try {
+    const product = await Product.findById(req.params.id).populate('farmer', 'firstName lastName district city address');
 
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: 'Product not found'
+        message: `Product not found with id of ${req.params.id}`
       });
     }
 
@@ -68,80 +104,83 @@ const getProductById = async (req, res) => {
       success: true,
       data: product
     });
-  } catch (error) {
-    console.error('Error fetching product:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while fetching product',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+  } catch (err) {
+    next(err);
   }
 };
 
 // @desc    Update product
 // @route   PUT /api/products/:id
 // @access  Private (Farmer)
-const updateProduct = async (req, res) => {
+exports.updateProduct = async (req, res, next) => {
   try {
-    const product = await Product.findOneAndUpdate(
-      { _id: req.params.id, farmer: req.user.id },
-      { $set: req.body },
-      { new: true, runValidators: true }
-    );
+    let product = await Product.findById(req.params.id);
 
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: 'Product not found'
+        message: `Product not found with id of ${req.params.id}`
       });
     }
+
+    // Make sure user is product owner
+    if (product.farmer.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(401).json({
+        success: false,
+        message: `User ${req.user.id} is not authorized to update this product`
+      });
+    }
+
+    // Recalculate totalValue if price or quantity changes
+    if (req.body.price || req.body.quantity) {
+      const quantity = req.body.quantity !== undefined ? req.body.quantity : product.quantity;
+      const price = req.body.price !== undefined ? req.body.price : product.price;
+      req.body.totalValue = quantity * price;
+    }
+
+    product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    });
 
     res.status(200).json({
       success: true,
       data: product
     });
-  } catch (error) {
-    console.error('Error updating product:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while updating product',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+  } catch (err) {
+    next(err);
   }
 };
 
 // @desc    Delete product
 // @route   DELETE /api/products/:id
 // @access  Private (Farmer)
-const deleteProduct = async (req, res) => {
+exports.deleteProduct = async (req, res, next) => {
   try {
-    const product = await Product.findOneAndDelete({ _id: req.params.id, farmer: req.user.id });
+    const product = await Product.findById(req.params.id);
 
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: 'Product not found'
+        message: `Product not found with id of ${req.params.id}`
       });
     }
 
+    // Make sure user is product owner
+    if (product.farmer.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(401).json({
+        success: false,
+        message: `User ${req.user.id} is not authorized to delete this product`
+      });
+    }
+
+    await product.deleteOne();
+
     res.status(200).json({
       success: true,
-      message: 'Product deleted successfully'
+      data: {}
     });
-  } catch (error) {
-    console.error('Error deleting product:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while deleting product',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+  } catch (err) {
+    next(err);
   }
-};
-
-module.exports = {
-  createProduct,
-  getProducts,
-  getProductById,
-  updateProduct,
-  deleteProduct
 };

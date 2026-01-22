@@ -13,6 +13,7 @@ import FarmerReports from './pages/FarmerReports';
 import CustomerLogin from './pages/CustomerLogin';
 import CustomerRegistration from './pages/CustomerRegistration';
 import CustomerDashboard from './pages/CustomerDashboard';
+import CustomerProducts from './pages/CustomerProducts';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/customer/login" element={<CustomerLogin />} />
           <Route path="/customer/register" element={<CustomerRegistration />} />
           <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+          <Route path="/customer/products" element={<CustomerProducts />} />
         </Routes>
       </div>
     </Router>
