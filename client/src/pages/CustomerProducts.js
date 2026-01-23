@@ -48,26 +48,53 @@ const CustomerProducts = () => {
         <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 font-sans">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-12">
-                    <h1 className="text-3xl font-bold text-green-600">Livestock360</h1>
-                    <div className="flex items-center space-x-4">
-                        <span className="text-xl font-medium text-gray-700">Hello, <span className="text-green-600 font-bold">{userName}</span></span>
-                        <button
-                            onClick={handleLogout}
-                            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition duration-200 text-sm flex items-center"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                            </svg>
-                            Logout
-                        </button>
+                {/* Header Section */}
+                {/* Header Section */}
+                <div className="flex flex-col space-y-6 mb-6">
+                    {/* Top Bar: Title and User Greeting */}
+                    <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                        <h1 className="text-3xl font-bold text-green-600">Livestock360</h1>
+                        <span className="text-xl font-medium text-gray-700">
+                            Hello, <span className="text-green-600 font-bold">{userName}</span>
+                        </span>
+                    </div>
+
+                    {/* Toolbar: Search and Actions */}
+                    <div className="flex flex-col lg:flex-row justify-between items-center gap-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                        {/* Search Bar */}
+                        <div className="w-full lg:w-1/3">
+                            <input
+                                type="text"
+                                placeholder="Search for products..."
+                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            />
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3 w-full lg:w-auto">
+                            <button className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 rounded-md font-medium transition duration-200 text-sm sm:text-base">
+                                My Cart
+                            </button>
+                            <button className="flex-1 sm:flex-none bg-green-500 hover:bg-green-600 text-white px-4 sm:px-6 py-2 rounded-md font-medium transition duration-200 text-sm sm:text-base">
+                                Recipes
+                            </button>
+                            <button className="flex-1 sm:flex-none bg-yellow-500 hover:bg-yellow-600 text-white px-4 sm:px-6 py-2 rounded-md font-medium transition duration-200 text-sm sm:text-base">
+                                Order History
+                            </button>
+                            <button
+                                onClick={handleLogout}
+                                className="flex-1 sm:flex-none bg-red-500 hover:bg-red-600 text-white px-4 sm:px-6 py-2 rounded-md font-medium transition duration-200 text-sm sm:text-base"
+                            >
+                                Logout
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 {/* Category Grid */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-8 border-b pb-4">Browse Categories</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-8">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">Browse Categories</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
                         {categories.map((cat) => (
                             <div
                                 key={cat.name}
