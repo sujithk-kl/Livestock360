@@ -63,7 +63,7 @@ exports.getAllProducts = async (req, res, next) => {
 
     // Finding resource
     // Populate farmer name if needed for the card
-    query = Product.find(JSON.parse(queryStr)).populate('farmer', 'firstName lastName district city address');
+    query = Product.find(JSON.parse(queryStr)).populate('farmer', 'name address farmName');
 
     // Sort
     if (req.query.sort) {
@@ -91,7 +91,7 @@ exports.getAllProducts = async (req, res, next) => {
 // @access  Public
 exports.getProductById = async (req, res, next) => {
   try {
-    const product = await Product.findById(req.params.id).populate('farmer', 'firstName lastName district city address');
+    const product = await Product.findById(req.params.id).populate('farmer', 'name address farmName');
 
     if (!product) {
       return res.status(404).json({

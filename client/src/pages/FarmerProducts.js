@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import productService from '../services/productService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const FarmerProducts = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -19,7 +21,7 @@ const FarmerProducts = () => {
   const [currentId, setCurrentId] = useState(null);
 
   const categories = [
-    'Milk', 'Curd', 'Butter', 'Ghee', 'Eggs', 'Chicken', 'Meat', 'Other Farm Products'
+    'Milk', 'Curd', 'Butter', 'Ghee', 'Eggs', 'Chicken', 'Country Chicken', 'Meat', 'Other Farm Products'
   ];
 
   const units = ['Litre', 'Kg', 'Dozen', 'Piece'];
@@ -130,7 +132,18 @@ const FarmerProducts = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <ToastContainer />
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">Manage Products</h1>
+      <ToastContainer />
+      <div className="flex items-center mb-8">
+        <button
+          onClick={() => navigate(-1)}
+          className="mr-4 text-gray-600 hover:text-green-600 transition duration-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </button>
+        <h1 className="text-3xl font-bold text-gray-800">Manage Products</h1>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Add/Edit Product Form */}

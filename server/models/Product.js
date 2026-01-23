@@ -17,6 +17,7 @@ const productSchema = new mongoose.Schema({
       'Ghee',
       'Eggs',
       'Chicken',
+      'Country Chicken',
       'Meat',
       'Other Farm Products'
     ]
