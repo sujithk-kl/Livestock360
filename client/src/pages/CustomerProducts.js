@@ -44,10 +44,15 @@ const CustomerProducts = () => {
         // { name: 'Meat', img: chickenImg }, // Hidden for now if redundant or use placeholder
     ];
 
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const filteredCategories = categories.filter(cat =>
+        cat.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 font-sans">
             <div className="max-w-7xl mx-auto">
-                {/* Header */}
                 {/* Header Section */}
                 {/* Header Section */}
                 <div className="flex flex-col space-y-6 mb-6">
@@ -66,6 +71,8 @@ const CustomerProducts = () => {
                             <input
                                 type="text"
                                 placeholder="Search for products..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                             />
                         </div>
@@ -95,24 +102,30 @@ const CustomerProducts = () => {
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-8">
                     <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">Browse Categories</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
-                        {categories.map((cat) => (
-                            <div
-                                key={cat.name}
-                                onClick={() => navigate(`/customer/products/${cat.name}`)}
-                                className="cursor-pointer group bg-white rounded-lg border border-gray-200 hover:shadow-lg hover:border-green-300 transition-all duration-200 overflow-hidden"
-                            >
-                                <div className="h-40 w-full overflow-hidden bg-gray-100">
-                                    <img
-                                        src={cat.img}
-                                        alt={cat.name}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                    />
+                        {filteredCategories.length > 0 ? (
+                            filteredCategories.map((cat) => (
+                                <div
+                                    key={cat.name}
+                                    onClick={() => navigate(`/customer/products/${cat.name}`)}
+                                    className="cursor-pointer group bg-white rounded-lg border border-gray-200 hover:shadow-lg hover:border-green-300 transition-all duration-200 overflow-hidden"
+                                >
+                                    <div className="h-40 w-full overflow-hidden bg-gray-100">
+                                        <img
+                                            src={cat.img}
+                                            alt={cat.name}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                                        />
+                                    </div>
+                                    <div className="p-4">
+                                        <h3 className="text-lg font-semibold text-gray-800 group-hover:text-green-600 text-center">{cat.name}</h3>
+                                    </div>
                                 </div>
-                                <div className="p-4">
-                                    <h3 className="text-lg font-semibold text-gray-800 group-hover:text-green-600 text-center">{cat.name}</h3>
-                                </div>
+                            ))
+                        ) : (
+                            <div className="col-span-full py-8 text-center text-gray-500 text-lg">
+                                No categories found matching "{searchQuery}"
                             </div>
-                        ))}
+                        )}
                     </div>
                 </div>
 
