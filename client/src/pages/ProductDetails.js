@@ -24,6 +24,11 @@ const ProductDetails = () => {
     const [loading, setLoading] = useState(true);
     const [sortOption, setSortOption] = useState('price-asc');
 
+    // Modal State
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [quantity, setQuantity] = useState(1);
+
     // Mappings
     const getImage = (cat) => {
         switch (cat) {
@@ -181,35 +186,9 @@ const ProductDetails = () => {
                                                 <div className="text-2xl font-bold text-gray-900">₹{product.price} <span className="text-sm text-gray-500 font-normal">per {product.unit}</span></div>
                                                 <button
                                                     onClick={() => {
-                                                        const cartItem = {
-                                                            id: product._id,
-                                                            productName: product.productName,
-                                                            name: product.productName, // Maintain consistency with Cart.js expectation
-                                                            category: category,
-                                                            price: product.price,
-                                                            unit: product.unit,
-                                                            farmerName: product.farmer?.name || 'Local Farmer',
-                                                            quantity: 1,
-                                                            maxQuantity: product.quantity
-                                                        };
-
-                                                        // Get existing cart
-                                                        const existingCart = JSON.parse(localStorage.getItem('cartItems') || '[]');
-
-                                                        // Check if item exists
-                                                        const existingItemIndex = existingCart.findIndex(item => item.id === cartItem.id);
-
-                                                        if (existingItemIndex > -1) {
-                                                            // Update quantity
-                                                            existingCart[existingItemIndex].quantity += 1;
-                                                            toast.success('Added to cart (Updated quantity)');
-                                                        } else {
-                                                            // Add new
-                                                            existingCart.push(cartItem);
-                                                            toast.success('Added to cart');
-                                                        }
-
-                                                        localStorage.setItem('cartItems', JSON.stringify(existingCart));
+                                                        setSelectedProduct(product);
+                                                        setQuantity(1); // Reset to 1 or default unit
+                                                        setIsModalOpen(true);
                                                     }}
                                                     disabled={product.quantity <= 0}
                                                     className="mt-3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow transition duration-200 disabled:bg-gray-300"
@@ -229,6 +208,96 @@ const ProductDetails = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Add to Cart Modal */}
+            {isModalOpen && selectedProduct && (
+                <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        {/* Background overlay */}
+                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onClick={() => setIsModalOpen(false)}></div>
+
+                        {/* Modal panel */}
+                        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
+                            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
+                                    Add to Cart
+                                </h3>
+
+                                <div className="mb-4">
+                                    <h4 className="text-xl font-bold text-gray-800">{selectedProduct.productName}</h4>
+                                    <p className="text-gray-500 text-sm">Price per {selectedProduct.unit}: ₹{selectedProduct.price}</p>
+                                </div>
+
+                                <div className="mb-6">
+                                    <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Quantity ({selectedProduct.unit})
+                                    </label>
+                                    <input
+                                        type="number"
+                                        id="quantity"
+                                        min="1"
+                                        max={selectedProduct.quantity}
+                                        value={quantity}
+                                        onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                                        className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                                    />
+                                    <p className="text-right text-lg font-bold text-gray-900 mt-2">
+                                        Total Cost: ₹{(selectedProduct.price * quantity).toFixed(2)}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                                <button
+                                    type="button"
+                                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                    onClick={() => {
+                                        const cartItem = {
+                                            id: selectedProduct._id,
+                                            productName: selectedProduct.productName,
+                                            name: selectedProduct.productName,
+                                            category: category,
+                                            price: selectedProduct.price,
+                                            unit: selectedProduct.unit,
+                                            farmerName: selectedProduct.farmer?.name || 'Local Farmer',
+                                            quantity: quantity,
+                                            maxQuantity: selectedProduct.quantity
+                                        };
+
+                                        // Get existing cart
+                                        const existingCart = JSON.parse(localStorage.getItem('cartItems') || '[]');
+
+                                        // Check if item exists
+                                        const existingItemIndex = existingCart.findIndex(item => item.id === cartItem.id);
+
+                                        if (existingItemIndex > -1) {
+                                            // Update quantity
+                                            existingCart[existingItemIndex].quantity += quantity;
+                                            toast.success('Added to cart (Updated quantity)');
+                                        } else {
+                                            // Add new
+                                            existingCart.push(cartItem);
+                                            toast.success('Added to cart');
+                                        }
+
+                                        localStorage.setItem('cartItems', JSON.stringify(existingCart));
+                                        setIsModalOpen(false);
+                                    }}
+                                >
+                                    Add to Cart
+                                </button>
+                                <button
+                                    type="button"
+                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                                    onClick={() => setIsModalOpen(false)}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
