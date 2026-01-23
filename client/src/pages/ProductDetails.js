@@ -45,16 +45,18 @@ const ProductDetails = () => {
 
     // Static Nutritional Data (Mock)
     const nutritionalData = {
-        'Chicken': { calories: '239 kcal', carbs: '0 g', protein: '27 g', fats: '14 g', vitaminA: '0 mg' },
-        'Country Chicken': { calories: '239 kcal', carbs: '0 g', protein: '27 g', fats: '14 g', vitaminA: '0 mg' },
-        'Mutton': { calories: '294 kcal', carbs: '0 g', protein: '25 g', fats: '21 g', vitaminA: '0 mg' },
-        'Milk': { calories: '42 kcal', carbs: '5 g', protein: '3.4 g', fats: '1 g', vitaminA: '46 mg' },
-        'Eggs': { calories: '155 kcal', carbs: '1.1 g', protein: '13 g', fats: '11 g', vitaminA: '160 mg' },
-        'Ghee': { calories: '900 kcal', carbs: '0 g', protein: '0 g', fats: '100 g', vitaminA: '3000 IU' },
-        'Paneer': { calories: '265 kcal', carbs: '1.2 g', protein: '18 g', fats: '20 g', vitaminA: '180 mg' },
-        'Honey': { calories: '304 kcal', carbs: '82 g', protein: '0.3 g', fats: '0 g', vitaminA: '0 mg' },
+        'Milk': { 'Serving Size': '100 ml', 'Calories': '42 kcal', 'Carbohydrates': '5 g', 'Protein': '3.4 g', 'Fat': '1 g', 'Calcium': '120 mg', 'Vitamin B12': '0.5 µg' },
+        'Curd': { 'Serving Size': '100 g', 'Calories': '98 kcal', 'Carbohydrates': '3.6 g', 'Protein': '4.3 g', 'Fat': '4 g', 'Calcium': '121 mg', 'Vitamin B12': '0.8 µg', 'Probiotics': 'Present' },
+        'Butter': { 'Serving Size': '100 g', 'Calories': '717 kcal', 'Carbohydrates': '0.1 g', 'Protein': '0.9 g', 'Fat': '81 g', 'Vitamin A': '684 µg', 'Cholesterol': '215 mg' },
+        'Ghee': { 'Serving Size': '100 g', 'Calories': '900 kcal', 'Carbohydrates': '0 g', 'Protein': '0 g', 'Fat': '100 g', 'Vitamin A': '850 µg', 'Omega-3 Fatty Acids': '0.5 g' },
+        'Paneer': { 'Serving Size': '100 g', 'Calories': '265 kcal', 'Carbohydrates': '1.2 g', 'Protein': '18 g', 'Fat': '20 g', 'Calcium': '208 mg', 'Vitamin B12': '1.1 µg' },
+        'Honey': { 'Serving Size': '100 g', 'Calories': '304 kcal', 'Carbohydrates': '82 g', 'Protein': '0.3 g', 'Fat': '0 g', 'Sugars': '82 g', 'Antioxidants': 'Present' },
+        'Eggs': { 'Serving Size': '1 large ~50 g', 'Calories': '72 kcal', 'Protein': '6.3 g', 'Fat': '5 g', 'Carbohydrates': '0.4 g', 'Vitamin D': '1.1 µg', 'Vitamin B12': '0.6 µg' },
+        'Chicken': { 'Serving Size': '100 g', 'Calories': '239 kcal', 'Protein': '27 g', 'Fat': '14 g', 'Carbohydrates': '0 g', 'Iron': '1.3 mg' },
+        'Country Chicken': { 'Serving Size': '100 g', 'Calories': '215 kcal', 'Protein': '25 g', 'Fat': '12 g', 'Carbohydrates': '0 g', 'Iron': '1.6 mg', 'Omega-3': 'Higher than broiler' },
+        'Mutton': { 'Serving Size': '100 g', 'Calories': '294 kcal', 'Protein': '25 g', 'Fat': '21 g', 'Carbohydrates': '0 g', 'Iron': '2.7 mg', 'Vitamin B12': '2.6 µg' },
         // Fallback
-        'default': { calories: 'N/A', carbs: 'N/A', protein: 'N/A', fats: 'N/A', vitaminA: 'N/A' }
+        'default': { 'Calories': 'N/A', 'Protein': 'N/A' }
     };
 
     const nutrition = nutritionalData[category] || nutritionalData['default'];
@@ -119,26 +121,12 @@ const ProductDetails = () => {
                         <div className="bg-blue-50 rounded-xl border border-blue-100 p-6">
                             <h3 className="text-lg font-bold text-blue-900 mb-4">Nutritional Facts</h3>
                             <ul className="space-y-3">
-                                <li className="flex justify-between border-b border-blue-100 pb-2">
-                                    <span className="text-gray-600 font-medium">• Calories</span>
-                                    <span className="text-blue-800 font-bold">{nutrition.calories}</span>
-                                </li>
-                                <li className="flex justify-between border-b border-blue-100 pb-2">
-                                    <span className="text-gray-600 font-medium">• Carbohydrates</span>
-                                    <span className="text-blue-800 font-bold">{nutrition.carbs}</span>
-                                </li>
-                                <li className="flex justify-between border-b border-blue-100 pb-2">
-                                    <span className="text-gray-600 font-medium">• Protein</span>
-                                    <span className="text-blue-800 font-bold">{nutrition.protein}</span>
-                                </li>
-                                <li className="flex justify-between border-b border-blue-100 pb-2">
-                                    <span className="text-gray-600 font-medium">• Fibers</span>
-                                    <span className="text-blue-800 font-bold">0 g</span>
-                                </li>
-                                <li className="flex justify-between pb-2">
-                                    <span className="text-gray-600 font-medium">• Vitamin A</span>
-                                    <span className="text-blue-800 font-bold">{nutrition.vitaminA}</span>
-                                </li>
+                                {Object.entries(nutrition).map(([key, value]) => (
+                                    <li key={key} className="flex justify-between border-b border-blue-100 pb-2 last:border-0">
+                                        <span className="text-gray-600 font-medium">• {key}</span>
+                                        <span className="text-blue-800 font-bold">{value}</span>
+                                    </li>
+                                ))}
                             </ul>
                         </div>
                     </div>
