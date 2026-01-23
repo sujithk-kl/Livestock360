@@ -139,7 +139,7 @@ const ProductDetails = () => {
                         {/* Controls */}
                         <div className="bg-white p-4 rounded-xl shadow-sm mb-6 border border-gray-100">
                             <div className="flex justify-between items-center">
-                                <h3 className="text-xl font-bold text-gray-800">Vendor Offerings</h3>
+                                <h3 className="text-xl font-bold text-gray-800">Farmers Offerings</h3>
                                 <div className="flex items-center">
                                     <span className="text-sm text-gray-500 mr-2">Sort by:</span>
                                     <select
