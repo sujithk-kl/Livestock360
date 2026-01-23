@@ -66,7 +66,7 @@ const loginFarmer = async (req, res) => {
                 crops: farmer.crops,
                 livestock: farmer.livestock,
                 aadharNumber: farmer.aadharNumber,
-                bankDetails: farmer.bankDetails,
+                bankDetails: farmer.getDecryptedBankDetails ? farmer.getDecryptedBankDetails() : farmer.bankDetails,
                 token
             }
         });
@@ -181,7 +181,7 @@ const registerFarmer = async (req, res) => {
                     crops: newFarmer.crops,
                     livestock: newFarmer.livestock,
                     aadharNumber: newFarmer.aadharNumber,
-                    bankDetails: newFarmer.bankDetails,
+                    bankDetails: newFarmer.getDecryptedBankDetails ? newFarmer.getDecryptedBankDetails() : newFarmer.bankDetails,
                     token
                 }
             }
@@ -229,7 +229,7 @@ const getMyProfile = async (req, res) => {
                     crops: farmer.crops,
                     livestock: farmer.livestock,
                     aadharNumber: farmer.aadharNumber,
-                    bankDetails: farmer.bankDetails
+                    bankDetails: farmer.getDecryptedBankDetails ? farmer.getDecryptedBankDetails() : farmer.bankDetails
                 }
             }
         });
@@ -290,7 +290,7 @@ const updateProfile = async (req, res) => {
                     crops: updatedFarmer.crops,
                     livestock: updatedFarmer.livestock,
                     aadharNumber: updatedFarmer.aadharNumber,
-                    bankDetails: updatedFarmer.bankDetails
+                    bankDetails: updatedFarmer.getDecryptedBankDetails ? updatedFarmer.getDecryptedBankDetails() : updatedFarmer.bankDetails
                 }
             }
         });

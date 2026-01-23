@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const farmerSchema = new mongoose.Schema({
     name: {
@@ -115,7 +116,7 @@ const farmerSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-farmerSchema.pre('save', async function() {
+farmerSchema.pre('save', async function () {
     // Only hash the password if it has been modified (or is new)
     if (!this.isModified('password')) return;
 
@@ -124,7 +125,7 @@ farmerSchema.pre('save', async function() {
 });
 
 // Method to compare password
-farmerSchema.methods.comparePassword = async function(candidatePassword) {
+farmerSchema.methods.comparePassword = async function (candidatePassword) {
     try {
         return await bcrypt.compare(candidatePassword, this.password);
     } catch (error) {
@@ -134,12 +135,70 @@ farmerSchema.methods.comparePassword = async function(candidatePassword) {
 };
 
 // Virtual for account lock status
-farmerSchema.virtual('isLocked').get(function() {
+farmerSchema.virtual('isLocked').get(function () {
     return !!(this.lockUntil && this.lockUntil > Date.now());
 });
 
+// Encryption configuration
+const algorithm = 'aes-256-cbc';
+const secretKey = process.env.ENCRYPTION_SECRET || 'your_32_byte_hex_secret_key_livestock360_secure';
+// Ensure key is 32 bytes
+const key = crypto.scryptSync(secretKey, 'salt', 32);
+
+// Encrypt text
+function encrypt(text) {
+    if (!text) return text;
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv(algorithm, key, iv);
+    let encrypted = cipher.update(text);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return iv.toString('hex') + ':' + encrypted.toString('hex');
+}
+
+// Decrypt text
+function decrypt(text) {
+    if (!text) return text;
+    // Check if text is in "iv:encrypted" format
+    const textParts = text.split(':');
+    if (textParts.length !== 2) return text; // Assume not encrypted or invalid format
+
+    const iv = Buffer.from(textParts.shift(), 'hex');
+    const encryptedText = Buffer.from(textParts.join(':'), 'hex');
+    const decipher = crypto.createDecipheriv(algorithm, key, iv);
+    let decrypted = decipher.update(encryptedText);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
+}
+
+// Pre-save hook to encrypt bank details
+farmerSchema.pre('save', async function () {
+    if (this.isModified('bankDetails')) {
+        if (this.bankDetails.accountNumber && !this.bankDetails.accountNumber.includes(':')) {
+            this.bankDetails.accountNumber = encrypt(this.bankDetails.accountNumber);
+        }
+        if (this.bankDetails.ifscCode && !this.bankDetails.ifscCode.includes(':')) {
+            this.bankDetails.ifscCode = encrypt(this.bankDetails.ifscCode);
+        }
+        // Encrypt other fields if needed, usually Account No and IFSC are critical
+    }
+});
+
+// Method to get decrypted bank details
+farmerSchema.methods.getDecryptedBankDetails = function () {
+    const details = this.bankDetails ? this.bankDetails.toObject() : {};
+
+    if (details.accountNumber) {
+        details.accountNumber = decrypt(details.accountNumber);
+    }
+    if (details.ifscCode) {
+        details.ifscCode = decrypt(details.ifscCode);
+    }
+
+    return details;
+};
+
 // Method to increment failed login attempts
-farmerSchema.methods.incLoginAttempts = function() {
+farmerSchema.methods.incLoginAttempts = function () {
     // if we have a previous lock that has expired, restart at 1
     if (this.lockUntil && this.lockUntil < Date.now()) {
         return this.updateOne({
@@ -158,7 +217,7 @@ farmerSchema.methods.incLoginAttempts = function() {
 };
 
 // Method to reset failed login attempts
-farmerSchema.methods.resetLoginAttempts = function() {
+farmerSchema.methods.resetLoginAttempts = function () {
     return this.updateOne({
         $unset: { lockUntil: 1 },
         $set: { failedAttempts: 0 }
