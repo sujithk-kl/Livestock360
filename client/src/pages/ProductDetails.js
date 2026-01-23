@@ -185,6 +185,7 @@ const ProductDetails = () => {
                                                             id: product._id,
                                                             productName: product.productName,
                                                             name: product.productName, // Maintain consistency with Cart.js expectation
+                                                            category: category,
                                                             price: product.price,
                                                             unit: product.unit,
                                                             farmerName: product.farmer?.name || 'Local Farmer',

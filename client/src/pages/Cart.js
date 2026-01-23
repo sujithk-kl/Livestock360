@@ -4,10 +4,41 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// Import Assets
+import milkImg from '../assets/Milk.jpg';
+import curdImg from '../assets/curd.jpeg';
+import butterImg from '../assets/butter.jpg';
+import gheeImg from '../assets/Ghee.jpg';
+import eggImg from '../assets/Egg.jpg';
+import paneerImg from '../assets/paneer.jpg';
+import honeyImg from '../assets/Honey.jpg';
+import chickenImg from '../assets/chicken.jpg';
+import countryChickenImg from '../assets/country chicken.jpg';
+import muttonImg from '../assets/Mutton.jpg';
+import defaultImg from '../assets/Milk.jpg';
+
 const Cart = () => {
     const navigate = useNavigate();
     const [cartItems, setCartItems] = useState([]);
     const [userName, setUserName] = useState('');
+
+    const getImage = (cat) => {
+        switch (cat) {
+            case 'Milk': return milkImg;
+            case 'Curd': return curdImg;
+            case 'Butter': return butterImg;
+            case 'Ghee': return gheeImg;
+            case 'Paneer': return paneerImg;
+            case 'Honey': return honeyImg;
+            case 'Eggs': return eggImg;
+            case 'Chicken': return chickenImg;
+            case 'Country Chicken': return countryChickenImg;
+            case 'Mutton': return muttonImg;
+            // Meat map to chicken for now if no generic meat image
+            case 'Meat': return chickenImg;
+            default: return defaultImg;
+        }
+    };
 
     useEffect(() => {
         // Load User
@@ -118,7 +149,16 @@ const Cart = () => {
                     <div className="space-y-4">
                         {cartItems.map((item) => (
                             <div key={item.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                                <div className="flex-1">
+                                {/* Image */}
+                                <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
+                                    <img
+                                        src={getImage(item.category)}
+                                        alt={item.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+
+                                <div className="flex-1 text-center sm:text-left">
                                     <h3 className="text-xl font-bold text-gray-800">{item.name}</h3>
                                     <p className="text-gray-600 mt-1">Farmer: <span className="font-medium text-gray-800">{item.farmerName}</span></p>
                                     <p className="text-gray-500 mt-1">Price per {item.unit}: ₹{item.price}</p>
