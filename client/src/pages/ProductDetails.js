@@ -28,6 +28,7 @@ const ProductDetails = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
+    const [locationSearch, setLocationSearch] = useState('');
 
     // Mappings
     const getImage = (cat) => {
@@ -85,8 +86,16 @@ const ProductDetails = () => {
         fetchOfferings();
     }, [category]);
 
-    // Sorting Logic
-    const sortedProducts = [...products].sort((a, b) => {
+    // Sorting and Filtering Logic
+    const filteredProducts = products.filter(p => {
+        if (!locationSearch) return true;
+        const search = locationSearch.toLowerCase();
+        const city = p.farmer?.address?.city?.toLowerCase() || '';
+        const state = p.farmer?.address?.state?.toLowerCase() || '';
+        return city.includes(search) || state.includes(search);
+    });
+
+    const sortedProducts = [...filteredProducts].sort((a, b) => {
         if (sortOption === 'price-asc') return a.price - b.price;
         if (sortOption === 'price-desc') return b.price - a.price;
         return 0; // Default
@@ -142,16 +151,25 @@ const ProductDetails = () => {
                         <div className="bg-white p-4 rounded-xl shadow-sm mb-6 border border-gray-100">
                             <div className="flex justify-between items-center">
                                 <h3 className="text-xl font-bold text-gray-800">Farmers Offerings</h3>
-                                <div className="flex items-center">
-                                    <span className="text-sm text-gray-500 mr-2">Sort by:</span>
-                                    <select
-                                        value={sortOption}
-                                        onChange={(e) => setSortOption(e.target.value)}
-                                        className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2"
-                                    >
-                                        <option value="price-asc">Price: Low to High</option>
-                                        <option value="price-desc">Price: High to Low</option>
-                                    </select>
+                                <div className="flex flex-col sm:flex-row items-center gap-4">
+                                    <input
+                                        type="text"
+                                        placeholder="Search by location (City/State)..."
+                                        value={locationSearch}
+                                        onChange={(e) => setLocationSearch(e.target.value)}
+                                        className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 w-full sm:w-60"
+                                    />
+                                    <div className="flex items-center">
+                                        <span className="text-sm text-gray-500 mr-2">Sort by:</span>
+                                        <select
+                                            value={sortOption}
+                                            onChange={(e) => setSortOption(e.target.value)}
+                                            className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2"
+                                        >
+                                            <option value="price-asc">Price: Low to High</option>
+                                            <option value="price-desc">Price: High to Low</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -223,12 +241,10 @@ const ProductDetails = () => {
                                 <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
                                     Add to Cart
                                 </h3>
-
                                 <div className="mb-4">
                                     <h4 className="text-xl font-bold text-gray-800">{selectedProduct.productName}</h4>
                                     <p className="text-gray-500 text-sm">Price per {selectedProduct.unit}: ₹{selectedProduct.price}</p>
                                 </div>
-
                                 <div className="mb-6">
                                     <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
                                         Quantity ({selectedProduct.unit})
