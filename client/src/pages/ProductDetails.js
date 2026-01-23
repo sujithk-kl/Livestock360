@@ -180,6 +180,36 @@ const ProductDetails = () => {
                                             <div className="text-right">
                                                 <div className="text-2xl font-bold text-gray-900">₹{product.price} <span className="text-sm text-gray-500 font-normal">per {product.unit}</span></div>
                                                 <button
+                                                    onClick={() => {
+                                                        const cartItem = {
+                                                            id: product._id,
+                                                            productName: product.productName,
+                                                            name: product.productName, // Maintain consistency with Cart.js expectation
+                                                            price: product.price,
+                                                            unit: product.unit,
+                                                            farmerName: product.farmer?.name || 'Local Farmer',
+                                                            quantity: 1,
+                                                            maxQuantity: product.quantity
+                                                        };
+
+                                                        // Get existing cart
+                                                        const existingCart = JSON.parse(localStorage.getItem('cartItems') || '[]');
+
+                                                        // Check if item exists
+                                                        const existingItemIndex = existingCart.findIndex(item => item.id === cartItem.id);
+
+                                                        if (existingItemIndex > -1) {
+                                                            // Update quantity
+                                                            existingCart[existingItemIndex].quantity += 1;
+                                                            toast.success('Added to cart (Updated quantity)');
+                                                        } else {
+                                                            // Add new
+                                                            existingCart.push(cartItem);
+                                                            toast.success('Added to cart');
+                                                        }
+
+                                                        localStorage.setItem('cartItems', JSON.stringify(existingCart));
+                                                    }}
                                                     disabled={product.quantity <= 0}
                                                     className="mt-3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow transition duration-200 disabled:bg-gray-300"
                                                 >

@@ -14,6 +14,7 @@ import CustomerLogin from './pages/CustomerLogin';
 import CustomerRegistration from './pages/CustomerRegistration';
 
 import CustomerProducts from './pages/CustomerProducts';
+import Cart from './pages/Cart';
 import ProductDetails from './pages/ProductDetails';
 
 
@@ -35,6 +36,7 @@ function App() {
           <Route path="/customer/register" element={<CustomerRegistration />} />
 
           <Route path="/customer/products" element={<CustomerProducts />} />
+          <Route path="/customer/cart" element={<Cart />} />
           <Route path="/customer/products/:category" element={<ProductDetails />} />
 
         </Routes>

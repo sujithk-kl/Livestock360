@@ -85,7 +85,9 @@ const CustomerProducts = () => {
 
                         {/* Action Buttons */}
                         <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3 w-full lg:w-auto">
-                            <button className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 rounded-md font-medium transition duration-200 text-sm sm:text-base">
+                            <button
+                                onClick={() => navigate('/customer/cart')}
+                                className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 rounded-md font-medium transition duration-200 text-sm sm:text-base">
                                 My Cart
                             </button>
                             <button className="flex-1 sm:flex-none bg-green-500 hover:bg-green-600 text-white px-4 sm:px-6 py-2 rounded-md font-medium transition duration-200 text-sm sm:text-base">
