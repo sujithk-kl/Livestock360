@@ -10,8 +10,11 @@ import curdImg from '../assets/curd.jpeg';
 import butterImg from '../assets/butter.jpg';
 import gheeImg from '../assets/Ghee.jpg';
 import eggImg from '../assets/Egg.jpg';
+import paneerImg from '../assets/paneer.jpg';
+import honeyImg from '../assets/Honey.jpg';
 import chickenImg from '../assets/chicken.jpg';
 import countryChickenImg from '../assets/country chicken.jpg';
+import muttonImg from '../assets/Mutton.jpg';
 import defaultImg from '../assets/Milk.jpg';
 
 const ProductDetails = () => {
@@ -28,9 +31,12 @@ const ProductDetails = () => {
             case 'Curd': return curdImg;
             case 'Butter': return butterImg;
             case 'Ghee': return gheeImg;
+            case 'Paneer': return paneerImg;
+            case 'Honey': return honeyImg;
             case 'Eggs': return eggImg;
             case 'Chicken': return chickenImg;
             case 'Country Chicken': return countryChickenImg;
+            case 'Mutton': return muttonImg;
             // Meat map to chicken for now if no generic meat image
             case 'Meat': return chickenImg;
             default: return defaultImg;
@@ -41,9 +47,12 @@ const ProductDetails = () => {
     const nutritionalData = {
         'Chicken': { calories: '239 kcal', carbs: '0 g', protein: '27 g', fats: '14 g', vitaminA: '0 mg' },
         'Country Chicken': { calories: '239 kcal', carbs: '0 g', protein: '27 g', fats: '14 g', vitaminA: '0 mg' },
+        'Mutton': { calories: '294 kcal', carbs: '0 g', protein: '25 g', fats: '21 g', vitaminA: '0 mg' },
         'Milk': { calories: '42 kcal', carbs: '5 g', protein: '3.4 g', fats: '1 g', vitaminA: '46 mg' },
         'Eggs': { calories: '155 kcal', carbs: '1.1 g', protein: '13 g', fats: '11 g', vitaminA: '160 mg' },
         'Ghee': { calories: '900 kcal', carbs: '0 g', protein: '0 g', fats: '100 g', vitaminA: '3000 IU' },
+        'Paneer': { calories: '265 kcal', carbs: '1.2 g', protein: '18 g', fats: '20 g', vitaminA: '180 mg' },
+        'Honey': { calories: '304 kcal', carbs: '82 g', protein: '0.3 g', fats: '0 g', vitaminA: '0 mg' },
         // Fallback
         'default': { calories: 'N/A', carbs: 'N/A', protein: 'N/A', fats: 'N/A', vitaminA: 'N/A' }
     };
@@ -159,7 +168,7 @@ const ProductDetails = () => {
                             <div className="flex justify-center p-12"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-500"></div></div>
                         ) : sortedProducts.length === 0 ? (
                             <div className="bg-white rounded-xl shadow p-8 text-center text-gray-500">
-                                No vendors currently selling {category}.
+                                No farmers currently selling {category}.
                             </div>
                         ) : (
                             <div className="space-y-4">
@@ -169,7 +178,7 @@ const ProductDetails = () => {
                                             <div>
                                                 <h4 className="text-lg font-bold text-gray-900">{product.productName}</h4>
                                                 <p className="text-sm text-gray-500 mb-2">
-                                                    Vendor: {product.farmer?.name || 'Local Farmer'}
+                                                    Farmer: {product.farmer?.name || 'Local Farmer'}
                                                 </p>
                                                 {/* Reviews stars placeholder */}
                                                 <div className="flex text-yellow-400 mb-1">

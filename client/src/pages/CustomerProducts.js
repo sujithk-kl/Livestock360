@@ -7,8 +7,11 @@ import curdImg from '../assets/curd.jpeg';
 import butterImg from '../assets/butter.jpg';
 import gheeImg from '../assets/Ghee.jpg';
 import eggImg from '../assets/Egg.jpg';
+import paneerImg from '../assets/paneer.jpg';
+import honeyImg from '../assets/Honey.jpg';
 import chickenImg from '../assets/chicken.jpg';
 import countryChickenImg from '../assets/country chicken.jpg';
+import muttonImg from '../assets/Mutton.jpg';
 import defaultImg from '../assets/Milk.jpg';
 
 const CustomerProducts = () => {
@@ -38,9 +41,12 @@ const CustomerProducts = () => {
         { name: 'Curd', img: curdImg },
         { name: 'Butter', img: butterImg },
         { name: 'Ghee', img: gheeImg },
+        { name: 'Paneer', img: paneerImg },
+        { name: 'Honey', img: honeyImg },
         { name: 'Eggs', img: eggImg },
         { name: 'Chicken', img: chickenImg },
         { name: 'Country Chicken', img: countryChickenImg },
+        { name: 'Mutton', img: muttonImg },
         // { name: 'Meat', img: chickenImg }, // Hidden for now if redundant or use placeholder
     ];
 

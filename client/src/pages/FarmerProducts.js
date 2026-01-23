@@ -21,7 +21,7 @@ const FarmerProducts = () => {
   const [currentId, setCurrentId] = useState(null);
 
   const categories = [
-    'Milk', 'Curd', 'Butter', 'Ghee', 'Eggs', 'Chicken', 'Country Chicken', 'Meat', 'Other Farm Products'
+    'Milk', 'Curd', 'Butter', 'Ghee', 'Paneer', 'Honey', 'Eggs', 'Chicken', 'Country Chicken', 'Mutton', 'Meat', 'Other Farm Products'
   ];
 
   const units = ['Litre', 'Kg', 'Dozen', 'Piece'];
