@@ -72,16 +72,18 @@ const CustomerProducts = () => {
                             <div
                                 key={cat.name}
                                 onClick={() => navigate(`/customer/products/${cat.name}`)}
-                                className="cursor-pointer group flex flex-col items-center bg-white rounded-lg border border-gray-200 hover:shadow-lg hover:border-green-300 transition-all duration-200 p-4"
+                                className="cursor-pointer group bg-white rounded-lg border border-gray-200 hover:shadow-lg hover:border-green-300 transition-all duration-200 overflow-hidden"
                             >
-                                <div className="h-32 w-32 mb-4 overflow-hidden rounded-full bg-gray-100">
+                                <div className="h-40 w-full overflow-hidden bg-gray-100">
                                     <img
                                         src={cat.img}
                                         alt={cat.name}
                                         className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                                     />
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-800 group-hover:text-green-600 text-center">{cat.name}</h3>
+                                <div className="p-4">
+                                    <h3 className="text-lg font-semibold text-gray-800 group-hover:text-green-600 text-center">{cat.name}</h3>
+                                </div>
                             </div>
                         ))}
                     </div>
