@@ -9,9 +9,32 @@ exports.createProduct = async (req, res, next) => {
     // Add farmer to req.body
     req.body.farmer = req.user.id;
 
-    // Calculate totalValue explicitly if needed, though model pre-save hook handles it too.
-    // However, for the response to be immediate without re-fetching, we can set it here or rely on the return value of create.
-    const product = await Product.create(req.body);
+    const { productName, category, unit, price, qualityTag, quantity } = req.body;
+
+    // Check if product already exists for this farmer with same attributes and price
+    let product = await Product.findOne({
+      farmer: req.user.id,
+      productName: { $regex: new RegExp(`^${productName}$`, 'i') }, // Case-insensitive match for name
+      category,
+      unit,
+      price,
+      qualityTag
+    });
+
+    if (product) {
+      // If product exists, update quantity
+      product.quantity += Number(quantity);
+      await product.save();
+
+      return res.status(200).json({
+        success: true,
+        data: product,
+        message: 'Product quantity updated successfully'
+      });
+    }
+
+    // Create new product if not exists
+    product = await Product.create(req.body);
 
     res.status(201).json({
       success: true,
