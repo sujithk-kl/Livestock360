@@ -14,12 +14,18 @@ const createLivestock = async (req, res) => {
       vaccinationDate: req.body.vaccinationDate
     });
 
+
+    if (res.headersSent) return;
+
     res.status(201).json({
       success: true,
       data: livestock
     });
   } catch (error) {
     console.error('Error creating livestock:', error);
+
+    if (res.headersSent) return;
+
     res.status(500).json({
       success: false,
       message: 'Server error while creating livestock',
@@ -35,12 +41,18 @@ const getLivestockList = async (req, res) => {
   try {
     const livestock = await Livestock.find({ farmer: req.user.id }).sort({ date: -1 });
 
+
+    if (res.headersSent) return;
+
     res.status(200).json({
       success: true,
       data: livestock
     });
   } catch (error) {
     console.error('Error fetching livestock list:', error);
+
+    if (res.headersSent) return;
+
     res.status(500).json({
       success: false,
       message: 'Server error while fetching livestock',
@@ -63,12 +75,18 @@ const getLivestockById = async (req, res) => {
       });
     }
 
+
+    if (res.headersSent) return;
+
     res.status(200).json({
       success: true,
       data: livestock
     });
   } catch (error) {
     console.error('Error fetching livestock:', error);
+
+    if (res.headersSent) return;
+
     res.status(500).json({
       success: false,
       message: 'Server error while fetching livestock',
@@ -95,12 +113,18 @@ const updateLivestock = async (req, res) => {
       });
     }
 
+
+    if (res.headersSent) return;
+
     res.status(200).json({
       success: true,
       data: livestock
     });
   } catch (error) {
     console.error('Error updating livestock:', error);
+
+    if (res.headersSent) return;
+
     res.status(500).json({
       success: false,
       message: 'Server error while updating livestock',
@@ -123,12 +147,18 @@ const deleteLivestock = async (req, res) => {
       });
     }
 
+
+    if (res.headersSent) return;
+
     res.status(200).json({
       success: true,
       message: 'Livestock record deleted successfully'
     });
   } catch (error) {
     console.error('Error deleting livestock:', error);
+
+    if (res.headersSent) return;
+
     res.status(500).json({
       success: false,
       message: 'Server error while deleting livestock',

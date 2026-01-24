@@ -263,9 +263,7 @@ const FarmerLivestock = () => {
                 Back
               </button>
               <h1 className="text-3xl font-bold text-gray-900">Livestock Management</h1>
-              <p className="mt-2 text-gray-600">
-                Manage your livestock records - track animals, health, and vaccinations
-              </p>
+
             </div>
             <button
               onClick={() => {

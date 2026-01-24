@@ -49,6 +49,9 @@ const loginFarmer = async (req, res) => {
         // Generate token
         const token = generateToken(farmer._id);
 
+
+        if (res.headersSent) return;
+
         res.json({
             success: true,
             data: {
@@ -72,6 +75,9 @@ const loginFarmer = async (req, res) => {
         });
     } catch (error) {
         console.error('Login error:', error);
+
+        if (res.headersSent) return;
+
         res.status(500).json({
             success: false,
             message: 'Server error during login',
