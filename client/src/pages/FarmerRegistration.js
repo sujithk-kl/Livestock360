@@ -239,13 +239,13 @@ const FarmerRegistration = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Farmer Registration</h2>
+          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Farmer Registration</h2>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-8">
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-8 transition-colors duration-200">
           {/* Success Message */}
           {successMessage && (
             <div className="mb-6 bg-green-50 border-l-4 border-green-500 p-4">
@@ -280,19 +280,18 @@ const FarmerRegistration = () => {
 
           {/* Personal Details Section */}
           <div className="mb-10">
-            <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">Personal Details</h3>
-            
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2 mb-6">Personal Details</h3>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name *</label>
                 <input
                   type="text"
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${
-                    errors.fullName ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  className={`w-full px-4 py-2 border ${errors.fullName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white`}
                 />
                 {errors.fullName && (
                   <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
@@ -300,15 +299,14 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${
-                    errors.email ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  className={`w-full px-4 py-2 border ${errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white`}
                 />
                 {errors.email && (
                   <p className="mt-1 text-sm text-red-600">{errors.email}</p>
@@ -316,37 +314,36 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number *</label>
                 <input
                   type="tel"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Aadhar Number *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aadhar Number *</label>
                 <input
                   type="text"
                   name="aadharNumber"
                   value={formData.aadharNumber}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password *</label>
                 <input
                   type="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${
-                    errors.password ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  className={`w-full px-4 py-2 border ${errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white`}
                 />
                 {errors.password && (
                   <p className="mt-1 text-sm text-red-600">{errors.password}</p>
@@ -354,15 +351,14 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm Password *</label>
                 <input
                   type="password"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${
-                    errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  className={`w-full px-4 py-2 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white`}
                 />
                 {errors.confirmPassword && (
                   <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
@@ -370,15 +366,14 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Street Address *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Street Address *</label>
                 <input
                   type="text"
                   name="addressStreet"
                   value={formData.addressStreet}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${
-                    errors.addressStreet ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  className={`w-full px-4 py-2 border ${errors.addressStreet ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white`}
                 />
                 {errors.addressStreet && (
                   <p className="mt-1 text-sm text-red-600">{errors.addressStreet}</p>
@@ -386,15 +381,14 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City *</label>
                 <input
                   type="text"
                   name="addressCity"
                   value={formData.addressCity}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${
-                    errors.addressCity ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  className={`w-full px-4 py-2 border ${errors.addressCity ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white`}
                 />
                 {errors.addressCity && (
                   <p className="mt-1 text-sm text-red-600">{errors.addressCity}</p>
@@ -402,15 +396,14 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">State *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">State *</label>
                 <input
                   type="text"
                   name="addressState"
                   value={formData.addressState}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${
-                    errors.addressState ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  className={`w-full px-4 py-2 border ${errors.addressState ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white`}
                 />
                 {errors.addressState && (
                   <p className="mt-1 text-sm text-red-600">{errors.addressState}</p>
@@ -418,15 +411,14 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Pincode *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pincode *</label>
                 <input
                   type="text"
                   name="addressPincode"
                   value={formData.addressPincode}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${
-                    errors.addressPincode ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  className={`w-full px-4 py-2 border ${errors.addressPincode ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white`}
                 />
                 {errors.addressPincode && (
                   <p className="mt-1 text-sm text-red-600">{errors.addressPincode}</p>
@@ -437,19 +429,18 @@ const FarmerRegistration = () => {
 
           {/* Farm Details Section */}
           <div className="mb-10">
-            <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">Farm Details</h3>
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2 mb-6">Farm Details</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Farm Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Farm Name *</label>
                 <input
                   type="text"
                   name="farmName"
                   value={formData.farmName}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${
-                    errors.farmName ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  className={`w-full px-4 py-2 border ${errors.farmName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white`}
                 />
                 {errors.farmName && (
                   <p className="mt-1 text-sm text-red-600">{errors.farmName}</p>
@@ -457,15 +448,14 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Farm Size (acres) *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Farm Size (acres) *</label>
                 <input
                   type="number"
                   name="farmSize"
                   value={formData.farmSize}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${
-                    errors.farmSize ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  className={`w-full px-4 py-2 border ${errors.farmSize ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white`}
                 />
                 {errors.farmSize && (
                   <p className="mt-1 text-sm text-red-600">{errors.farmSize}</p>
@@ -473,12 +463,12 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Type of Farm *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type of Farm *</label>
                 <select
                   name="farmType"
                   value={formData.farmType}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white"
                 >
                   <option value="Dairy">Dairy</option>
                   <option value="Livestock">Livestock</option>
@@ -488,15 +478,14 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Years of Farming *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Years of Farming *</label>
                 <input
                   type="number"
                   name="yearsOfFarming"
                   value={formData.yearsOfFarming}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${
-                    errors.yearsOfFarming ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  className={`w-full px-4 py-2 border ${errors.yearsOfFarming ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white`}
                 />
                 {errors.yearsOfFarming && (
                   <p className="mt-1 text-sm text-red-600">{errors.yearsOfFarming}</p>
@@ -504,15 +493,14 @@ const FarmerRegistration = () => {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Farm Address *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Farm Address *</label>
                 <textarea
                   name="farmAddress"
                   value={formData.farmAddress}
                   onChange={handleChange}
                   rows="2"
-                  className={`w-full px-4 py-2 border ${
-                    errors.farmAddress ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  className={`w-full px-4 py-2 border ${errors.farmAddress ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white`}
                 ></textarea>
                 {errors.farmAddress && (
                   <p className="mt-1 text-sm text-red-600">{errors.farmAddress}</p>
@@ -523,19 +511,18 @@ const FarmerRegistration = () => {
 
           {/* Bank Details Section */}
           <div className="mb-10">
-            <h3 className="text-xl font-semibold text-gray-800 border-b pb-2 mb-6">Bank Details</h3>
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2 mb-6">Bank Details</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Bank Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bank Name *</label>
                 <input
                   type="text"
                   name="bankName"
                   value={formData.bankName}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${
-                    errors.bankName ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  className={`w-full px-4 py-2 border ${errors.bankName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white`}
                 />
                 {errors.bankName && (
                   <p className="mt-1 text-sm text-red-600">{errors.bankName}</p>
@@ -543,15 +530,14 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Account Number *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Account Number *</label>
                 <input
                   type="text"
                   name="accountNumber"
                   value={formData.accountNumber}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${
-                    errors.accountNumber ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  className={`w-full px-4 py-2 border ${errors.accountNumber ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white`}
                 />
                 {errors.accountNumber && (
                   <p className="mt-1 text-sm text-red-600">{errors.accountNumber}</p>
@@ -559,15 +545,14 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">IFSC Code *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">IFSC Code *</label>
                 <input
                   type="text"
                   name="ifscCode"
                   value={formData.ifscCode}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${
-                    errors.ifscCode ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  className={`w-full px-4 py-2 border ${errors.ifscCode ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white`}
                   style={{ textTransform: 'uppercase' }}
                 />
                 {errors.ifscCode && (
@@ -576,15 +561,14 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Account Holder Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Account Holder Name *</label>
                 <input
                   type="text"
                   name="accountHolderName"
                   value={formData.accountHolderName}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${
-                    errors.accountHolderName ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500`}
+                  className={`w-full px-4 py-2 border ${errors.accountHolderName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white`}
                 />
                 {errors.accountHolderName && (
                   <p className="mt-1 text-sm text-red-600">{errors.accountHolderName}</p>
@@ -599,7 +583,7 @@ const FarmerRegistration = () => {
                 type="button"
                 onClick={() => navigate('/')}
                 disabled={loading}
-                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 disabled:bg-gray-200 disabled:cursor-not-allowed"
+                className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
@@ -613,7 +597,7 @@ const FarmerRegistration = () => {
             </div>
 
             <div className="text-center mt-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Already have an account?{' '}
                 <Link
                   to="/farmer/login"

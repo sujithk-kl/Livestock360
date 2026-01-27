@@ -102,18 +102,18 @@ const ProductDetails = () => {
     });
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans transition-colors duration-200">
             <ToastContainer />
 
             {/* Header */}
-            <div className="bg-white shadow-sm sticky top-0 z-10">
+            <div className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-10 transition-colors duration-200">
                 <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
                     <div className="flex items-center">
-                        <button onClick={() => navigate(-1)} className="mr-4 text-gray-600 hover:text-green-600">
+                        <button onClick={() => navigate(-1)} className="mr-4 text-gray-600 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                         </button>
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-800">Product Details</h1>
+                    <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Product Details</h1>
                     <div className="w-10"></div> {/* Spacer for alignment */}
                 </div>
             </div>
@@ -124,21 +124,21 @@ const ProductDetails = () => {
                     {/* Left Column: Product Info */}
                     <div className="w-full lg:w-1/3">
                         {/* Product Image Card */}
-                        <div className="bg-white rounded-xl shadow-md p-6 mb-6 flex flex-col items-center">
-                            <div className="w-64 h-64 overflow-hidden rounded-full border-4 border-gray-100 mb-4">
+                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6 flex flex-col items-center transition-colors duration-200">
+                            <div className="w-64 h-64 overflow-hidden rounded-full border-4 border-gray-100 dark:border-gray-700 mb-4">
                                 <img src={getImage(category)} alt={category} className="w-full h-full object-cover" />
                             </div>
-                            <h2 className="text-3xl font-bold text-blue-800 mb-2">{category}</h2>
+                            <h2 className="text-3xl font-bold text-blue-800 dark:text-blue-400 mb-2">{category}</h2>
                         </div>
 
                         {/* Nutritional Facts Card */}
-                        <div className="bg-blue-50 rounded-xl border border-blue-100 p-6">
-                            <h3 className="text-lg font-bold text-blue-900 mb-4">Nutritional Facts</h3>
+                        <div className="bg-blue-50 dark:bg-gray-700 rounded-xl border border-blue-100 dark:border-gray-600 p-6 transition-colors duration-200">
+                            <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100 mb-4">Nutritional Facts</h3>
                             <ul className="space-y-3">
                                 {Object.entries(nutrition).map(([key, value]) => (
-                                    <li key={key} className="flex justify-between border-b border-blue-100 pb-2 last:border-0">
-                                        <span className="text-gray-600 font-medium">• {key}</span>
-                                        <span className="text-blue-800 font-bold">{value}</span>
+                                    <li key={key} className="flex justify-between border-b border-blue-100 dark:border-gray-600 pb-2 last:border-0">
+                                        <span className="text-gray-600 dark:text-gray-300 font-medium">• {key}</span>
+                                        <span className="text-blue-800 dark:text-blue-200 font-bold">{value}</span>
                                     </li>
                                 ))}
                             </ul>
@@ -148,23 +148,23 @@ const ProductDetails = () => {
                     {/* Right Column: Vendor Offerings */}
                     <div className="w-full lg:w-2/3">
                         {/* Controls */}
-                        <div className="bg-white p-4 rounded-xl shadow-sm mb-6 border border-gray-100">
+                        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm mb-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
                             <div className="flex justify-between items-center">
-                                <h3 className="text-xl font-bold text-gray-800">Farmers Offerings</h3>
+                                <h3 className="text-xl font-bold text-gray-800 dark:text-white">Farmers Offerings</h3>
                                 <div className="flex flex-col sm:flex-row items-center gap-4">
                                     <input
                                         type="text"
                                         placeholder="Search by location (City/State)..."
                                         value={locationSearch}
                                         onChange={(e) => setLocationSearch(e.target.value)}
-                                        className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 w-full sm:w-60"
+                                        className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 w-full sm:w-60"
                                     />
                                     <div className="flex items-center">
-                                        <span className="text-sm text-gray-500 mr-2">Sort by:</span>
+                                        <span className="text-sm text-gray-500 dark:text-gray-400 mr-2">Sort by:</span>
                                         <select
                                             value={sortOption}
                                             onChange={(e) => setSortOption(e.target.value)}
-                                            className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2"
+                                            className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2"
                                         >
                                             <option value="price-asc">Price: Low to High</option>
                                             <option value="price-desc">Price: High to Low</option>
@@ -178,17 +178,17 @@ const ProductDetails = () => {
                         {loading ? (
                             <div className="flex justify-center p-12"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-500"></div></div>
                         ) : sortedProducts.length === 0 ? (
-                            <div className="bg-white rounded-xl shadow p-8 text-center text-gray-500">
+                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-8 text-center text-gray-500 dark:text-gray-400">
                                 No farmers currently selling {category}.
                             </div>
                         ) : (
                             <div className="space-y-4">
                                 {sortedProducts.map(product => (
-                                    <div key={product._id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition hover:shadow-md">
+                                    <div key={product._id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 transition hover:shadow-md">
                                         <div className="flex justify-between items-start">
                                             <div>
-                                                <h4 className="text-lg font-bold text-gray-900">{product.productName}</h4>
-                                                <p className="text-sm text-gray-500 mb-2">
+                                                <h4 className="text-lg font-bold text-gray-900 dark:text-white">{product.productName}</h4>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
                                                     Farmer: {product.farmer?.name || 'Local Farmer'}
                                                 </p>
                                                 {/* Reviews stars placeholder */}
@@ -196,12 +196,12 @@ const ProductDetails = () => {
                                                     {'★'.repeat(4)}{'☆'.repeat(1)}
                                                     <span className="text-xs text-gray-400 ml-2">(12 reviews)</span>
                                                 </div>
-                                                <div className="mt-2 text-xs text-gray-500">
+                                                <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                                                     {product.farmer?.address?.city}, {product.farmer?.address?.state}
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-2xl font-bold text-gray-900">₹{product.price} <span className="text-sm text-gray-500 font-normal">per {product.unit}</span></div>
+                                                <div className="text-2xl font-bold text-gray-900 dark:text-white">₹{product.price} <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">per {product.unit}</span></div>
                                                 <button
                                                     onClick={() => {
                                                         setSelectedProduct(product);
@@ -236,17 +236,17 @@ const ProductDetails = () => {
 
                         {/* Modal panel */}
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-                            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
+                        <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
+                            <div className="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4" id="modal-title">
                                     Add to Cart
                                 </h3>
                                 <div className="mb-4">
-                                    <h4 className="text-xl font-bold text-gray-800">{selectedProduct.productName}</h4>
-                                    <p className="text-gray-500 text-sm">Price per {selectedProduct.unit}: ₹{selectedProduct.price}</p>
+                                    <h4 className="text-xl font-bold text-gray-800 dark:text-white">{selectedProduct.productName}</h4>
+                                    <p className="text-gray-500 dark:text-gray-400 text-sm">Price per {selectedProduct.unit}: ₹{selectedProduct.price}</p>
                                 </div>
                                 <div className="mb-6">
-                                    <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         Quantity ({selectedProduct.unit})
                                     </label>
                                     <input
@@ -256,14 +256,14 @@ const ProductDetails = () => {
                                         max={selectedProduct.quantity}
                                         value={quantity}
                                         onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                                        className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                                        className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md p-2 border"
                                     />
-                                    <p className="text-right text-lg font-bold text-gray-900 mt-2">
+                                    <p className="text-right text-lg font-bold text-gray-900 dark:text-white mt-2">
                                         Total Cost: ₹{(selectedProduct.price * quantity).toFixed(2)}
                                     </p>
                                 </div>
                             </div>
-                            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                            <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                 <button
                                     type="button"
                                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
@@ -304,7 +304,7 @@ const ProductDetails = () => {
                                 </button>
                                 <button
                                     type="button"
-                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                                     onClick={() => setIsModalOpen(false)}
                                 >
                                     Cancel

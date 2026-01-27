@@ -106,38 +106,38 @@ const Cart = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans transition-colors duration-200">
             <ToastContainer />
 
             {/* Header - Reuse from CustomerProducts but simpler */}
-            <div className="bg-white shadow-sm sticky top-0 z-10">
+            <div className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-10 transition-colors duration-200">
                 <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                    <h1 className="text-3xl font-bold text-green-600 cursor-pointer" onClick={() => navigate('/customer/products')}>Livestock360</h1>
+                    <h1 className="text-3xl font-bold text-green-600 dark:text-green-400 cursor-pointer" onClick={() => navigate('/customer/products')}>Livestock360</h1>
                     <div className="flex items-center space-x-4">
-                        <span className="text-gray-700 font-medium">Hello, <span className="text-green-600 font-bold">{userName}</span></span>
+                        <span className="text-gray-700 dark:text-gray-300 font-medium">Hello, <span className="text-green-600 dark:text-green-400 font-bold">{userName}</span></span>
                         {/* Optional Logout if needed usually cart has minimalist header */}
                     </div>
                 </div>
             </div>
 
             <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-                <h1 className="text-3xl font-bold text-center text-gray-900 mb-8">Your Cart</h1>
+                <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">Your Cart</h1>
 
                 {cartItems.length > 0 && (
                     <div className="flex justify-end mb-6">
-                        <h2 className="text-2xl font-bold text-gray-900">Total: ₹{calculateTotal()}</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Total: ₹{calculateTotal()}</h2>
                     </div>
                 )}
 
                 {cartItems.length === 0 ? (
-                    <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center transition-colors duration-200">
                         <div className="mb-4 text-gray-400">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                         </div>
-                        <h3 className="text-xl font-medium text-gray-900 mb-2">Your cart is empty</h3>
-                        <p className="text-gray-500 mb-6">Looks like you haven't added anything yet.</p>
+                        <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">Your cart is empty</h3>
+                        <p className="text-gray-500 dark:text-gray-400 mb-6">Looks like you haven't added anything yet.</p>
                         <button
                             onClick={() => navigate('/customer/products')}
                             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200"
@@ -148,9 +148,9 @@ const Cart = () => {
                 ) : (
                     <div className="space-y-4">
                         {cartItems.map((item) => (
-                            <div key={item.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div key={item.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 transition-colors duration-200">
                                 {/* Image */}
-                                <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-md overflow-hidden">
+                                <div className="w-24 h-24 flex-shrink-0 bg-gray-100 dark:bg-gray-700 rounded-md overflow-hidden">
                                     <img
                                         src={getImage(item.category)}
                                         alt={item.name}
@@ -159,17 +159,17 @@ const Cart = () => {
                                 </div>
 
                                 <div className="flex-1 text-center sm:text-left">
-                                    <h3 className="text-xl font-bold text-gray-800">{item.name}</h3>
-                                    <p className="text-gray-600 mt-1">Farmer: <span className="font-medium text-gray-800">{item.farmerName}</span></p>
-                                    <p className="text-gray-500 mt-1">Price per {item.unit}: ₹{item.price}</p>
-                                    <p className="text-blue-600 font-bold mt-2">Total: ₹{(item.price * item.quantity).toFixed(2)}</p>
+                                    <h3 className="text-xl font-bold text-gray-800 dark:text-white">{item.name}</h3>
+                                    <p className="text-gray-600 dark:text-gray-400 mt-1">Farmer: <span className="font-medium text-gray-800 dark:text-gray-200">{item.farmerName}</span></p>
+                                    <p className="text-gray-500 dark:text-gray-400 mt-1">Price per {item.unit}: ₹{item.price}</p>
+                                    <p className="text-blue-600 dark:text-blue-400 font-bold mt-2">Total: ₹{(item.price * item.quantity).toFixed(2)}</p>
                                 </div>
 
                                 <div className="flex items-center gap-6">
-                                    <div className="flex items-center border border-gray-300 rounded-md">
+                                    <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-md">
                                         <button
                                             onClick={() => updateQuantity(item.id, -1)}
-                                            className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold rounded-l-md transition"
+                                            className="px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 font-bold rounded-l-md transition"
                                         >
                                             -
                                         </button>
@@ -177,11 +177,11 @@ const Cart = () => {
                                             type="text"
                                             readOnly
                                             value={item.quantity}
-                                            className="w-12 text-center border-x border-gray-300 py-1 focus:outline-none"
+                                            className="w-12 text-center border-x border-gray-300 dark:border-gray-600 py-1 focus:outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                                         />
                                         <button
                                             onClick={() => updateQuantity(item.id, 1)}
-                                            className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold rounded-r-md transition"
+                                            className="px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 font-bold rounded-r-md transition"
                                         >
                                             +
                                         </button>

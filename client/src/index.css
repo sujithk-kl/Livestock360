@@ -10,3 +10,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Global Dark Mode Autofill Overrides */
+/* This ensures that browser autofill uses the correct background and text color in dark mode */
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover, 
+.dark input:-webkit-autofill:focus, 
+.dark input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #374151 inset !important; /* bg-gray-700 */
+    -webkit-text-fill-color: white !important;
+    caret-color: white !important;
+}

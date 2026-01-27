@@ -57,21 +57,21 @@ const CustomerProducts = () => {
     );
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 font-sans">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8 font-sans transition-colors duration-200">
             <div className="max-w-7xl mx-auto">
                 {/* Header Section */}
                 {/* Header Section */}
                 <div className="flex flex-col space-y-6 mb-6">
                     {/* Top Bar: Title and User Greeting */}
                     <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-                        <h1 className="text-3xl font-bold text-green-600">Livestock360</h1>
-                        <span className="text-xl font-medium text-gray-700">
-                            Hello, <span className="text-green-600 font-bold">{userName}</span>
+                        <h1 className="text-3xl font-bold text-green-600 dark:text-green-400">Livestock360</h1>
+                        <span className="text-xl font-medium text-gray-700 dark:text-gray-300">
+                            Hello, <span className="text-green-600 dark:text-green-400 font-bold">{userName}</span>
                         </span>
                     </div>
 
                     {/* Toolbar: Search and Actions */}
-                    <div className="flex flex-col lg:flex-row justify-between items-center gap-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                    <div className="flex flex-col lg:flex-row justify-between items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-200">
                         {/* Search Bar */}
                         <div className="w-full lg:w-1/3">
                             <input
@@ -79,7 +79,7 @@ const CustomerProducts = () => {
                                 placeholder="Search for products..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
                             />
                         </div>
 
@@ -104,15 +104,15 @@ const CustomerProducts = () => {
                 </div>
 
                 {/* Category Grid */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-8">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">Browse Categories</h2>
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-8 transition-colors duration-200">
+                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">Browse Categories</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
                         {filteredCategories.length > 0 ? (
                             filteredCategories.map((cat) => (
                                 <div
                                     key={cat.name}
                                     onClick={() => navigate(`/customer/products/${cat.name}`)}
-                                    className="cursor-pointer group bg-white rounded-lg border border-gray-200 hover:shadow-lg hover:border-green-300 transition-all duration-200 overflow-hidden"
+                                    className="cursor-pointer group bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-lg hover:border-green-300 dark:hover:border-green-500 transition-all duration-200 overflow-hidden"
                                 >
                                     <div className="h-40 w-full overflow-hidden bg-gray-100">
                                         <img
@@ -122,12 +122,12 @@ const CustomerProducts = () => {
                                         />
                                     </div>
                                     <div className="p-4">
-                                        <h3 className="text-lg font-semibold text-gray-800 group-hover:text-green-600 text-center">{cat.name}</h3>
+                                        <h3 className="text-lg font-semibold text-gray-800 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 text-center">{cat.name}</h3>
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <div className="col-span-full py-8 text-center text-gray-500 text-lg">
+                            <div className="col-span-full py-8 text-center text-gray-500 dark:text-gray-400 text-lg">
                                 No categories found matching "{searchQuery}"
                             </div>
                         )}

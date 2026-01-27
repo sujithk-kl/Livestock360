@@ -246,15 +246,15 @@ const FarmerLivestock = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8 transition-colors duration-200">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 transition-colors duration-200">
           <div className="flex justify-between items-center">
             <div>
               <button
                 onClick={() => navigate(-1)}
-                className="mb-4 flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+                className="mb-4 flex items-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
                 aria-label="Go back"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -262,7 +262,7 @@ const FarmerLivestock = () => {
                 </svg>
                 Back
               </button>
-              <h1 className="text-3xl font-bold text-gray-900">Livestock Management</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Livestock Management</h1>
 
             </div>
             <button
@@ -280,17 +280,17 @@ const FarmerLivestock = () => {
 
           {/* Summary Stats */}
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Total Types</p>
-              <p className="text-2xl font-bold text-blue-600">{livestockList.length}</p>
+            <div className="bg-blue-50 dark:bg-gray-700 p-4 rounded-lg">
+              <p className="text-sm text-gray-600 dark:text-gray-300">Total Types</p>
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{livestockList.length}</p>
             </div>
-            <div className="bg-green-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Total Animals</p>
-              <p className="text-2xl font-bold text-green-600">{getTotalCount()}</p>
+            <div className="bg-green-50 dark:bg-gray-700 p-4 rounded-lg">
+              <p className="text-sm text-gray-600 dark:text-gray-300">Total Animals</p>
+              <p className="text-2xl font-bold text-green-600 dark:text-green-400">{getTotalCount()}</p>
             </div>
-            <div className="bg-purple-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600">Last Updated</p>
-              <p className="text-2xl font-bold text-purple-600">
+            <div className="bg-purple-50 dark:bg-gray-700 p-4 rounded-lg">
+              <p className="text-sm text-gray-600 dark:text-gray-300">Last Updated</p>
+              <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                 {livestockList.length > 0
                   ? new Date(livestockList[0].updatedAt).toLocaleDateString()
                   : 'N/A'}
@@ -315,22 +315,22 @@ const FarmerLivestock = () => {
 
         {/* Add/Edit Form */}
         {showAddForm && (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 transition-colors duration-200">
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
               {editingLivestock ? 'Edit Livestock' : 'Add New Livestock'}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Animal Type */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Animal Type <span className="text-red-500">*</span>
                   </label>
                   <select
                     name="animalType"
                     value={formData.animalType}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
                     required
                   >
                     <option value="">Select Animal Type</option>
@@ -351,7 +351,7 @@ const FarmerLivestock = () => {
                     value={formData.count}
                     onChange={handleInputChange}
                     min="1"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
                     placeholder="Enter animal count"
                     required
                   />
@@ -367,7 +367,7 @@ const FarmerLivestock = () => {
                     value={formData.healthNotes}
                     onChange={handleInputChange}
                     rows="3"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
                     placeholder="Enter health observations, conditions, treatments, etc."
                   ></textarea>
                 </div>
@@ -381,7 +381,7 @@ const FarmerLivestock = () => {
                     name="vaccination"
                     value={formData.vaccination}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-900 dark:disabled:text-gray-500"
                     disabled={!formData.animalType}
                   >
                     <option value="">
@@ -407,7 +407,7 @@ const FarmerLivestock = () => {
                     name="vaccinationDate"
                     value={formData.vaccinationDate}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
                     max={new Date().toISOString().split('T')[0]}
                   />
                 </div>
@@ -433,8 +433,8 @@ const FarmerLivestock = () => {
         )}
 
         {/* Livestock List */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors duration-200">
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
             Livestock Records
           </h2>
 
@@ -469,66 +469,66 @@ const FarmerLivestock = () => {
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-700">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Animal Type
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Count
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Vaccination
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Vaccination Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Health Notes
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {livestockList.map((livestock) => (
-                    <tr key={livestock._id} className="hover:bg-gray-50">
+                    <tr key={livestock._id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{livestock.animalType}</div>
+                        <div className="text-sm text-gray-900 dark:text-white">{livestock.animalType}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{livestock.count}</div>
+                        <div className="text-sm text-gray-900 dark:text-white">{livestock.count}</div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-gray-900 dark:text-white">
                           {livestock.vaccination || 'Not vaccinated'}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-gray-900 dark:text-white">
                           {livestock.vaccinationDate
                             ? new Date(livestock.vaccinationDate).toLocaleDateString()
                             : 'N/A'}
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-gray-900 dark:text-white">
                           {livestock.healthNotes || 'No notes'}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button
                           onClick={() => handleEdit(livestock)}
-                          className="text-blue-600 hover:text-blue-900 mr-4"
+                          className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400 mr-4"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDelete(livestock._id)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-red-600 hover:text-red-900 dark:hover:text-red-400"
                         >
                           Delete
                         </button>
