@@ -20,14 +20,14 @@ const Home = () => {
           onClick={() => navigate('/farmer/login')}
           className="group cursor-pointer flex flex-col items-center transition-transform duration-300 hover:scale-105"
         >
-          <div className="border-2 border-purple-600 p-1 bg-white">
+          <div className="p-1 bg-white">
             <div className="w-72 h-72 bg-gray-100 flex items-center justify-center border border-gray-200 overflow-hidden relative">
               {/* Placeholder for Farmer Image */}
               <span className="text-gray-400 font-sans text-lg">Farmer Illustration</span>
               {/* Use this when image is ready: <img src={farmerImg} alt="Farmer" className="object-cover w-full h-full" /> */}
             </div>
           </div>
-          <div className="mt-0 w-full border-2 border-t-0 border-purple-600 bg-purple-600 py-3 text-center">
+          <div className="mt-0 w-full bg-purple-600 py-3 text-center">
             <span className="text-3xl font-medium text-white font-serif">Farmer</span>
           </div>
         </div>
@@ -37,14 +37,14 @@ const Home = () => {
           onClick={() => navigate('/customer/login')}
           className="group cursor-pointer flex flex-col items-center transition-transform duration-300 hover:scale-105"
         >
-          <div className="border-2 border-green-600 p-1 bg-white">
+          <div className="p-1 bg-white">
             <div className="w-72 h-72 bg-gray-100 flex items-center justify-center border border-gray-200 overflow-hidden relative">
               {/* Placeholder for Customer Image */}
               <span className="text-gray-400 font-sans text-lg">Customer Illustration</span>
               {/* Use this when image is ready: <img src={customerImg} alt="Customer" className="object-cover w-full h-full" /> */}
             </div>
           </div>
-          <div className="mt-0 w-full border-2 border-t-0 border-green-600 bg-green-600 py-3 text-center">
+          <div className="mt-0 w-full bg-green-600 py-3 text-center">
             <span className="text-3xl font-medium text-white font-serif">Customer</span>
           </div>
         </div>
