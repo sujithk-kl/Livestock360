@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import farmerImg from '../assets/Farmer.jpg';
+import customerImg from '../assets/delivery.jpg';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -21,10 +23,8 @@ const Home = () => {
           className="group cursor-pointer flex flex-col items-center transition-transform duration-300 hover:scale-105"
         >
           <div className="p-1 bg-white">
-            <div className="w-72 h-72 bg-gray-100 flex items-center justify-center border border-gray-200 overflow-hidden relative">
-              {/* Placeholder for Farmer Image */}
-              <span className="text-gray-400 font-sans text-lg">Farmer Illustration</span>
-              {/* Use this when image is ready: <img src={farmerImg} alt="Farmer" className="object-cover w-full h-full" /> */}
+            <div className="w-72 h-auto border border-gray-200 overflow-hidden relative">
+              <img src={farmerImg} alt="Farmer" className="w-full h-auto" />
             </div>
           </div>
           <div className="mt-0 w-full bg-purple-600 py-3 text-center">
@@ -38,10 +38,8 @@ const Home = () => {
           className="group cursor-pointer flex flex-col items-center transition-transform duration-300 hover:scale-105"
         >
           <div className="p-1 bg-white">
-            <div className="w-72 h-72 bg-gray-100 flex items-center justify-center border border-gray-200 overflow-hidden relative">
-              {/* Placeholder for Customer Image */}
-              <span className="text-gray-400 font-sans text-lg">Customer Illustration</span>
-              {/* Use this when image is ready: <img src={customerImg} alt="Customer" className="object-cover w-full h-full" /> */}
+            <div className="w-72 h-auto bg-gray-100 border border-gray-200 overflow-hidden relative">
+              <img src={customerImg} alt="Customer" className="w-full h-auto" />
             </div>
           </div>
           <div className="mt-0 w-full bg-green-600 py-3 text-center">
