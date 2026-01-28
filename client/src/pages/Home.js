@@ -15,35 +15,35 @@ const Home = () => {
       </div>
 
       {/* Role Selection Cards */}
-      <div className="flex flex-col md:flex-row gap-12 md:gap-32 items-center justify-center w-full max-w-5xl">
+      <div className="flex flex-col md:flex-row gap-8 md:gap-24 items-center justify-center w-full max-w-5xl">
 
         {/* Farmer Card */}
         <div
           onClick={() => navigate('/farmer/login')}
-          className="group cursor-pointer flex flex-col items-center transition-transform duration-300 hover:scale-105"
+          className="cursor-pointer flex flex-col items-center"
         >
           <div className="p-1 bg-white">
-            <div className="w-72 h-auto border border-gray-200 overflow-hidden relative">
+            <div className="w-56 h-auto border border-gray-200 overflow-hidden relative">
               <img src={farmerImg} alt="Farmer" className="w-full h-auto" />
             </div>
           </div>
-          <div className="mt-0 w-full bg-purple-600 py-3 text-center">
-            <span className="text-3xl font-medium text-white font-serif">Farmer</span>
+          <div className="mt-4 px-8 py-2 bg-purple-600 rounded-full shadow-lg text-center">
+            <span className="text-2xl font-medium text-white font-serif">Farmer</span>
           </div>
         </div>
 
         {/* Customer Card */}
         <div
           onClick={() => navigate('/customer/login')}
-          className="group cursor-pointer flex flex-col items-center transition-transform duration-300 hover:scale-105"
+          className="cursor-pointer flex flex-col items-center"
         >
           <div className="p-1 bg-white">
-            <div className="w-72 h-auto bg-gray-100 border border-gray-200 overflow-hidden relative">
+            <div className="w-56 h-auto bg-gray-100 border border-gray-200 overflow-hidden relative">
               <img src={customerImg} alt="Customer" className="w-full h-auto" />
             </div>
           </div>
-          <div className="mt-0 w-full bg-green-600 py-3 text-center">
-            <span className="text-3xl font-medium text-white font-serif">Customer</span>
+          <div className="mt-4 px-8 py-2 bg-green-600 rounded-full shadow-lg text-center">
+            <span className="text-2xl font-medium text-white font-serif">Customer</span>
           </div>
         </div>
 
