@@ -7,7 +7,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-[#FDFBD4] flex flex-col items-center justify-center p-4">
       {/* Header Section */}
       <div className="text-center mb-16 relative">
         <h1 className="text-6xl md:text-8xl font-bold text-green-600 mb-2 font-serif relative z-10">Livestock360</h1>
@@ -20,7 +20,7 @@ const Home = () => {
         {/* Farmer Card */}
         <div
           onClick={() => navigate('/farmer/login')}
-          className="cursor-pointer flex flex-col items-center"
+          className="cursor-pointer flex flex-col items-center transition-transform duration-300 hover:scale-105"
         >
           <div className="p-1 bg-white">
             <div className="w-56 h-auto border border-gray-200 overflow-hidden relative shadow-md">
@@ -35,7 +35,7 @@ const Home = () => {
         {/* Customer Card */}
         <div
           onClick={() => navigate('/customer/login')}
-          className="cursor-pointer flex flex-col items-center"
+          className="cursor-pointer flex flex-col items-center transition-transform duration-300 hover:scale-105"
         >
           <div className="p-1 bg-white">
             <div className="w-56 h-auto bg-gray-100 border border-gray-200 overflow-hidden relative shadow-md">
