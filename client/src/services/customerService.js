@@ -55,6 +55,15 @@ const customerService = {
       throw error.response?.data || { message: 'Failed to update profile' };
     }
   },
+  // Change Password
+  changePassword: async (passwordData) => {
+    try {
+      const response = await api.put('/customers/password', passwordData);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to change password' };
+    }
+  },
 };
 
 export default customerService;

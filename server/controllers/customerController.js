@@ -252,9 +252,67 @@ const updateProfile = async (req, res) => {
     }
 };
 
+// @desc    Change customer password
+// @route   PUT /api/customers/password
+// @access  Private
+const changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide both current and new passwords'
+            });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'New password must be at least 6 characters long'
+            });
+        }
+
+        const customer = await Customer.findById(req.user.id).select('+password');
+
+        if (!customer) {
+            return res.status(404).json({
+                success: false,
+                message: 'Customer not found'
+            });
+        }
+
+        // Check if current password matches
+        const isMatch = await customer.comparePassword(currentPassword);
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                message: 'Incorrect current password'
+            });
+        }
+
+        // Update password (pre-save hook will hash it)
+        customer.password = newPassword;
+        await customer.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Password updated successfully'
+        });
+    } catch (error) {
+        console.error('Error changing password:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+};
+
 module.exports = {
     loginCustomer,
     registerCustomer,
     getMyProfile,
-    updateProfile
+    updateProfile,
+    changePassword
 };

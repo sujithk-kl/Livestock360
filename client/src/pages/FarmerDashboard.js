@@ -59,6 +59,7 @@ const FarmerDashboard = () => {
             ['Milk Production', '/farmer/milk-production'],
             ['Staff', '/farmer/staff'],
             ['Reports', '/farmer/reports'],
+            ['Profile', '/farmer/profile'],
           ].map(([label, path]) => (
             <button
               key={label}

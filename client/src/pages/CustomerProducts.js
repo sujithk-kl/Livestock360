@@ -90,6 +90,11 @@ const CustomerProducts = () => {
                                 className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 rounded-md font-medium transition duration-200 text-sm sm:text-base">
                                 My Cart
                             </button>
+                            <button
+                                onClick={() => navigate('/customer/profile')}
+                                className="flex-1 sm:flex-none bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-6 py-2 rounded-md font-medium transition duration-200 text-sm sm:text-base">
+                                Profile
+                            </button>
                             <button className="flex-1 sm:flex-none bg-yellow-500 hover:bg-yellow-600 text-white px-4 sm:px-6 py-2 rounded-md font-medium transition duration-200 text-sm sm:text-base">
                                 Order History
                             </button>

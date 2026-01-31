@@ -221,6 +221,11 @@ const farmerService = {
   },
 
   // Get dashboard stats
+  changePassword: async (passwordData) => {
+    const response = await api.put('/farmers/password', passwordData);
+    return response.data;
+  },
+
   getDashboardStats: async () => {
     try {
       const response = await api.get('/staff/stats/dashboard');

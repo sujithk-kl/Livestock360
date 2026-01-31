@@ -44,4 +44,13 @@ router.put(
   customerController.updateProfile
 );
 
+// @route   PUT /api/customers/password
+// @desc    Change customer password
+// @access  Private
+router.put(
+  '/password',
+  authorize('customer', 'admin'),
+  customerController.changePassword
+);
+
 module.exports = router;

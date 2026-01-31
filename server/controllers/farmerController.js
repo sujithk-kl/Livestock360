@@ -310,9 +310,67 @@ const updateProfile = async (req, res) => {
     }
 };
 
+// @desc    Change farmer password
+// @route   PUT /api/farmers/password
+// @access  Private
+const changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide both current and new passwords'
+            });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'New password must be at least 6 characters long'
+            });
+        }
+
+        const farmer = await Farmer.findById(req.user.id).select('+password');
+
+        if (!farmer) {
+            return res.status(404).json({
+                success: false,
+                message: 'Farmer not found'
+            });
+        }
+
+        // Check if current password matches
+        const isMatch = await farmer.comparePassword(currentPassword);
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                message: 'Incorrect current password'
+            });
+        }
+
+        // Update password (pre-save hook will hash it)
+        farmer.password = newPassword;
+        await farmer.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Password updated successfully'
+        });
+    } catch (error) {
+        console.error('Error changing password:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+};
+
 module.exports = {
     loginFarmer,
     registerFarmer,
     getMyProfile,
-    updateProfile
+    updateProfile,
+    changePassword
 };

@@ -10,8 +10,10 @@ import FarmerProducts from './pages/FarmerProducts';
 import FarmerMilkProduction from './pages/FarmerMilkProduction';
 import FarmerStaff from './pages/FarmerStaff';
 import FarmerReports from './pages/FarmerReports';
+import FarmerProfile from './pages/FarmerProfile';
 import CustomerLogin from './pages/CustomerLogin';
 import CustomerRegistration from './pages/CustomerRegistration';
+import CustomerProfile from './pages/CustomerProfile';
 
 import CustomerProducts from './pages/CustomerProducts';
 import Cart from './pages/Cart';
@@ -38,8 +40,10 @@ function AppContent() {
         <Route path="/farmer/milk-production" element={<FarmerMilkProduction />} />
         <Route path="/farmer/staff" element={<FarmerStaff />} />
         <Route path="/farmer/reports" element={<FarmerReports />} />
+        <Route path="/farmer/profile" element={<FarmerProfile />} />
         <Route path="/customer/login" element={<CustomerLogin />} />
         <Route path="/customer/register" element={<CustomerRegistration />} />
+        <Route path="/customer/profile" element={<CustomerProfile />} />
 
         <Route path="/customer/products" element={<CustomerProducts />} />
         <Route path="/customer/cart" element={<Cart />} />
@@ -50,11 +54,15 @@ function AppContent() {
   );
 }
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 function App() {
   return (
     <ThemeProvider>
       <Router>
         <AppContent />
+        <ToastContainer position="top-right" autoClose={3000} />
       </Router>
     </ThemeProvider>
   );

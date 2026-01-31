@@ -44,4 +44,13 @@ router.put(
   farmerController.updateProfile
 );
 
+// @route   PUT /api/farmers/password
+// @desc    Change farmer password
+// @access  Private
+router.put(
+  '/password',
+  authorize('farmer', 'admin'),
+  farmerController.changePassword
+);
+
 module.exports = router;
