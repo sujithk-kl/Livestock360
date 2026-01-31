@@ -65,9 +65,20 @@ const CustomerProducts = () => {
                     {/* Top Bar: Title and User Greeting */}
                     <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
                         <h1 className="text-3xl font-bold text-green-600 dark:text-green-400">Livestock360</h1>
-                        <span className="text-xl font-medium text-gray-700 dark:text-gray-300">
-                            Hello, <span className="text-green-600 dark:text-green-400 font-bold">{userName}</span>
-                        </span>
+                        <div className="flex items-center space-x-4">
+                            <span className="text-xl font-medium text-gray-700 dark:text-gray-300">
+                                Hello, <span className="text-green-600 dark:text-green-400 font-bold">{userName}</span>
+                            </span>
+                            <button
+                                onClick={() => navigate('/customer/profile')}
+                                className="text-gray-600 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400 transition-colors"
+                                title="Go to Profile"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     {/* Toolbar: Search and Actions */}
@@ -89,11 +100,6 @@ const CustomerProducts = () => {
                                 onClick={() => navigate('/customer/cart')}
                                 className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 rounded-md font-medium transition duration-200 text-sm sm:text-base">
                                 My Cart
-                            </button>
-                            <button
-                                onClick={() => navigate('/customer/profile')}
-                                className="flex-1 sm:flex-none bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-6 py-2 rounded-md font-medium transition duration-200 text-sm sm:text-base">
-                                Profile
                             </button>
                             <button className="flex-1 sm:flex-none bg-yellow-500 hover:bg-yellow-600 text-white px-4 sm:px-6 py-2 rounded-md font-medium transition duration-200 text-sm sm:text-base">
                                 Order History

@@ -59,7 +59,6 @@ const FarmerDashboard = () => {
             ['Milk Production', '/farmer/milk-production'],
             ['Staff', '/farmer/staff'],
             ['Reports', '/farmer/reports'],
-            ['Profile', '/farmer/profile'],
           ].map(([label, path]) => (
             <button
               key={label}
@@ -72,8 +71,18 @@ const FarmerDashboard = () => {
         </nav>
 
         <div className="p-4 border-t dark:border-gray-700">
-          <p className="text-sm font-semibold dark:text-white">{farmerProfile.name}</p>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Farmer Account</p>
+          <div
+            onClick={() => navigate('/farmer/profile')}
+            className="cursor-pointer group mb-2"
+          >
+            <p className="text-xl font-bold dark:text-white group-hover:text-green-600 transition-colors flex items-center">
+              {farmerProfile.name}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">View Profile</p>
+          </div>
           <button
             onClick={handleLogout}
             className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"

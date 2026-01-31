@@ -162,7 +162,6 @@ const CustomerProfile = () => {
                                         className="w-full px-4 py-2 border rounded-lg bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                                         title="Phone number cannot be changed"
                                     />
-                                    <p className="text-xs text-gray-500 mt-1">Contact support to update phone number.</p>
                                 </div>
 
                                 <div className="col-span-2">
