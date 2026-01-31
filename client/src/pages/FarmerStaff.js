@@ -1,12 +1,707 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import farmerService from '../services/farmerService';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const FarmerStaff = () => {
+  const navigate = useNavigate();
+  const [staffList, setStaffList] = useState([]);
+  const [stats, setStats] = useState({
+    totalStaff: 0,
+    attendancePercentage: 0,
+    presentCount: 0,
+    estimatedMonthlyExpense: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  // Modals
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [showAttendanceModal, setShowAttendanceModal] = useState(false);
+  const [editingStaff, setEditingStaff] = useState(null);
+
+  // Form State
+  const [formData, setFormData] = useState({
+    name: '',
+    role: '',
+    phone: '',
+    salary: '',
+    wageType: 'monthly',
+    dateOfJoining: new Date().toISOString().split('T')[0],
+    status: 'active'
+  });
+
+  // Attendance State
+  const [attendanceDate, setAttendanceDate] = useState(new Date().toISOString().split('T')[0]);
+  const [attendanceData, setAttendanceData] = useState({}); // { staffId: status }
+
+  // Report Modal State
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportYear, setReportYear] = useState(new Date().getFullYear());
+  const [reportMonth, setReportMonth] = useState(new Date().getMonth()); // 0-11
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [listRes, statsRes] = await Promise.all([
+        farmerService.getStaffList(),
+        farmerService.getDashboardStats()
+      ]);
+
+      setStaffList(listRes.data || []);
+      setStats(statsRes.data || {
+        totalStaff: 0,
+        attendancePercentage: 0,
+        presentCount: 0,
+        estimatedMonthlyExpense: 0
+      });
+    } catch (err) {
+      setError(err.message || 'Failed to load data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      role: '',
+      phone: '',
+      salary: '',
+      wageType: 'monthly',
+      dateOfJoining: new Date().toISOString().split('T')[0],
+      status: 'active'
+    });
+    setEditingStaff(null);
+    setShowAddForm(false);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingStaff) {
+        await farmerService.updateStaff(editingStaff._id, formData);
+        setSuccess('Staff updated successfully');
+      } else {
+        await farmerService.createStaff(formData);
+        setSuccess('Staff added successfully');
+      }
+      resetForm();
+      fetchData();
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError(err.message || 'Failed to save staff');
+      setTimeout(() => setError(''), 3000);
+    }
+  };
+
+  const handleEdit = (staff) => {
+    setFormData({
+      name: staff.name,
+      role: staff.role || '',
+      phone: staff.phone || '',
+      salary: staff.salary || '',
+      wageType: staff.wageType || 'monthly',
+      dateOfJoining: staff.dateOfJoining ? new Date(staff.dateOfJoining).toISOString().split('T')[0] : '',
+      status: staff.status || 'active'
+    });
+    setEditingStaff(staff);
+    setShowAddForm(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this staff member?')) return;
+    try {
+      await farmerService.deleteStaff(id);
+      setSuccess('Staff deleted successfully');
+      fetchData();
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError(err.message || 'Failed to delete staff');
+    }
+  };
+
+  useEffect(() => {
+    if (showAttendanceModal) {
+      loadAttendanceForDate(attendanceDate);
+    }
+  }, [attendanceDate, showAttendanceModal, staffList]);
+
+  const loadAttendanceForDate = (date) => {
+    const selectedDate = new Date(date);
+    selectedDate.setHours(0, 0, 0, 0);
+
+    const newAttendanceData = {};
+
+    staffList.forEach(staff => {
+      // Find attendance for this date
+      const record = staff.attendance.find(a => {
+        const aDate = new Date(a.date);
+        aDate.setHours(0, 0, 0, 0);
+        return aDate.getTime() === selectedDate.getTime();
+      });
+
+      if (record) {
+        newAttendanceData[staff._id] = record.status;
+      } else if (staff.status === 'active') {
+        // Default to present for active staff if no record exists
+        newAttendanceData[staff._id] = 'present';
+      }
+    });
+
+    setAttendanceData(newAttendanceData);
+  };
+
+  const initAttendance = () => {
+    setAttendanceDate(new Date().toISOString().split('T')[0]);
+    setShowAttendanceModal(true);
+  };
+
+  const handleAttendanceChange = (staffId, status) => {
+    setAttendanceData(prev => ({ ...prev, [staffId]: status }));
+  };
+
+  const submitAttendance = async () => {
+    try {
+      // Process all attendance concurrently
+      const promises = Object.entries(attendanceData).map(([id, status]) => {
+        return farmerService.addAttendance(id, {
+          date: attendanceDate,
+          status: status
+        });
+      });
+
+      await Promise.all(promises);
+      setSuccess('Attendance marked successfully');
+      setShowAttendanceModal(false);
+      fetchData();
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError(err.message || 'Failed to mark attendance');
+    }
+  };
+
+  // Report Generation Logic
+  const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+
+  const getReportData = () => {
+    const daysInMonth = getDaysInMonth(reportYear, reportMonth);
+
+    return staffList.map(staff => {
+      // Filter attendance for selected month
+      const monthlyAttendance = staff.attendance.filter(a => {
+        const d = new Date(a.date);
+        return d.getFullYear() === parseInt(reportYear) && d.getMonth() === parseInt(reportMonth);
+      });
+
+      const presentCount = monthlyAttendance.filter(a => a.status === 'present').length;
+      const halfDayCount = monthlyAttendance.filter(a => a.status === 'half-day').length;
+      const effectiveDays = presentCount + (halfDayCount * 0.5);
+
+      let payableAmount = 0;
+      if (staff.wageType === 'daily') {
+        payableAmount = effectiveDays * staff.salary;
+      } else {
+        // Monthly Pro-rata: (Salary / DaysInMonth) * EffectiveDays
+        const dailyRate = staff.salary / daysInMonth;
+        payableAmount = effectiveDays * dailyRate;
+      }
+
+      return {
+        name: staff.name,
+        role: staff.role,
+        wageType: staff.wageType,
+        rate: staff.salary,
+        present: presentCount,
+        halfDays: halfDayCount,
+        payable: Math.round(payableAmount)
+      };
+    });
+  };
+
+  const downloadCSV = () => {
+    const data = getReportData();
+    const monthName = new Date(reportYear, reportMonth).toLocaleString('default', { month: 'long' });
+
+    // Headers
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Staff Name,Role,Wage Type,Rate,Days Present,Half Days,Total Payable\n";
+
+    // Rows
+    data.forEach(row => {
+      csvContent += `"${row.name}","${row.role}",${row.wageType},${row.rate},${row.present},${row.halfDays},${row.payable}\n`;
+    });
+
+    // Download
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Staff_Report_${monthName}_${reportYear}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const downloadPDF = () => {
+    try {
+      const data = getReportData();
+      const monthName = new Date(reportYear, reportMonth).toLocaleString('default', { month: 'long' });
+      const doc = new jsPDF();
+
+      // Title
+      doc.setFontSize(18);
+      doc.text(`Staff Attendance & Salary Report`, 14, 22);
+      doc.setFontSize(12);
+      doc.text(`${monthName} ${reportYear}`, 14, 32);
+
+      // Table
+      const tableColumn = ["Name", "Role", "Wage Type", "Rate", "Present", "Half Days", "Payable"];
+      const tableRows = [];
+
+      data.forEach(row => {
+        const rowData = [
+          row.name,
+          row.role,
+          row.wageType,
+          row.rate,
+          row.present,
+          row.halfDays,
+          row.payable
+        ];
+        tableRows.push(rowData);
+      });
+
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 40,
+      });
+
+      doc.save(`Staff_Report_${monthName}_${reportYear}.pdf`);
+    } catch (err) {
+      console.error("PDF Generation Error:", err);
+      alert("Failed to generate PDF. Please check console for details.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8 transition-colors duration-200">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Staff</h1>
-      <p className="mt-2 text-gray-600 dark:text-gray-400">
-        Manage staff records here. This page is a placeholder for upcoming features.
-      </p>
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Staff Management</h1>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">Manage your farm workers and attendance</p>
+          </div>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setShowReportModal(true)}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
+            >
+              Download Report
+            </button>
+            <button
+              onClick={initAttendance}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
+            >
+              Mark Attendance
+            </button>
+            <button
+              onClick={() => setShowAddForm(true)}
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
+            >
+              + Add Staff
+            </button>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-l-4 border-blue-500">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">Total Staff</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.totalStaff}</p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-l-4 border-green-500">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">Present Today</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.presentCount}</p>
+            <p className="text-xs text-green-500 mt-1">{stats.attendancePercentage}% Attendance</p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-l-4 border-purple-500">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">Est. Monthly Expense</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">₹{stats.estimatedMonthlyExpense.toLocaleString()}</p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-l-4 border-yellow-500">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">Active Workers</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+              {staffList.filter(s => s.status === 'active').length}
+            </p>
+          </div>
+        </div>
+
+        {/* Messages */}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+            {success}
+          </div>
+        )}
+
+        {/* Report Modal */}
+        {showReportModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md overflow-hidden">
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Download Monthly Report</h2>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Year</label>
+                    <select
+                      value={reportYear}
+                      onChange={(e) => setReportYear(e.target.value)}
+                      className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    >
+                      {[...Array(5)].map((_, i) => (
+                        <option key={i} value={new Date().getFullYear() - i}>{new Date().getFullYear() - i}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Month</label>
+                    <select
+                      value={reportMonth}
+                      onChange={(e) => setReportMonth(e.target.value)}
+                      className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    >
+                      {Array.from({ length: 12 }, (_, i) => (
+                        <option key={i} value={i}>{new Date(0, i).toLocaleString('default', { month: 'long' })}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={downloadCSV}
+                    className="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center justify-center gap-2"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                    Download CSV (Excel)
+                  </button>
+                  <button
+                    onClick={downloadPDF}
+                    className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg flex items-center justify-center gap-2"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clipRule="evenodd" />
+                    </svg>
+                    Download PDF
+                  </button>
+                </div>
+
+                <div className="mt-6 text-center">
+                  <button
+                    onClick={() => setShowReportModal(false)}
+                    className="text-gray-500 hover:text-gray-700 underline"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add/Edit Form Modal */}
+        {showAddForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl overflow-hidden">
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                  {editingStaff ? 'Edit Staff Member' : 'Add New Staff Member'}
+                </h2>
+              </div>
+              <div className="p-6">
+                <form onSubmit={handleSubmit}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name *</label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role *</label>
+                      <select
+                        name="role"
+                        value={formData.role}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      >
+                        <option value="">Select Role</option>
+                        <option value="Milker">Milker</option>
+                        <option value="Livestock Caretaker">Livestock Caretaker</option>
+                        <option value="Farm Supervisor">Farm Supervisor</option>
+                        <option value="Veterinary Assistant">Veterinary Assistant</option>
+                        <option value="Feed Manager">Feed Manager</option>
+                        <option value="Cleaning & Maintenance Worker">Cleaning & Maintenance Worker</option>
+                        <option value="Milk Collection Assistant">Milk Collection Assistant</option>
+                        <option value="Delivery Helper">Delivery Helper</option>
+                        <option value="Storekeeper">Storekeeper</option>
+                        <option value="General Farm Worker">General Farm Worker</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
+                      <input
+                        type="text"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date of Joining</label>
+                      <input
+                        type="date"
+                        name="dateOfJoining"
+                        value={formData.dateOfJoining}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Wage Type</label>
+                      <select
+                        name="wageType"
+                        value={formData.wageType}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      >
+                        <option value="monthly">Monthly</option>
+                        <option value="daily">Daily</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Salary/Wage Amount</label>
+                      <input
+                        type="number"
+                        name="salary"
+                        value={formData.salary}
+                        onChange={handleInputChange}
+                        min="0"
+                        className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                      <select
+                        name="status"
+                        value={formData.status}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      >
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="mt-8 flex justify-end gap-4">
+                    <button
+                      type="button"
+                      onClick={resetForm}
+                      className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                    >
+                      {editingStaff ? 'Update Staff' : 'Add Staff'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Attendance Modal */}
+        {showAttendanceModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col">
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Mark Attendance</h2>
+                <input
+                  type="date"
+                  value={attendanceDate}
+                  onChange={(e) => setAttendanceDate(e.target.value)}
+                  className="mt-2 px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+              </div>
+              <div className="p-6 overflow-y-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="text-gray-500 dark:text-gray-400 border-b dark:border-gray-700">
+                      <th className="pb-3">Staff Name</th>
+                      <th className="pb-3">Role</th>
+                      <th className="pb-3">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {staffList.filter(s => {
+                      // 1. Must be active
+                      if (s.status !== 'active') return false;
+
+                      // 2. Attendance date must be >= Joining Date
+                      if (s.dateOfJoining) {
+                        const selectedDateIndex = new Date(attendanceDate).setHours(0, 0, 0, 0);
+                        const joinDateIndex = new Date(s.dateOfJoining).setHours(0, 0, 0, 0);
+                        if (selectedDateIndex < joinDateIndex) return false;
+                      }
+                      return true;
+                    }).map(staff => (
+                      <tr key={staff._id} className="text-gray-900 dark:text-white">
+                        <td className="py-4">{staff.name}</td>
+                        <td className="py-4 text-sm text-gray-500">{staff.role}</td>
+                        <td className="py-4">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleAttendanceChange(staff._id, 'present')}
+                              className={`px-3 py-1 rounded-full text-sm ${attendanceData[staff._id] === 'present' ? 'bg-green-100 text-green-700 ring-2 ring-green-500' : 'bg-gray-100 text-gray-600'}`}
+                            >
+                              Present
+                            </button>
+                            <button
+                              onClick={() => handleAttendanceChange(staff._id, 'absent')}
+                              className={`px-3 py-1 rounded-full text-sm ${attendanceData[staff._id] === 'absent' ? 'bg-red-100 text-red-700 ring-2 ring-red-500' : 'bg-gray-100 text-gray-600'}`}
+                            >
+                              Absent
+                            </button>
+                            <button
+                              onClick={() => handleAttendanceChange(staff._id, 'half-day')}
+                              className={`px-3 py-1 rounded-full text-sm ${attendanceData[staff._id] === 'half-day' ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-500' : 'bg-gray-100 text-gray-600'}`}
+                            >
+                              Half Day
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-4 bg-gray-50 dark:bg-gray-900">
+                <button
+                  onClick={() => setShowAttendanceModal(false)}
+                  className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-white dark:text-white dark:border-gray-600 dark:hover:bg-gray-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={submitAttendance}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Save Attendance
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Staff List */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-gray-700 text-xs text-gray-500 dark:text-gray-300 uppercase tracking-wider text-left">
+                <tr>
+                  <th className="px-6 py-3">Name</th>
+                  <th className="px-6 py-3">Role</th>
+                  <th className="px-6 py-3">Phone</th>
+                  <th className="px-6 py-3">Wage</th>
+                  <th className="px-6 py-3">Status</th>
+                  <th className="px-6 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                {loading ? (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-8 text-center text-gray-500">Loading...</td>
+                  </tr>
+                ) : staffList.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-8 text-center text-gray-500">No staff members found. Add one to get started.</td>
+                  </tr>
+                ) : (
+                  staffList.map(staff => (
+                    <tr key={staff._id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                      <td className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                        <div className="font-medium text-gray-900 dark:text-white">{staff.name}</div>
+                        <div className="text-xs text-gray-500">Joined: {new Date(staff.dateOfJoining).toLocaleDateString()}</div>
+                      </td>
+                      <td className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-300">
+                        {staff.role}
+                      </td>
+                      <td className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-300">
+                        {staff.phone || '-'}
+                      </td>
+                      <td className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-300">
+                        ₹{staff.salary} <span className="text-xs bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded ml-1">{staff.wageType}</span>
+                      </td>
+                      <td className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                        <span className={`px-2 py-1 text-xs rounded-full ${staff.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                          {staff.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 text-right space-x-3">
+                        <button
+                          onClick={() => handleEdit(staff)}
+                          className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 text-sm"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(staff._id)}
+                          className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 text-sm"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

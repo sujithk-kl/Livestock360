@@ -157,6 +157,78 @@ const farmerService = {
       throw error.response?.data || { message: 'Failed to delete livestock entry' };
     }
   },
+
+  // ============= STAFF MANAGEMENT =============
+
+  // Create staff member
+  createStaff: async (staffData) => {
+    try {
+      const response = await api.post('/staff', staffData);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to create staff member' };
+    }
+  },
+
+  // Get staff list
+  getStaffList: async () => {
+    try {
+      const response = await api.get('/staff');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to fetch staff list' };
+    }
+  },
+
+  // Get staff by ID
+  getStaffById: async (id) => {
+    try {
+      const response = await api.get(`/staff/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to fetch staff details' };
+    }
+  },
+
+  // Update staff member
+  updateStaff: async (id, staffData) => {
+    try {
+      const response = await api.put(`/staff/${id}`, staffData);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to update staff member' };
+    }
+  },
+
+  // Delete staff member
+  deleteStaff: async (id) => {
+    try {
+      const response = await api.delete(`/staff/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to delete staff member' };
+    }
+  },
+
+  // Add attendance
+  addAttendance: async (id, attendanceData) => {
+    try {
+      const response = await api.post(`/staff/${id}/attendance`, attendanceData);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to add attendance' };
+    }
+  },
+
+  // Get dashboard stats
+  getDashboardStats: async () => {
+    try {
+      const response = await api.get('/staff/stats/dashboard');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to fetch dashboard stats' };
+    }
+  },
 };
 
 export default farmerService;

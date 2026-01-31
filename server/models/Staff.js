@@ -47,7 +47,34 @@ const staffSchema = new mongoose.Schema({
   attendance: {
     type: [attendanceSchema],
     default: []
-  }
+  },
+  dateOfJoining: {
+    type: Date,
+    default: Date.now
+  },
+  wageType: {
+    type: String,
+    enum: ['daily', 'monthly'],
+    default: 'monthly'
+  },
+  status: {
+    type: String,
+    enum: ['active', 'inactive'],
+    default: 'active'
+  },
+  paymentHistory: [{
+    date: {
+      type: Date,
+      default: Date.now
+    },
+    amount: Number,
+    period: String, // e.g., "January 2024"
+    status: {
+      type: String,
+      enum: ['paid', 'pending'],
+      default: 'pending'
+    }
+  }]
 }, {
   timestamps: true
 });

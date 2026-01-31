@@ -17,7 +17,7 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json({ limit: '10kb' })); // Limit JSON body size to 10kb
+app.use(express.json({ limit: '50mb' })); // Limit JSON body size to 50mb
 
 // Request timeout middleware (30 seconds for all routes)
 app.use((req, res, next) => {
@@ -69,7 +69,7 @@ app.get('/', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);
-  
+
   // Handle validation errors
   if (err.name === 'ValidationError') {
     const messages = Object.values(err.errors).map(val => val.message);

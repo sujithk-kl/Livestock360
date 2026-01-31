@@ -15,6 +15,11 @@ router.post('/', authorize('farmer', 'admin'), staffController.createStaff);
 // @access  Private (Farmer)
 router.get('/', authorize('farmer', 'admin'), staffController.getStaffList);
 
+// @route   GET /api/staff/stats/dashboard
+// @desc    Get staff dashboard stats
+// @access  Private (Farmer)
+router.get('/stats/dashboard', authorize('farmer', 'admin'), staffController.getDashboardStats);
+
 // @route   GET /api/staff/:id
 // @desc    Get staff member by id
 // @access  Private (Farmer)
