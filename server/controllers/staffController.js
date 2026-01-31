@@ -128,14 +128,12 @@ const addAttendance = async (req, res) => {
       });
     }
 
-    const newDate = new Date(req.body.date);
-    newDate.setHours(0, 0, 0, 0);
+    const newDateStr = new Date(req.body.date).toISOString().split('T')[0];
 
     // Check if attendance for this date already exists
     const existingIndex = staffMember.attendance.findIndex(a => {
-      const aDate = new Date(a.date);
-      aDate.setHours(0, 0, 0, 0);
-      return aDate.getTime() === newDate.getTime();
+      const aDateStr = new Date(a.date).toISOString().split('T')[0];
+      return aDateStr === newDateStr;
     });
 
     if (existingIndex !== -1) {
@@ -182,28 +180,33 @@ const getDashboardStats = async (req, res) => {
     const totalStaff = staff.length;
 
     // Calculate today's attendance
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayStr = new Date().toISOString().split('T')[0];
 
     let presentCount = 0;
 
     staff.forEach(member => {
+      if (member.status !== 'active') return;
+
       const todayAttendance = member.attendance.find(a => {
-        const aDate = new Date(a.date);
-        aDate.setHours(0, 0, 0, 0);
-        return aDate.getTime() === today.getTime();
+        const aDateStr = new Date(a.date).toISOString().split('T')[0];
+        return aDateStr === todayStr;
       });
 
-      if (todayAttendance && todayAttendance.status === 'present') {
-        presentCount++;
+      if (todayAttendance) {
+        if (todayAttendance.status === 'present' || todayAttendance.status === 'half-day') {
+          presentCount++;
+        }
       }
     });
 
-    const attendancePercentage = totalStaff > 0 ? ((presentCount / totalStaff) * 100).toFixed(1) : 0;
+    const activeStaffCount = staff.filter(s => s.status === 'active').length;
+    const attendancePercentage = activeStaffCount > 0 ? ((presentCount / activeStaffCount) * 100).toFixed(1) : 0;
 
     // Estimate monthly expense
     let estimatedMonthlyExpense = 0;
     staff.forEach(member => {
+      if (member.status !== 'active') return;
+
       if (member.wageType === 'monthly') {
         estimatedMonthlyExpense += member.salary;
       } else if (member.wageType === 'daily') {
