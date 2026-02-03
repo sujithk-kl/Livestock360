@@ -28,7 +28,6 @@ const ProductDetails = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
-    const [locationSearch, setLocationSearch] = useState('');
 
     // Reviews State
     const [reviews, setReviews] = useState({});
@@ -107,18 +106,11 @@ const ProductDetails = () => {
         fetchOfferings();
     }, [category]);
 
-    // Sorting and Filtering Logic
-    const filteredProducts = products.filter(p => {
-        if (!locationSearch) return true;
-        const search = locationSearch.toLowerCase();
-        const city = p.farmer?.address?.city?.toLowerCase() || '';
-        const state = p.farmer?.address?.state?.toLowerCase() || '';
-        return city.includes(search) || state.includes(search);
-    });
-
-    const sortedProducts = [...filteredProducts].sort((a, b) => {
+    const sortedProducts = [...products].sort((a, b) => {
         if (sortOption === 'price-asc') return a.price - b.price;
         if (sortOption === 'price-desc') return b.price - a.price;
+        if (sortOption === 'rating-desc') return (b.averageRating || 0) - (a.averageRating || 0);
+        if (sortOption === 'rating-asc') return (a.averageRating || 0) - (b.averageRating || 0);
         return 0; // Default
     });
 
@@ -172,23 +164,34 @@ const ProductDetails = () => {
                         <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm mb-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
                             <div className="flex justify-between items-center">
                                 <h3 className="text-xl font-bold text-gray-800 dark:text-white">Farmers Offerings</h3>
-                                <div className="flex flex-col sm:flex-row items-center gap-4">
-                                    <input
-                                        type="text"
-                                        placeholder="Search by location (City/State)..."
-                                        value={locationSearch}
-                                        onChange={(e) => setLocationSearch(e.target.value)}
-                                        className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 w-full sm:w-60"
-                                    />
+                                <div className="flex items-center gap-3">
                                     <div className="flex items-center">
-                                        <span className="text-sm text-gray-500 dark:text-gray-400 mr-2">Sort by:</span>
+                                        <span className="text-sm text-gray-500 dark:text-gray-400 mr-2">Rating:</span>
                                         <select
-                                            value={sortOption}
+                                            value={sortOption.includes('rating') ? sortOption : ''}
                                             onChange={(e) => setSortOption(e.target.value)}
-                                            className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2"
+                                            className={`bg-gray-50 dark:bg-gray-700 border text-gray-700 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 ${sortOption.includes('rating') ? 'border-gray-200 dark:border-gray-600' : 'border-transparent text-gray-400'
+                                                }`}
                                         >
-                                            <option value="price-asc">Price: Low to High</option>
-                                            <option value="price-desc">Price: High to Low</option>
+                                            <option value="" disabled>Select Order</option>
+                                            <option value="rating-desc">High to Low</option>
+                                            <option value="rating-asc">Low to High</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="h-6 w-px bg-gray-300 dark:bg-gray-600 mx-1"></div>
+
+                                    <div className="flex items-center">
+                                        <span className="text-sm text-gray-500 dark:text-gray-400 mr-2">Price:</span>
+                                        <select
+                                            value={sortOption.includes('price') ? sortOption : ''}
+                                            onChange={(e) => setSortOption(e.target.value)}
+                                            className={`bg-gray-50 dark:bg-gray-700 border text-gray-700 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 ${sortOption.includes('price') ? 'border-gray-200 dark:border-gray-600' : 'border-transparent text-gray-400'
+                                                }`}
+                                        >
+                                            <option value="" disabled>Select Order</option>
+                                            <option value="price-asc">Low to High</option>
+                                            <option value="price-desc">High to Low</option>
                                         </select>
                                     </div>
                                 </div>
