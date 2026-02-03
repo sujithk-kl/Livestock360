@@ -1,28 +1,20 @@
 const mongoose = require('mongoose');
 const path = require('path');
-// Use relative path from CWD (d:\Livestock360)
-const Order = require('./server/models/Order');
-require('dotenv').config({ path: './server/.env' });
+const Review = require(path.resolve(__dirname, 'server/models/Review'));
+require('dotenv').config({ path: path.resolve(__dirname, 'server/.env') });
 
-async function checkOrder() {
+async function checkReviews() {
     try {
         await mongoose.connect(process.env.MONGODB_URI);
-        const order = await Order.findOne().sort({ createdAt: -1 });
-        if (!order) {
-            console.log("No orders found.");
-        } else {
-            console.log("Order ID:", order._id);
-            console.log("Items:");
-            order.items.forEach(item => {
-                console.log(`- Product: ${item.productName}`);
-                console.log(`  Category: '${item.category}'`);
-                console.log(`  Farmer: ${item.farmerName}`);
-            });
-        }
+        const reviews = await Review.find({});
+        console.log(`Found ${reviews.length} reviews.`);
+        reviews.forEach(r => {
+            console.log(`- User: ${r.userName} | Product: ${r.product} | Rating: ${r.rating} | Comment: ${r.comment}`);
+        });
         process.exit(0);
     } catch (e) {
         console.error(e);
         process.exit(1);
     }
 }
-checkOrder();
+checkReviews();
