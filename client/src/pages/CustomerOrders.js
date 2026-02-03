@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Import Assets (Same as ProductDetails)
@@ -144,6 +144,7 @@ const CustomerOrders = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 font-sans">
+            <ToastContainer />
             <div className="max-w-4xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Order History</h1>
