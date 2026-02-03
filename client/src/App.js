@@ -18,6 +18,7 @@ import CustomerProfile from './pages/CustomerProfile';
 import CustomerProducts from './pages/CustomerProducts';
 import Cart from './pages/Cart';
 import CustomerCheckout from './pages/CustomerCheckout';
+import CustomerOrders from './pages/CustomerOrders';
 import ProductDetails from './pages/ProductDetails';
 
 
@@ -49,6 +50,7 @@ function AppContent() {
         <Route path="/customer/products" element={<CustomerProducts />} />
         <Route path="/customer/cart" element={<Cart />} />
         <Route path="/customer/checkout" element={<CustomerCheckout />} />
+        <Route path="/customer/orders" element={<CustomerOrders />} />
         <Route path="/customer/products/:category" element={<ProductDetails />} />
 
       </Routes>

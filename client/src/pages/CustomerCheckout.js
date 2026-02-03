@@ -26,6 +26,7 @@ const CustomerCheckout = () => {
                 items: cartItems.map(item => ({
                     product: item.id, // Assuming id is product ID
                     productName: item.name,
+                    category: item.category, // Pass category for image mapping
                     farmer: item.farmerId, // Need to ensure farmerId is in cart item
                     farmerName: item.farmerName,
                     quantity: item.quantity,
@@ -54,7 +55,7 @@ const CustomerCheckout = () => {
                 localStorage.removeItem('cartItems');
                 toast.success('Payment Successful!');
                 setTimeout(() => {
-                    navigate('/customer/products');
+                    navigate('/customer/orders');
                 }, 2000);
             } else {
                 toast.error(data.message || 'Payment failed to record');

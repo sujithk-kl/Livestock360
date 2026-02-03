@@ -60,6 +60,14 @@ const productSchema = new mongoose.Schema({
     enum: ['Available', 'Out of Stock'],
     default: 'Available'
   },
+  averageRating: {
+    type: Number,
+    default: 0
+  },
+  numReviews: {
+    type: Number,
+    default: 0
+  },
   createdAt: {
     type: Date,
     default: Date.now

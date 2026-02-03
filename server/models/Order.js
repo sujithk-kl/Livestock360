@@ -15,6 +15,10 @@ const orderSchema = new mongoose.Schema({
             type: String,
             required: true
         },
+        category: {
+            type: String,
+            required: true
+        },
         farmer: {
             type: mongoose.Schema.Types.ObjectId, // Can be null if generic/deleted, but usually linked
             ref: 'Farmer'

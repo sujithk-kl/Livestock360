@@ -30,6 +30,27 @@ const ProductDetails = () => {
     const [quantity, setQuantity] = useState(1);
     const [locationSearch, setLocationSearch] = useState('');
 
+    // Reviews State
+    const [reviews, setReviews] = useState({});
+    const [expandedReviews, setExpandedReviews] = useState({});
+
+    const toggleReviews = async (productId) => {
+        setExpandedReviews(prev => ({ ...prev, [productId]: !prev[productId] }));
+
+        if (!reviews[productId]) {
+            // Fetch reviews
+            try {
+                const response = await fetch(`http://localhost:4000/api/reviews/${productId}`);
+                const data = await response.json();
+                if (data.success) {
+                    setReviews(prev => ({ ...prev, [productId]: data.data }));
+                }
+            } catch (error) {
+                console.error("Error fetching reviews", error);
+            }
+        }
+    };
+
     // Mappings
     const getImage = (cat) => {
         switch (cat) {
@@ -191,14 +212,45 @@ const ProductDetails = () => {
                                                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
                                                     Farmer: {product.farmer?.name || 'Local Farmer'}
                                                 </p>
-                                                {/* Reviews stars placeholder */}
-                                                <div className="flex text-yellow-400 mb-1">
-                                                    {'★'.repeat(4)}{'☆'.repeat(1)}
-                                                    <span className="text-xs text-gray-400 ml-2">(12 reviews)</span>
+                                                {/* Reviews */}
+                                                <div className="flex items-center text-yellow-400 mb-1 cursor-pointer" onClick={() => toggleReviews(product._id)}>
+                                                    <span className="text-lg mr-1">
+                                                        {product.averageRating ? product.averageRating.toFixed(1) : 'New'}
+                                                    </span>
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <span key={i} className={i < Math.round(product.averageRating || 0) ? 'text-yellow-400' : 'text-gray-300'}>★</span>
+                                                    ))}
+                                                    <span className="text-xs text-gray-400 ml-2">({product.numReviews || 0} reviews)</span>
+                                                    <span className="text-xs text-blue-500 ml-2 hover:underline">
+                                                        {expandedReviews[product._id] ? 'Hide' : 'Show'} Reviews
+                                                    </span>
                                                 </div>
+
                                                 <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                                                     {product.farmer?.address?.city}, {product.farmer?.address?.state}
                                                 </div>
+
+                                                {/* Expanded Reviews Section */}
+                                                {expandedReviews[product._id] && (
+                                                    <div className="mt-4 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg max-w-lg">
+                                                        <h5 className="text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Customer Reviews</h5>
+                                                        {reviews[product._id] && reviews[product._id].length > 0 ? (
+                                                            <div className="space-y-3">
+                                                                {reviews[product._id].map(review => (
+                                                                    <div key={review._id} className="border-b border-gray-200 dark:border-gray-600 pb-2 last:border-0">
+                                                                        <div className="flex justify-between items-center mb-1">
+                                                                            <span className="font-medium text-xs text-gray-800 dark:text-white">{review.userName}</span>
+                                                                            <span className="text-yellow-400 text-xs text-right">{'★'.repeat(review.rating)}</span>
+                                                                        </div>
+                                                                        <p className="text-xs text-gray-600 dark:text-gray-300 italic">"{review.comment}"</p>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <p className="text-xs text-gray-500 italic">No reviews yet.</p>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
                                             <div className="text-right">
                                                 <div className="text-2xl font-bold text-gray-900 dark:text-white">₹{product.price} <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">per {product.unit}</span></div>
