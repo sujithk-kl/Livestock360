@@ -276,6 +276,7 @@ const ProductDetails = () => {
                                             price: selectedProduct.price,
                                             unit: selectedProduct.unit,
                                             farmerName: selectedProduct.farmer?.name || 'Local Farmer',
+                                            farmerId: selectedProduct.farmer?._id,
                                             quantity: quantity,
                                             maxQuantity: selectedProduct.quantity
                                         };

@@ -12,6 +12,7 @@ const productRoutes = require('./routes/products');
 const milkProductionRoutes = require('./routes/milkProduction');
 const staffRoutes = require('./routes/staff');
 const reportRoutes = require('./routes/reports');
+const orderRoutes = require('./routes/orderRoutes');
 
 const app = express();
 
@@ -60,6 +61,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/milk-production', milkProductionRoutes);
 app.use('/api/staff', staffRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Health check endpoint
 app.get('/', (req, res) => {

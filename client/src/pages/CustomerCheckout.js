@@ -9,13 +9,60 @@ const CustomerCheckout = () => {
     const [status, setStatus] = useState('processing');
     const { total } = location.state || { total: '0.00' };
 
-    const handlePaymentConfirmation = () => {
-        setStatus('success');
-        localStorage.removeItem('cartItems');
-        toast.success('Payment Successful!');
-        setTimeout(() => {
-            navigate('/customer/products');
-        }, 2000);
+    const handlePaymentConfirmation = async () => {
+        try {
+            // Prepare order data
+            const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+            const user = JSON.parse(localStorage.getItem('user'));
+            const token = localStorage.getItem('token');
+
+            if (!user || !token) {
+                toast.error('Please login to complete payment');
+                navigate('/customer/login');
+                return;
+            }
+
+            const orderData = {
+                items: cartItems.map(item => ({
+                    product: item.id, // Assuming id is product ID
+                    productName: item.name,
+                    farmer: item.farmerId, // Need to ensure farmerId is in cart item
+                    farmerName: item.farmerName,
+                    quantity: item.quantity,
+                    unit: item.unit,
+                    price: item.price,
+                    total: item.price * item.quantity
+                })),
+                totalAmount: total,
+                paymentStatus: 'Success'
+            };
+
+            // Send to backend
+            const response = await fetch('http://localhost:4000/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(orderData)
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setStatus('success');
+                localStorage.removeItem('cartItems');
+                toast.success('Payment Successful!');
+                setTimeout(() => {
+                    navigate('/customer/products');
+                }, 2000);
+            } else {
+                toast.error(data.message || 'Payment failed to record');
+            }
+        } catch (error) {
+            console.error('Payment Error:', error);
+            toast.error('Error processing payment record');
+        }
     };
 
     return (
