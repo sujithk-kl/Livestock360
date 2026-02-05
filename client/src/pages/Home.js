@@ -10,8 +10,9 @@ const Home = () => {
   return (
     <div className="min-h-screen flex flex-col font-sans">
       {/* Hero Section */}
+      {/* Hero Section */}
       <div
-        className="relative h-screen flex flex-col items-center justify-center text-white overflow-hidden"
+        className="relative min-h-screen flex flex-col items-center justify-center text-white overflow-hidden py-24 sm:py-0"
         style={{
           backgroundImage: `url(${homeBg})`,
           backgroundSize: 'cover',
@@ -23,27 +24,27 @@ const Home = () => {
         <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
 
         {/* Content */}
-        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto mt-20 md:mt-0">
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6 font-serif animate-fade-in-down drop-shadow-lg leading-tight">
+        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto w-full">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 sm:mb-6 font-serif animate-fade-in-down drop-shadow-lg leading-tight mt-8 sm:mt-0">
             Livestock<span className="text-green-400">360</span>
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl mb-8 sm:mb-12 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-md text-gray-100 md:translate-x-32">
+          <p className="text-lg sm:text-xl md:text-2xl mb-10 sm:mb-12 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-md text-gray-100 md:translate-x-32">
             - Manage Your Farm With Ease
           </p>
 
           {/* Role Selection */}
-          <div className="flex flex-col md:flex-row gap-6 md:gap-8 justify-center items-center w-full">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-8 justify-center items-center w-full px-4">
             {/* Farmer Card */}
             <div
               onClick={() => navigate('/farmer/login')}
-              className="group bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 cursor-pointer transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl w-full max-w-xs md:w-80 flex flex-col items-center"
+              className="group bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 cursor-pointer transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl w-full max-w-[340px] md:w-80 flex flex-col items-center"
             >
               <div className="w-full h-40 sm:h-48 mb-4 sm:mb-6 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all">
                 <img src={farmerImg} alt="Farmer" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 font-serif">I am a Farmer</h2>
-              <p className="text-gray-200 text-xs sm:text-sm mb-4 sm:mb-6">Manage livestock, track products, and organize your farm efficiently.</p>
-              <button className="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-full font-semibold transition-colors w-full text-sm sm:text-base">
+              <p className="text-gray-200 text-sm sm:text-base mb-4 sm:mb-6 leading-relaxed">Manage livestock, track products, and organize your farm efficiently.</p>
+              <button className="px-6 py-3 sm:py-2 bg-green-600 hover:bg-green-500 text-white rounded-full font-semibold transition-colors w-full text-base sm:text-lg shadow-md">
                 Farmer Login
               </button>
             </div>
@@ -51,22 +52,22 @@ const Home = () => {
             {/* Customer Card */}
             <div
               onClick={() => navigate('/customer/login')}
-              className="group bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 cursor-pointer transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl w-full max-w-xs md:w-80 flex flex-col items-center"
+              className="group bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 cursor-pointer transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl w-full max-w-[340px] md:w-80 flex flex-col items-center"
             >
               <div className="w-full h-40 sm:h-48 mb-4 sm:mb-6 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all">
                 <img src={customerImg} alt="Customer" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
               </div>
               <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 font-serif">I am a Customer</h2>
-              <p className="text-gray-200 text-xs sm:text-sm mb-4 sm:mb-6">Discover fresh dairy, meat, and farm products directly from the source.</p>
-              <button className="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-semibold transition-colors w-full text-sm sm:text-base">
+              <p className="text-gray-200 text-sm sm:text-base mb-4 sm:mb-6 leading-relaxed">Discover fresh dairy, meat, and farm products directly from the source.</p>
+              <button className="px-6 py-3 sm:py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-semibold transition-colors w-full text-base sm:text-lg shadow-md">
                 Customer Login
               </button>
             </div>
           </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-10 animate-bounce text-white/70">
+        {/* Scroll Indicator - Hidden on mobile as scrolling is natural */}
+        <div className="absolute bottom-10 animate-bounce text-white/70 hidden md:block">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
@@ -74,46 +75,46 @@ const Home = () => {
       </div>
 
       {/* Features Section */}
-      <div className="bg-white py-20 px-4 md:px-8">
+      <div className="bg-white py-12 sm:py-20 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4 font-serif">Why Livestock360?</h2>
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4 font-serif">Why Livestock360?</h2>
             <div className="w-20 h-1 bg-green-500 mx-auto rounded-full"></div>
-            <p className="mt-4 text-gray-600 max-w-2xl mx-auto">Connecting traditional farming with modern technology for better efficiency and quality.</p>
+            <p className="mt-4 text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">Connecting traditional farming with modern technology for better efficiency and quality.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10">
             {/* Feature 1 */}
-            <div className="bg-gray-50 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow text-center">
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="bg-gray-50 p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow text-center">
+              <div className="bg-green-100 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 sm:h-8 sm:w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3">Quality Assurance</h3>
-              <p className="text-gray-600">Ensuring the highest standards for all livestock products through rigorous health monitoring.</p>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-3">Quality Assurance</h3>
+              <p className="text-gray-600 text-sm sm:text-base">Ensuring the highest standards for all livestock products through rigorous health monitoring.</p>
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-gray-50 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow text-center">
-              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="bg-gray-50 p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow text-center">
+              <div className="bg-blue-100 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 sm:h-8 sm:w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3">Real-time Analytics</h3>
-              <p className="text-gray-600">Farmers get detailed insights into milk production, livestock health, and sales trends.</p>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-3">Real-time Analytics</h3>
+              <p className="text-gray-600 text-sm sm:text-base">Farmers get detailed insights into milk production, livestock health, and sales trends.</p>
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-gray-50 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow text-center">
-              <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="bg-gray-50 p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow text-center">
+              <div className="bg-orange-100 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 sm:h-8 sm:w-8 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-3">Direct Marketplace</h3>
-              <p className="text-gray-600">Eliminating middlemen by connecting farmers directly with customers for better prices.</p>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-3">Direct Marketplace</h3>
+              <p className="text-gray-600 text-sm sm:text-base">Eliminating middlemen by connecting farmers directly with customers for better prices.</p>
             </div>
           </div>
         </div>

@@ -178,15 +178,15 @@ const ProductDetails = () => {
                     <div className="w-full lg:w-2/3">
                         {/* Controls */}
                         <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm mb-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
-                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                 <h3 className="text-xl font-bold text-gray-800 dark:text-white">Farmers Offerings</h3>
-                                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-                                    <div className="flex items-center flex-1 sm:flex-none">
+                                <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                                    <div className="flex items-center w-full sm:w-auto justify-between sm:justify-start">
                                         <span className="text-sm text-gray-500 dark:text-gray-400 mr-2 whitespace-nowrap">Rating:</span>
                                         <select
                                             value={sortOption.includes('rating') ? sortOption : ''}
                                             onChange={(e) => setSortOption(e.target.value)}
-                                            className={`w-full sm:w-auto bg-gray-50 dark:bg-gray-700 border text-gray-700 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 ${sortOption.includes('rating') ? 'border-gray-200 dark:border-gray-600' : 'border-transparent text-gray-400'
+                                            className={`flex-1 sm:flex-none w-full sm:w-40 bg-gray-50 dark:bg-gray-700 border text-gray-700 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 ${sortOption.includes('rating') ? 'border-gray-200 dark:border-gray-600' : 'border-transparent text-gray-400'
                                                 }`}
                                         >
                                             <option value="" disabled>Select Order</option>
@@ -197,12 +197,12 @@ const ProductDetails = () => {
 
                                     <div className="hidden sm:block h-6 w-px bg-gray-300 dark:bg-gray-600 mx-1"></div>
 
-                                    <div className="flex items-center flex-1 sm:flex-none">
+                                    <div className="flex items-center w-full sm:w-auto justify-between sm:justify-start">
                                         <span className="text-sm text-gray-500 dark:text-gray-400 mr-2 whitespace-nowrap">Price:</span>
                                         <select
                                             value={sortOption.includes('price') ? sortOption : ''}
                                             onChange={(e) => setSortOption(e.target.value)}
-                                            className={`w-full sm:w-auto bg-gray-50 dark:bg-gray-700 border text-gray-700 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 ${sortOption.includes('price') ? 'border-gray-200 dark:border-gray-600' : 'border-transparent text-gray-400'
+                                            className={`flex-1 sm:flex-none w-full sm:w-40 bg-gray-50 dark:bg-gray-700 border text-gray-700 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 ${sortOption.includes('price') ? 'border-gray-200 dark:border-gray-600' : 'border-transparent text-gray-400'
                                                 }`}
                                         >
                                             <option value="" disabled>Select Order</option>
@@ -225,8 +225,8 @@ const ProductDetails = () => {
                             <div className="space-y-4">
                                 {sortedProducts.map(product => (
                                     <div key={product._id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 transition hover:shadow-md">
-                                        <div className="flex justify-between items-start">
-                                            <div>
+                                        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                                            <div className="w-full sm:w-auto">
                                                 <h4 className="text-lg font-bold text-gray-900 dark:text-white">{product.productName}</h4>
                                                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
                                                     Farmer: {product.farmer?.name || 'Local Farmer'}
@@ -246,7 +246,6 @@ const ProductDetails = () => {
                                                     </div>
 
                                                     {/* Always showing reviews if expanded, but also auto-expand if low count? */}
-                                                    {/* To satisfy 'Add to all users', valid interpretation is ensuring they are easily accessible */}
                                                     {expandedReviews[product._id] && (
                                                         <div className="mt-2 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg w-full">
                                                             <h5 className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-2">Customer Reviews</h5>
@@ -277,22 +276,24 @@ const ProductDetails = () => {
 
 
                                             </div>
-                                            <div className="text-right">
+                                            <div className="text-left sm:text-right w-full sm:w-auto mt-4 sm:mt-0 flex flex-row sm:flex-col justify-between sm:justify-start items-center sm:items-end border-t sm:border-0 border-gray-100 dark:border-gray-700 pt-4 sm:pt-0">
                                                 <div className="text-2xl font-bold text-gray-900 dark:text-white">₹{product.price} <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">per {product.unit}</span></div>
-                                                <button
-                                                    onClick={() => {
-                                                        setSelectedProduct(product);
-                                                        setQuantity(1); // Reset to 1 or default unit
-                                                        setIsModalOpen(true);
-                                                    }}
-                                                    disabled={product.quantity <= 0}
-                                                    className="mt-3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow transition duration-200 disabled:bg-gray-300"
-                                                >
-                                                    {product.quantity > 0 ? 'Add to Cart' : 'Sold Out'}
-                                                </button>
-                                                <p className={`text-xs mt-2 ${product.quantity > 0 ? 'text-green-600' : 'text-red-500'}`}>
-                                                    {product.quantity > 0 ? 'In Stock' : 'Out of Stock'}
-                                                </p>
+                                                <div className="flex flex-col items-end">
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedProduct(product);
+                                                            setQuantity(1); // Reset to 1 or default unit
+                                                            setIsModalOpen(true);
+                                                        }}
+                                                        disabled={product.quantity <= 0}
+                                                        className="mt-0 sm:mt-3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow transition duration-200 disabled:bg-gray-300 w-full sm:w-auto"
+                                                    >
+                                                        {product.quantity > 0 ? 'Add to Cart' : 'Sold Out'}
+                                                    </button>
+                                                    <p className={`text-xs mt-2 ${product.quantity > 0 ? 'text-green-600' : 'text-red-500'} hidden sm:block`}>
+                                                        {product.quantity > 0 ? 'In Stock' : 'Out of Stock'}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
