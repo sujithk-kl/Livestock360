@@ -165,9 +165,9 @@ const FarmerProfile = () => {
                 {activeTab === 'profile' && (
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                         <form onSubmit={handleProfileSubmit}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="flex flex-col gap-6 md:grid md:grid-cols-2 md:gap-6">
                                 {/* Personal Details */}
-                                <div className="col-span-2">
+                                <div className="md:col-span-2">
                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Personal Details</h3>
                                 </div>
 
@@ -194,7 +194,7 @@ const FarmerProfile = () => {
                                 </div>
 
                                 {/* Address */}
-                                <div className="col-span-2">
+                                <div className="md:col-span-2">
                                     <h4 className="text-md font-medium text-gray-700 dark:text-gray-300 mt-2 mb-2">Address</h4>
                                 </div>
                                 <div>
@@ -239,7 +239,7 @@ const FarmerProfile = () => {
                                 </div>
 
                                 {/* Farm Details */}
-                                <div className="col-span-2 border-t border-gray-200 dark:border-gray-700 pt-6 mt-2">
+                                <div className="md:col-span-2 border-t border-gray-200 dark:border-gray-700 pt-6 mt-2">
                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Farm Details</h3>
                                 </div>
 
@@ -269,7 +269,7 @@ const FarmerProfile = () => {
                                     </select>
                                 </div>
 
-                                <div className="col-span-2">
+                                <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Farm Address</label>
                                     <textarea
                                         name="farmAddress"

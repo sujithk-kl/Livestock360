@@ -152,9 +152,9 @@ const CustomerProfile = () => {
                 {activeTab === 'profile' && (
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                         <form onSubmit={handleProfileSubmit}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="flex flex-col gap-6 md:grid md:grid-cols-2 md:gap-6">
 
-                                <div className="col-span-2">
+                                <div className="md:col-span-2">
                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Personal Details</h3>
                                 </div>
 
@@ -194,7 +194,7 @@ const CustomerProfile = () => {
                                     />
                                 </div>
 
-                                <div className="col-span-2">
+                                <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
                                     <input
                                         type="text"

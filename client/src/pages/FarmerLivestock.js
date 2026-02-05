@@ -250,7 +250,7 @@ const FarmerLivestock = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 transition-colors duration-200">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <button
                 onClick={() => navigate(-1)}
@@ -262,7 +262,7 @@ const FarmerLivestock = () => {
                 </svg>
                 Back
               </button>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Livestock Management</h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Livestock Management</h1>
 
             </div>
             <button
@@ -272,7 +272,7 @@ const FarmerLivestock = () => {
                   resetForm();
                 }
               }}
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
+              className="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
             >
               {showAddForm ? 'Cancel' : '+ Add Livestock'}
             </button>
