@@ -6,6 +6,7 @@ const productService = {
         try {
             const params = {};
             if (filters.category) params.category = filters.category;
+            if (filters.city) params.city = filters.city;
             // Add other filters as needed
 
             const response = await api.get('/products', { params });

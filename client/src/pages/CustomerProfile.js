@@ -16,7 +16,8 @@ const CustomerProfile = () => {
             preferredProducts: [],
             budgetRange: { min: 0, max: 0 },
             notifications: { email: true, sms: false }
-        }
+        },
+        address: { city: '' }
     });
 
     // Password State
@@ -46,18 +47,35 @@ const CustomerProfile = () => {
 
     const handleProfileChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        if (name.startsWith('address.')) {
+            const field = name.split('.')[1];
+            setFormData(prev => ({
+                ...prev,
+                address: { ...prev.address, [field]: value }
+            }));
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }));
+        }
     };
 
     // Simplified profile update for customers for now - detailed preference editing can be added if requested
     const handleProfileSubmit = async (e) => {
         e.preventDefault();
         try {
-            await customerService.updateProfile({
+            const response = await customerService.updateProfile({
                 name: formData.name,
-                // Phone usually shouldn't be changed without verification, but allowing for now if backend permits
+                address: formData.address
             });
-            toast.success('Profile updated successfully');
+
+            if (response.success && response.data && response.data.user) {
+                // Update local storage with new user data
+                // Merge with existing to keep token if it's there, though token is usually separate
+                const existingUser = JSON.parse(localStorage.getItem('user') || '{}');
+                const updatedUser = { ...existingUser, ...response.data.user };
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+
+                toast.success('Profile updated successfully');
+            }
         } catch (error) {
             console.error('Update error:', error);
             toast.error(error.message || 'Failed to update profile');
@@ -161,6 +179,18 @@ const CustomerProfile = () => {
                                         readOnly
                                         className="w-full px-4 py-2 border rounded-lg bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                                         title="Phone number cannot be changed"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City</label>
+                                    <input
+                                        type="text"
+                                        name="address.city"
+                                        value={formData.address?.city || ''}
+                                        onChange={handleProfileChange}
+                                        className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        placeholder="Enter your city"
                                     />
                                 </div>
 

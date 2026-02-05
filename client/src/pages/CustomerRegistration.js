@@ -11,6 +11,7 @@ const CustomerRegistration = () => {
     password: '',
     confirmPassword: '',
     phone: '',
+    city: '',
     preferences: {
       preferredProducts: [],
       budgetRange: {
@@ -90,6 +91,7 @@ const CustomerRegistration = () => {
         email: formData.email,
         password: formData.password,
         phone: formData.phone,
+        city: formData.city,
         preferences: {
           preferredProducts: formData.preferences.preferredProducts,
           budgetRange: {
@@ -108,11 +110,11 @@ const CustomerRegistration = () => {
       // customerService already handles token storage
 
       // Show success message
-      setSuccessMessage('Registration successful! Redirecting to dashboard...');
+      setSuccessMessage('Registration successful! Redirecting to login...');
 
-      // Redirect to customer dashboard after 2 seconds
+      // Redirect to customer login after 2 seconds
       setTimeout(() => {
-        navigate('/customer/dashboard'); // Assuming we'll create this later
+        navigate('/customer/login');
       }, 2000);
 
     } catch (err) {
@@ -223,6 +225,19 @@ const CustomerRegistration = () => {
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white"
                 placeholder="10-digit phone number"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City *</label>
+              <input
+                type="text"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white"
+                placeholder="Enter your city"
                 required
               />
             </div>

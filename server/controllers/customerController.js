@@ -65,6 +65,7 @@ const loginCustomer = async (req, res) => {
                 roles: ['customer'],
                 phone: customer.phone,
                 preferences: customer.preferences,
+                address: customer.address,
                 token
             }
         });
@@ -98,7 +99,8 @@ const registerCustomer = async (req, res) => {
             email,
             password,
             phone,
-            preferences
+            preferences,
+            city
         } = req.body;
 
         // Check if customer already exists
@@ -129,6 +131,9 @@ const registerCustomer = async (req, res) => {
                 preferredProducts: preferences?.preferredProducts || [],
                 budgetRange: preferences?.budgetRange || {},
                 notifications: preferences?.notifications || { email: true, sms: false }
+            },
+            address: {
+                city: city
             }
         });
 
@@ -148,6 +153,7 @@ const registerCustomer = async (req, res) => {
                     roles: ['customer'],
                     phone: newCustomer.phone,
                     preferences: newCustomer.preferences,
+                    address: newCustomer.address,
                     token
                 }
             }
@@ -186,7 +192,8 @@ const getMyProfile = async (req, res) => {
                     email: customer.email,
                     roles: ['customer'],
                     phone: customer.phone,
-                    preferences: customer.preferences
+                    preferences: customer.preferences,
+                    address: customer.address
                 }
             }
         });
@@ -238,7 +245,8 @@ const updateProfile = async (req, res) => {
                     email: updatedCustomer.email,
                     roles: ['customer'],
                     phone: updatedCustomer.phone,
-                    preferences: updatedCustomer.preferences
+                    preferences: updatedCustomer.preferences,
+                    address: updatedCustomer.address
                 }
             }
         });

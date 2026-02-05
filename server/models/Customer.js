@@ -33,6 +33,12 @@ const customerSchema = new mongoose.Schema({
         required: [true, 'Please provide a phone number'],
         match: [/^[0-9]{10}$/, 'Please provide a valid 10-digit phone number']
     },
+    address: {
+        city: {
+            type: String,
+            trim: true
+        }
+    },
     preferences: {
         preferredProducts: [{
             type: String,
@@ -64,7 +70,7 @@ const customerSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-customerSchema.pre('save', async function() {
+customerSchema.pre('save', async function () {
     // Only hash the password if it has been modified (or is new)
     if (!this.isModified('password')) return;
 
@@ -73,7 +79,7 @@ customerSchema.pre('save', async function() {
 });
 
 // Method to compare password
-customerSchema.methods.comparePassword = async function(candidatePassword) {
+customerSchema.methods.comparePassword = async function (candidatePassword) {
     try {
         return await bcrypt.compare(candidatePassword, this.password);
     } catch (error) {
@@ -83,12 +89,12 @@ customerSchema.methods.comparePassword = async function(candidatePassword) {
 };
 
 // Virtual for account lock status
-customerSchema.virtual('isLocked').get(function() {
+customerSchema.virtual('isLocked').get(function () {
     return !!(this.lockUntil && this.lockUntil > Date.now());
 });
 
 // Method to increment failed login attempts
-customerSchema.methods.incLoginAttempts = function() {
+customerSchema.methods.incLoginAttempts = function () {
     // if we have a previous lock that has expired, restart at 1
     if (this.lockUntil && this.lockUntil < Date.now()) {
         return this.updateOne({
@@ -107,7 +113,7 @@ customerSchema.methods.incLoginAttempts = function() {
 };
 
 // Method to reset failed login attempts
-customerSchema.methods.resetLoginAttempts = function() {
+customerSchema.methods.resetLoginAttempts = function () {
     return this.updateOne({
         $unset: { lockUntil: 1 },
         $set: { failedAttempts: 0 }

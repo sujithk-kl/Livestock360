@@ -73,7 +73,7 @@ exports.getAllProducts = async (req, res, next) => {
     const reqQuery = { ...req.query };
 
     // Fields to exclude
-    const removeFields = ['select', 'sort', 'page', 'limit'];
+    const removeFields = ['select', 'sort', 'page', 'limit', 'city'];
 
     // Loop over removeFields and delete them from reqQuery
     removeFields.forEach(param => delete reqQuery[param]);
@@ -85,8 +85,24 @@ exports.getAllProducts = async (req, res, next) => {
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
 
     // Finding resource
+    if (req.query.city) {
+      // Find farmers in the city
+      const farmersDocs = await Farmer.find({
+        'address.city': { $regex: new RegExp(req.query.city.trim(), 'i') }
+      }).select('_id');
+
+      const farmersInCity = farmersDocs.map(f => f._id);
+
+      // Add to query
+      const queryObj = JSON.parse(queryStr);
+      queryObj.farmer = { $in: farmersInCity };
+      query = Product.find(queryObj);
+    } else {
+      query = Product.find(JSON.parse(queryStr));
+    }
+
     // Populate farmer name if needed for the card
-    query = Product.find(JSON.parse(queryStr)).populate('farmer', 'name address farmName');
+    query = query.populate('farmer', 'name address farmName');
 
     // Sort
     if (req.query.sort) {

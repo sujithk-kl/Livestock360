@@ -92,7 +92,23 @@ const ProductDetails = () => {
             try {
                 setLoading(true);
                 // Fetch products specifically for this category
-                const data = await productService.getAll({ category: category });
+                let city = null;
+                try {
+                    const userStr = localStorage.getItem('user');
+                    if (userStr) {
+                        const user = JSON.parse(userStr);
+                        // Check if user has city directly or in address (handle both structures)
+                        if (user.address?.city) city = user.address.city;
+                        else if (user.city) city = user.city;
+                    }
+                } catch (e) {
+                    // console.error("Error parsing user for city", e);
+                }
+
+                const filters = { category: category };
+                if (city) filters.city = city;
+
+                const data = await productService.getAll(filters);
                 if (data.success) {
                     setProducts(data.data);
                 }
