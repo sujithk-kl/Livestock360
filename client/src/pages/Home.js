@@ -23,27 +23,27 @@ const Home = () => {
         <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
 
         {/* Content */}
-        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 font-serif animate-fade-in-down drop-shadow-lg">
+        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto mt-20 md:mt-0">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-4 sm:mb-6 font-serif animate-fade-in-down drop-shadow-lg leading-tight">
             Livestock<span className="text-green-400">360</span>
           </h1>
-          <p className="text-xl md:text-2xl mb-12 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-md text-gray-100 translate-x-32">
+          <p className="text-lg sm:text-xl md:text-2xl mb-8 sm:mb-12 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-md text-gray-100 md:translate-x-32">
             - Manage Your Farm With Ease
           </p>
 
           {/* Role Selection */}
-          <div className="flex flex-col md:flex-row gap-8 justify-center items-center w-full">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-8 justify-center items-center w-full">
             {/* Farmer Card */}
             <div
               onClick={() => navigate('/farmer/login')}
-              className="group bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-2xl p-8 cursor-pointer transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl w-full md:w-80 flex flex-col items-center"
+              className="group bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 cursor-pointer transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl w-full max-w-xs md:w-80 flex flex-col items-center"
             >
-              <div className="w-full h-48 mb-6 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all">
+              <div className="w-full h-40 sm:h-48 mb-4 sm:mb-6 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all">
                 <img src={farmerImg} alt="Farmer" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
               </div>
-              <h2 className="text-3xl font-bold mb-3 font-serif">I am a Farmer</h2>
-              <p className="text-gray-200 text-sm mb-6">Manage livestock, track products, and organize your farm efficiently.</p>
-              <button className="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-full font-semibold transition-colors w-full">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 font-serif">I am a Farmer</h2>
+              <p className="text-gray-200 text-xs sm:text-sm mb-4 sm:mb-6">Manage livestock, track products, and organize your farm efficiently.</p>
+              <button className="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-full font-semibold transition-colors w-full text-sm sm:text-base">
                 Farmer Login
               </button>
             </div>
@@ -51,14 +51,14 @@ const Home = () => {
             {/* Customer Card */}
             <div
               onClick={() => navigate('/customer/login')}
-              className="group bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-2xl p-8 cursor-pointer transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl w-full md:w-80 flex flex-col items-center"
+              className="group bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 cursor-pointer transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl w-full max-w-xs md:w-80 flex flex-col items-center"
             >
-              <div className="w-full h-48 mb-6 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all">
+              <div className="w-full h-40 sm:h-48 mb-4 sm:mb-6 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all">
                 <img src={customerImg} alt="Customer" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
               </div>
-              <h2 className="text-3xl font-bold mb-3 font-serif">I am a Customer</h2>
-              <p className="text-gray-200 text-sm mb-6">Discover fresh dairy, meat, and farm products directly from the source.</p>
-              <button className="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-semibold transition-colors w-full">
+              <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 font-serif">I am a Customer</h2>
+              <p className="text-gray-200 text-xs sm:text-sm mb-4 sm:mb-6">Discover fresh dairy, meat, and farm products directly from the source.</p>
+              <button className="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-semibold transition-colors w-full text-sm sm:text-base">
                 Customer Login
               </button>
             </div>

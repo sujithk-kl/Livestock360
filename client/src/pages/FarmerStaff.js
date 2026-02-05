@@ -296,10 +296,10 @@ const FarmerStaff = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8 transition-colors duration-200">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 md:p-8 transition-colors duration-200">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
             <button
               onClick={() => navigate('/farmer/dashboard')}
@@ -310,25 +310,25 @@ const FarmerStaff = () => {
               </svg>
               Back to Dashboard
             </button>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Staff Management</h1>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">Manage your farm workers and attendance</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Staff Management</h1>
+            <p className="mt-2 text-gray-600 dark:text-gray-400 text-sm md:text-base">Manage your farm workers and attendance</p>
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             <button
               onClick={() => setShowReportModal(true)}
-              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
+              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 text-sm md:text-base whitespace-nowrap"
             >
               Download Report
             </button>
             <button
               onClick={initAttendance}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 text-sm md:text-base whitespace-nowrap"
             >
               Mark Attendance
             </button>
             <button
               onClick={() => setShowAddForm(true)}
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 text-sm md:text-base whitespace-nowrap"
             >
               + Add Staff
             </button>

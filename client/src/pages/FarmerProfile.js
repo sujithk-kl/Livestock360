@@ -126,7 +126,7 @@ const FarmerProfile = () => {
     if (loading) return <div className="p-8 text-center dark:text-white">Loading profile...</div>;
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8 transition-colors duration-200">
+        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 md:p-8 transition-colors duration-200">
             <div className="max-w-4xl mx-auto">
                 <button
                     onClick={() => navigate('/farmer/dashboard')}

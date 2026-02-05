@@ -7,6 +7,7 @@ const FarmerDashboard = () => {
   const navigate = useNavigate();
   const [farmerProfile, setFarmerProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -44,14 +45,33 @@ const FarmerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
+    <div className="min-h-screen flex bg-gray-100 dark:bg-gray-900 transition-colors duration-200 relative">
+      {/* Mobile Header for Hamburger */}
+      <div className="md:hidden fixed top-0 w-full bg-green-600 z-20 flex items-center justify-between px-4 h-16 shadow-md text-white">
+        <span className="font-bold text-lg">Livestock360</span>
+        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 focus:outline-none">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+      </div>
+
+      {/* Overlay for mobile sidebar */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        ></div>
+      )}
+
       {/* Sidebar */}
-      <aside className="w-72 bg-white dark:bg-gray-800 shadow-lg flex flex-col transition-colors duration-200">
+      <aside className={`
+        fixed md:static inset-y-0 left-0 z-30 w-72 bg-white dark:bg-gray-800 shadow-lg flex flex-col transition-transform duration-300 transform
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
+      `}>
         <div className="h-16 flex items-center px-6 bg-gradient-to-r from-green-600 to-green-700 text-white font-bold text-xl">
           Livestock360
         </div>
 
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {[
             ['Dashboard', '/farmer/dashboard'],
             ['Livestock', '/farmer/livestock'],
@@ -62,7 +82,10 @@ const FarmerDashboard = () => {
           ].map(([label, path]) => (
             <button
               key={label}
-              onClick={() => navigate(path)}
+              onClick={() => {
+                navigate(path);
+                setSidebarOpen(false);
+              }}
               className="w-full text-left px-4 py-3 rounded-lg hover:bg-green-100 hover:text-green-700 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-green-400 transition font-medium"
             >
               {label}
@@ -93,17 +116,17 @@ const FarmerDashboard = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 transition-all duration-200">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm md:text-base">
             Welcome back! Here’s an overview of your farm.
           </p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
           {/* Livestock */}
           <StatCard
             title="Total Livestock"
