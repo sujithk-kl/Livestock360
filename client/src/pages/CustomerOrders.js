@@ -78,7 +78,7 @@ const CustomerOrders = () => {
                 return;
             }
 
-            const response = await fetch('http://localhost:4000/api/orders/my-orders', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/orders/my-orders`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -108,7 +108,7 @@ const CustomerOrders = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:4000/api/reviews', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/reviews`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

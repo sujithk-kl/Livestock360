@@ -39,7 +39,7 @@ const ProductDetails = () => {
         if (!reviews[productId]) {
             // Fetch reviews
             try {
-                const response = await fetch(`http://localhost:4000/api/reviews/${productId}`);
+                const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/reviews/${productId}`);
                 const data = await response.json();
                 if (data.success) {
                     setReviews(prev => ({ ...prev, [productId]: data.data }));
