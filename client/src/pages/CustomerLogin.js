@@ -2,9 +2,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import customerService from '../services/customerService';
+import { useAuth } from '../context/AuthContext';
 
 const CustomerLogin = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -34,7 +36,11 @@ const CustomerLogin = () => {
 
       console.log('Login successful:', response);
 
-      // Redirect to customer dashboard
+      // Update global auth state
+      if (response.data && response.data.token) {
+        login(response.data, response.data.token);
+      }
+
       // Redirect to customer products page
       navigate('/customer/products');
     } catch (err) {

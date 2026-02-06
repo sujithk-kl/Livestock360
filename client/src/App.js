@@ -21,9 +21,12 @@ import CustomerCheckout from './pages/CustomerCheckout';
 import CustomerOrders from './pages/CustomerOrders';
 import ProductDetails from './pages/ProductDetails';
 
-
 import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import ThemeToggle from './components/ThemeToggle';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function AppContent() {
   const location = useLocation();
@@ -33,42 +36,54 @@ function AppContent() {
     <div className="App min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       {showThemeToggle && <ThemeToggle />}
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<Home />} />
+
+        {/* Farmer Public Routes */}
         <Route path="/farmer/login" element={<FarmerLogin />} />
         <Route path="/farmer/register" element={<FarmerRegistration />} />
-        <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
-        <Route path="/farmer/livestock" element={<FarmerLivestock />} />
-        <Route path="/farmer/products" element={<FarmerProducts />} />
-        <Route path="/farmer/milk-production" element={<FarmerMilkProduction />} />
-        <Route path="/farmer/staff" element={<FarmerStaff />} />
-        <Route path="/farmer/reports" element={<FarmerReports />} />
-        <Route path="/farmer/profile" element={<FarmerProfile />} />
+
+        {/* Customer Public Routes */}
         <Route path="/customer/login" element={<CustomerLogin />} />
         <Route path="/customer/register" element={<CustomerRegistration />} />
-        <Route path="/customer/profile" element={<CustomerProfile />} />
 
-        <Route path="/customer/products" element={<CustomerProducts />} />
-        <Route path="/customer/cart" element={<Cart />} />
-        <Route path="/customer/checkout" element={<CustomerCheckout />} />
-        <Route path="/customer/orders" element={<CustomerOrders />} />
-        <Route path="/customer/products/:category" element={<ProductDetails />} />
+        {/* Farmer Protected Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['farmer']} />}>
+          <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
+          <Route path="/farmer/livestock" element={<FarmerLivestock />} />
+          <Route path="/farmer/products" element={<FarmerProducts />} />
+          <Route path="/farmer/milk-production" element={<FarmerMilkProduction />} />
+          <Route path="/farmer/staff" element={<FarmerStaff />} />
+          <Route path="/farmer/reports" element={<FarmerReports />} />
+          <Route path="/farmer/profile" element={<FarmerProfile />} />
+        </Route>
+
+        {/* Customer Protected Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['customer']} />}>
+          <Route path="/customer/profile" element={<CustomerProfile />} />
+          <Route path="/customer/products" element={<CustomerProducts />} />
+          <Route path="/customer/cart" element={<Cart />} />
+          <Route path="/customer/checkout" element={<CustomerCheckout />} />
+          <Route path="/customer/orders" element={<CustomerOrders />} />
+          <Route path="/customer/products/:category" element={<ProductDetails />} />
+        </Route>
 
       </Routes>
     </div>
   );
 }
 
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
-    <ThemeProvider>
-      <Router>
-        <AppContent />
-        <ToastContainer position="top-right" autoClose={3000} />
-      </Router>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <Router>
+          <AppContent />
+          <ToastContainer position="top-right" autoClose={3000} />
+        </Router>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 

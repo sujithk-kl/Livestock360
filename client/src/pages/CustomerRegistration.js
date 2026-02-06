@@ -2,9 +2,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import customerService from '../services/customerService';
+import { useAuth } from '../context/AuthContext';
 
 const CustomerRegistration = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -107,14 +109,17 @@ const CustomerRegistration = () => {
 
       console.log('Customer registered:', response);
 
-      // customerService already handles token storage
+      // Auto-login using context
+      if (response.data && response.data.user && response.data.user.token) {
+        login(response.data.user, response.data.user.token);
+      }
 
       // Show success message
-      setSuccessMessage('Registration successful! Redirecting to login...');
+      setSuccessMessage('Registration successful! Redirecting...');
 
-      // Redirect to customer login after 2 seconds
+      // Redirect to customer products after 2 seconds
       setTimeout(() => {
-        navigate('/customer/login');
+        navigate('/customer/products');
       }, 2000);
 
     } catch (err) {

@@ -2,9 +2,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import farmerService from '../services/farmerService';
+import { useAuth } from '../context/AuthContext';
 
 const FarmerLogin = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -33,6 +35,11 @@ const FarmerLogin = () => {
       });
 
       console.log('Login successful:', response);
+
+      // Update global auth state
+      if (response.data && response.data.token) {
+        login(response.data, response.data.token);
+      }
 
       // Redirect to farmer dashboard
       navigate('/farmer/dashboard');

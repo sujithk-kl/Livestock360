@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/authService';
 import farmerService from '../services/farmerService';
+import { useAuth } from '../context/AuthContext';
 
 const FarmerRegistration = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     // Personal Details
     fullName: '',
@@ -204,8 +206,7 @@ const FarmerRegistration = () => {
       }
 
       if (token) {
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(userData));
+        login(userData, token);
       }
 
       // Show success message

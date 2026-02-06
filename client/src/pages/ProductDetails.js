@@ -333,19 +333,32 @@ const ProductDetails = () => {
                                         min="1"
                                         max={selectedProduct.quantity}
                                         value={quantity}
-                                        onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            if (val === '') {
+                                                setQuantity('');
+                                            } else {
+                                                // Allow typing numbers, handle leading zeros naturally
+                                                const parsed = parseInt(val);
+                                                if (!isNaN(parsed)) {
+                                                    setQuantity(parsed);
+                                                }
+                                            }
+                                        }}
                                         className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md p-2 border"
                                     />
                                     <p className="text-right text-lg font-bold text-gray-900 dark:text-white mt-2">
-                                        Total Cost: ₹{(selectedProduct.price * quantity).toFixed(2)}
+                                        Total Cost: ₹{(selectedProduct.price * (quantity || 0)).toFixed(2)}
                                     </p>
                                 </div>
                             </div>
                             <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                 <button
                                     type="button"
-                                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                    disabled={!quantity || quantity < 1}
+                                    className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm ${(!quantity || quantity < 1) ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
                                     onClick={() => {
+                                        if (!quantity || quantity < 1) return;
                                         const cartItem = {
                                             id: selectedProduct._id,
                                             productName: selectedProduct.productName,
