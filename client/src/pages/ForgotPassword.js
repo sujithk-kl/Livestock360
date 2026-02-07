@@ -14,6 +14,10 @@ const ForgotPassword = () => {
     const [loading, setLoading] = useState(false);
     const [emailSent, setEmailSent] = useState(false);
 
+    // DEBUG: Check what API URL is being used
+    console.log('Current API URL Env:', import.meta.env.VITE_API_URL);
+    console.log('Current API BaseURL:', axios.defaults.baseURL); // Note: axios instance in api.js might not be same as global axios, but helps.
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
