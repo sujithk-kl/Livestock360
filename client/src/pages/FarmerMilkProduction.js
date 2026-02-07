@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import milkProductionService from '../services/milkProductionService';
 
 const FarmerMilkProduction = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [records, setRecords] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -170,11 +172,11 @@ const FarmerMilkProduction = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
                 </svg>
-                Back
+                {t('back_btn')}
               </button>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Milk Production</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('milk_production_title')}</h1>
               <p className="mt-2 text-gray-600 dark:text-gray-400">
-                Record and track daily milk production for better monitoring and profit analysis.
+                {t('milk_production_subtitle')}
               </p>
             </div>
             <button
@@ -184,22 +186,22 @@ const FarmerMilkProduction = () => {
               }}
               className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
             >
-              {showAddForm ? 'Cancel' : '+ Add Production'}
+              {showAddForm ? t('cancel_btn') : t('add_production_btn')}
             </button>
           </div>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
             <div className="bg-blue-50 dark:bg-gray-700 p-6 rounded-xl border border-blue-100 dark:border-gray-600">
-              <p className="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">Today's Production</p>
+              <p className="text-sm font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">{t('todays_production')}</p>
               <p className="text-3xl font-bold text-blue-900 dark:text-blue-100 mt-2">{stats.todayProduction.toFixed(1)} L</p>
             </div>
             <div className="bg-purple-50 dark:bg-gray-700 p-6 rounded-xl border border-purple-100 dark:border-gray-600">
-              <p className="text-sm font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wider">This Month</p>
+              <p className="text-sm font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wider">{t('this_month_production')}</p>
               <p className="text-3xl font-bold text-purple-900 dark:text-purple-100 mt-2">{stats.monthProduction.toFixed(1)} L</p>
             </div>
             <div className="bg-green-50 dark:bg-gray-700 p-6 rounded-xl border border-green-100 dark:border-gray-600">
-              <p className="text-sm font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">Total Earnings</p>
+              <p className="text-sm font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">{t('total_earnings')}</p>
               <p className="text-3xl font-bold text-green-900 dark:text-green-100 mt-2">₹{stats.totalEarnings.toLocaleString()}</p>
             </div>
           </div>
@@ -209,13 +211,13 @@ const FarmerMilkProduction = () => {
         {showAddForm && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 animate-fade-in-down transition-colors duration-200">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
-              {editingId ? 'Edit Production Record' : 'Add Daily Production'}
+              {editingId ? t('edit_production_title') : t('add_production_title')}
             </h2>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
               {/* Animal Type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Animal Type</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('form_animal_type')}</label>
                 <select
                   name="animalType"
                   value={formData.animalType}
@@ -230,7 +232,7 @@ const FarmerMilkProduction = () => {
 
               {/* Date */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('form_date')}</label>
                 <input
                   type="date"
                   name="date"
@@ -244,7 +246,7 @@ const FarmerMilkProduction = () => {
 
               {/* Quantity */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Quantity (Litres)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('form_quantity_litres')}</label>
                 <input
                   type="number"
                   step="0.1"
@@ -259,7 +261,7 @@ const FarmerMilkProduction = () => {
 
               {/* Price per Litre */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Price per Litre (₹)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('form_price_per_litre')}</label>
                 <input
                   type="number"
                   name="pricePerLitre"
@@ -273,7 +275,7 @@ const FarmerMilkProduction = () => {
 
               {/* Total Amount (Read Only) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total Amount (₹)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('form_total_amount')}</label>
                 <div className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-600 border border-gray-200 dark:border-gray-500 rounded-lg text-gray-700 dark:text-white font-semibold">
                   {formData.totalAmount.toLocaleString()}
                 </div>
@@ -281,7 +283,7 @@ const FarmerMilkProduction = () => {
 
               {/* Notes */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('form_notes')}</label>
                 <input
                   type="text"
                   name="notes"
@@ -299,13 +301,13 @@ const FarmerMilkProduction = () => {
                   onClick={resetForm}
                   className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium"
                 >
-                  Cancel
+                  {t('cancel_btn')}
                 </button>
                 <button
                   type="submit"
                   className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium shadow-sm"
                 >
-                  {editingId ? 'Update Record' : 'Save Record'}
+                  {editingId ? t('update_record_btn') : t('save_record_btn')}
                 </button>
               </div>
             </form>
@@ -315,28 +317,28 @@ const FarmerMilkProduction = () => {
         {/* Records Table */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-colors duration-200">
           <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-            <h3 className="font-semibold text-gray-800 dark:text-white">Production Records</h3>
-            <span className="text-sm text-gray-500 dark:text-gray-300">{records.length} records found</span>
+            <h3 className="font-semibold text-gray-800 dark:text-white">{t('production_records_title')}</h3>
+            <span className="text-sm text-gray-500 dark:text-gray-300">{records.length} {t('records_found')}</span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Animal</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Quantity</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Price/L</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Notes</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{t('form_date')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{t('th_animal_type')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{t('quantity_label')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{t('th_price')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{t('th_total')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{t('th_notes')}</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{t('th_actions')}</th>
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {records.length === 0 ? (
                   <tr>
                     <td colSpan="7" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
-                      No production records found. Start by adding one!
+                      {t('no_production_records')}
                     </td>
                   </tr>
                 ) : (
@@ -370,13 +372,13 @@ const FarmerMilkProduction = () => {
                           onClick={() => handleEdit(record)}
                           className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-4"
                         >
-                          Edit
+                          {t('edit_btn')}
                         </button>
                         <button
                           onClick={() => handleDelete(record._id)}
                           className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                         >
-                          Delete
+                          {t('delete_btn')}
                         </button>
                       </td>
                     </tr>

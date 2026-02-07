@@ -1,11 +1,13 @@
 // src/pages/CustomerRegistration.js
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
 import customerService from '../services/customerService';
 import { useAuth } from '../context/AuthContext';
 
 const CustomerRegistration = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
@@ -159,8 +161,8 @@ const CustomerRegistration = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Customer Registration</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Create your Livestock360 customer account</p>
+          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">{t('customer_registration_title')}</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{t('customer_registration_subtitle')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-8 max-w-2xl transition-colors duration-200">
@@ -198,7 +200,7 @@ const CustomerRegistration = () => {
 
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('full_name_label')}</label>
               <input
                 type="text"
                 name="name"
@@ -210,7 +212,7 @@ const CustomerRegistration = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('email_label')}</label>
               <input
                 type="email"
                 name="email"
@@ -222,7 +224,7 @@ const CustomerRegistration = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('phone_label')}</label>
               <input
                 type="tel"
                 name="phone"
@@ -235,7 +237,7 @@ const CustomerRegistration = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('city_label')}</label>
               <input
                 type="text"
                 name="city"
@@ -248,7 +250,7 @@ const CustomerRegistration = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('password_label')}</label>
               <input
                 type="password"
                 name="password"
@@ -264,7 +266,7 @@ const CustomerRegistration = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm Password *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('confirm_password_label')}</label>
               <input
                 type="password"
                 name="confirmPassword"
@@ -296,25 +298,25 @@ const CustomerRegistration = () => {
                 disabled={loading}
                 className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed"
               >
-                Cancel
+                {t('cancel_button')}
               </button>
               <button
                 type="submit"
                 disabled={loading}
                 className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                {loading ? 'Registering...' : 'Register'}
+                {loading ? t('registering_button') : t('register_button')}
               </button>
             </div>
 
             <div className="text-center mt-4">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Already have an account?{' '}
+                {t('already_have_account')}{' '}
                 <Link
                   to="/customer/login"
                   className="font-medium text-green-600 hover:text-green-500"
                 >
-                  Sign in
+                  {t('sign_in_button')}
                 </Link>
               </p>
             </div>

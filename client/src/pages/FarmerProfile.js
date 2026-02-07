@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import farmerService from '../services/farmerService';
 import { toast } from 'react-toastify';
 
 const FarmerProfile = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('profile'); // 'profile' or 'security'
     const [loading, setLoading] = useState(true);
 
@@ -49,7 +51,7 @@ const FarmerProfile = () => {
             }
         } catch (error) {
             console.error('Error fetching profile:', error);
-            toast.error('Failed to load profile');
+            toast.error(t('loading_error') || 'Failed to load profile');
         } finally {
             setLoading(false);
         }
@@ -88,10 +90,10 @@ const FarmerProfile = () => {
             };
 
             await farmerService.updateProfile(updateData);
-            toast.success('Profile updated successfully');
+            toast.success(t('profile_updated_msg'));
         } catch (error) {
             console.error('Update error:', error);
-            toast.error(error.message || 'Failed to update profile');
+            toast.error(error.message || t('update_error') || 'Failed to update profile');
         }
     };
 
@@ -102,11 +104,11 @@ const FarmerProfile = () => {
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();
         if (passwordData.newPassword !== passwordData.confirmPassword) {
-            toast.error("New passwords don't match");
+            toast.error(t('password_mismatch_msg'));
             return;
         }
         if (passwordData.newPassword.length < 6) {
-            toast.error("Password must be at least 6 characters");
+            toast.error(t('password_min_length_msg'));
             return;
         }
 
@@ -115,7 +117,7 @@ const FarmerProfile = () => {
                 currentPassword: passwordData.currentPassword,
                 newPassword: passwordData.newPassword
             });
-            toast.success('Password changed successfully');
+            toast.success(t('password_changed_msg'));
             setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         } catch (error) {
             console.error('Password change error:', error);
@@ -123,7 +125,7 @@ const FarmerProfile = () => {
         }
     };
 
-    if (loading) return <div className="p-8 text-center dark:text-white">Loading profile...</div>;
+    if (loading) return <div className="p-8 text-center dark:text-white">{t('loading_profile')}</div>;
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 md:p-8 transition-colors duration-200">
@@ -135,9 +137,9 @@ const FarmerProfile = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
                     </svg>
-                    Back to Dashboard
+                    {t('back_dashboard_btn')}
                 </button>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Account Settings</h1>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">{t('account_settings_title')}</h1>
 
                 {/* Tabs */}
                 <div className="flex border-b border-gray-200 dark:border-gray-700 mb-6">
@@ -148,7 +150,7 @@ const FarmerProfile = () => {
                             : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                             }`}
                     >
-                        Edit Profile
+                        {t('tab_profile')}
                     </button>
                     <button
                         onClick={() => setActiveTab('security')}
@@ -157,7 +159,7 @@ const FarmerProfile = () => {
                             : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                             }`}
                     >
-                        Security
+                        {t('tab_security')}
                     </button>
                 </div>
 
@@ -168,11 +170,11 @@ const FarmerProfile = () => {
                             <div className="flex flex-col gap-6 md:grid md:grid-cols-2 md:gap-6">
                                 {/* Personal Details */}
                                 <div className="md:col-span-2">
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Personal Details</h3>
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('personal_details_title')}</h3>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('full_name_label')}</label>
                                     <input
                                         type="text"
                                         name="name"
@@ -183,7 +185,7 @@ const FarmerProfile = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('phone_label')}</label>
                                     <input
                                         type="text"
                                         name="phone"
@@ -195,10 +197,10 @@ const FarmerProfile = () => {
 
                                 {/* Address */}
                                 <div className="md:col-span-2">
-                                    <h4 className="text-md font-medium text-gray-700 dark:text-gray-300 mt-2 mb-2">Address</h4>
+                                    <h4 className="text-md font-medium text-gray-700 dark:text-gray-300 mt-2 mb-2">{t('address_title')}</h4>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Street</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('street_label')}</label>
                                     <input
                                         type="text"
                                         name="address.street"
@@ -208,7 +210,7 @@ const FarmerProfile = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('city_label')}</label>
                                     <input
                                         type="text"
                                         name="address.city"
@@ -218,7 +220,7 @@ const FarmerProfile = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">State</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('state_label')}</label>
                                     <input
                                         type="text"
                                         name="address.state"
@@ -228,7 +230,7 @@ const FarmerProfile = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pincode</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('pincode_label')}</label>
                                     <input
                                         type="text"
                                         name="address.pincode"
@@ -240,11 +242,11 @@ const FarmerProfile = () => {
 
                                 {/* Farm Details */}
                                 <div className="md:col-span-2 border-t border-gray-200 dark:border-gray-700 pt-6 mt-2">
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Farm Details</h3>
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('farm_details_title')}</h3>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Farm Name</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_name_label')}</label>
                                     <input
                                         type="text"
                                         name="farmName"
@@ -255,22 +257,22 @@ const FarmerProfile = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Farm Type</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_type_label')}</label>
                                     <select
                                         name="farmType"
                                         value={formData.farmType}
                                         onChange={handleProfileChange}
                                         className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                     >
-                                        <option value="Dairy">Dairy</option>
-                                        <option value="Livestock">Livestock</option>
-                                        <option value="Both">Both</option>
-                                        <option value="Other">Other</option>
+                                        <option value="Dairy">{t('farm_type_dairy')}</option>
+                                        <option value="Livestock">{t('farm_type_livestock')}</option>
+                                        <option value="Both">{t('farm_type_both')}</option>
+                                        <option value="Other">{t('role_other')}</option>
                                     </select>
                                 </div>
 
                                 <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Farm Address</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_address_label')}</label>
                                     <textarea
                                         name="farmAddress"
                                         value={formData.farmAddress}
@@ -287,7 +289,7 @@ const FarmerProfile = () => {
                                     type="submit"
                                     className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200"
                                 >
-                                    Save Changes
+                                    {t('save_changes_btn')}
                                 </button>
                             </div>
                         </form>
@@ -297,11 +299,11 @@ const FarmerProfile = () => {
                 {/* Security Content */}
                 {activeTab === 'security' && (
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Change Password</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">{t('change_password_title')}</h3>
                         <form onSubmit={handlePasswordSubmit} className="max-w-md">
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Password</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('current_password_label')}</label>
                                     <input
                                         type="password"
                                         name="currentPassword"
@@ -312,7 +314,7 @@ const FarmerProfile = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Password</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('new_password_label')}</label>
                                     <input
                                         type="password"
                                         name="newPassword"
@@ -324,7 +326,7 @@ const FarmerProfile = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm New Password</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('confirm_new_password_label')}</label>
                                     <input
                                         type="password"
                                         name="confirmPassword"
@@ -342,7 +344,7 @@ const FarmerProfile = () => {
                                     type="submit"
                                     className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200"
                                 >
-                                    Update Password
+                                    {t('update_password_btn')}
                                 </button>
                             </div>
                         </form>

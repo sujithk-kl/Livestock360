@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import farmerService from '../services/farmerService';
 
 const FarmerLivestock = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [livestockList, setLivestockList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -260,9 +262,9 @@ const FarmerLivestock = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
                 </svg>
-                Back
+                {t('back_btn')}
               </button>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Livestock Management</h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{t('livestock_management_title')}</h1>
 
             </div>
             <button
@@ -274,22 +276,22 @@ const FarmerLivestock = () => {
               }}
               className="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
             >
-              {showAddForm ? 'Cancel' : '+ Add Livestock'}
+              {showAddForm ? t('cancel_btn') : t('add_livestock_btn')}
             </button>
           </div>
 
           {/* Summary Stats */}
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-blue-50 dark:bg-gray-700 p-4 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-300">Total Types</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">{t('total_types')}</p>
               <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{livestockList.length}</p>
             </div>
             <div className="bg-green-50 dark:bg-gray-700 p-4 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-300">Total Animals</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">{t('total_animals')}</p>
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">{getTotalCount()}</p>
             </div>
             <div className="bg-purple-50 dark:bg-gray-700 p-4 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-300">Last Updated</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">{t('last_updated')}</p>
               <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                 {livestockList.length > 0
                   ? new Date(livestockList[0].updatedAt).toLocaleDateString()
@@ -317,14 +319,14 @@ const FarmerLivestock = () => {
         {showAddForm && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 transition-colors duration-200">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-              {editingLivestock ? 'Edit Livestock' : 'Add New Livestock'}
+              {editingLivestock ? t('edit_livestock') : t('add_new_livestock')}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Animal Type */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Livestock Type <span className="text-red-500">*</span>
+                    {t('form_animal_type')} <span className="text-red-500">*</span>
                   </label>
                   <select
                     name="animalType"
@@ -333,7 +335,7 @@ const FarmerLivestock = () => {
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
                     required
                   >
-                    <option value="">Select Animal Type</option>
+                    <option value="">{t('select_animal_type')}</option>
                     {animalTypes.map(type => (
                       <option key={type} value={type}>{type}</option>
                     ))}
@@ -343,7 +345,7 @@ const FarmerLivestock = () => {
                 {/* Count */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Count <span className="text-red-500">*</span>
+                    {t('form_count')} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -360,7 +362,7 @@ const FarmerLivestock = () => {
                 {/* Health Notes */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Health Notes
+                    {t('form_health_notes')}
                   </label>
                   <textarea
                     name="healthNotes"
@@ -375,7 +377,7 @@ const FarmerLivestock = () => {
                 {/* Vaccination */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Vaccination
+                    {t('form_vaccination')}
                   </label>
                   <select
                     name="vaccination"
@@ -386,8 +388,8 @@ const FarmerLivestock = () => {
                   >
                     <option value="">
                       {formData.animalType
-                        ? 'Select Vaccination'
-                        : 'Select Animal Type First'}
+                        ? t('select_vaccination')
+                        : t('select_animal_type')}
                     </option>
                     {getAvailableVaccinations().map((vaccine, index) => (
                       <option key={index} value={vaccine}>
@@ -400,7 +402,7 @@ const FarmerLivestock = () => {
                 {/* Vaccination Date */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Vaccination Date
+                    {t('form_vaccination_date')}
                   </label>
                   <input
                     type="date"
@@ -418,14 +420,14 @@ const FarmerLivestock = () => {
                   type="submit"
                   className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
                 >
-                  {editingLivestock ? 'Update Livestock' : 'Add Livestock'}
+                  {editingLivestock ? t('update_livestock_btn') : t('add_new_livestock')}
                 </button>
                 <button
                   type="button"
                   onClick={resetForm}
                   className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-6 rounded-lg transition duration-200"
                 >
-                  Cancel
+                  {t('cancel_btn')}
                 </button>
               </div>
             </form>
@@ -435,12 +437,12 @@ const FarmerLivestock = () => {
         {/* Livestock List */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors duration-200">
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-            Livestock Records
+            {t('livestock_records_title')}
           </h2>
 
           {loading ? (
             <div className="text-center py-8">
-              <p className="text-gray-600">Loading livestock data...</p>
+              <p className="text-gray-600">{t('loading_data')}</p>
             </div>
           ) : livestockList.length === 0 ? (
             <div className="text-center py-12">
@@ -457,14 +459,14 @@ const FarmerLivestock = () => {
                   d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
                 />
               </svg>
-              <h3 className="mt-2 text-lg font-medium text-gray-900">No livestock records</h3>
-              <p className="mt-1 text-gray-500">Get started by adding your first livestock entry.</p>
+              <h3 className="mt-2 text-lg font-medium text-gray-900">{t('no_records')}</h3>
+              <p className="mt-1 text-gray-500">{t('get_started_text')}</p>
               <div className="mt-6">
                 <button
                   onClick={() => setShowAddForm(true)}
                   className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200"
                 >
-                  + Add Livestock
+                  {t('add_livestock_btn')}
                 </button>
               </div>
             </div>
@@ -474,22 +476,22 @@ const FarmerLivestock = () => {
                 <thead className="bg-gray-50 dark:bg-gray-700">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Animal Type
+                      {t('th_animal_type')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Count
+                      {t('th_count')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Vaccination
+                      {t('th_vaccination')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Vaccination Date
+                      {t('th_vaccination_date')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Health Notes
+                      {t('th_health_notes')}
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                      Actions
+                      {t('th_actions')}
                     </th>
                   </tr>
                 </thead>
@@ -524,13 +526,13 @@ const FarmerLivestock = () => {
                           onClick={() => handleEdit(livestock)}
                           className="text-blue-600 hover:text-blue-900 dark:hover:text-blue-400 mr-4"
                         >
-                          Edit
+                          {t('edit_btn')}
                         </button>
                         <button
                           onClick={() => handleDelete(livestock._id)}
                           className="text-red-600 hover:text-red-900 dark:hover:text-red-400"
                         >
-                          Delete
+                          {t('delete_btn')}
                         </button>
                       </td>
                     </tr>

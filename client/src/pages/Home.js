@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import homeBg from '../assets/modern_farm_hero.png';
 import farmerImg from '../assets/farmer_card.png';
@@ -6,6 +7,7 @@ import customerImg from '../assets/customer_card.png';
 
 const Home = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
@@ -26,10 +28,10 @@ const Home = () => {
         {/* Content */}
         <div className="relative z-10 text-center px-4 max-w-5xl mx-auto w-full">
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 sm:mb-6 font-serif animate-fade-in-down drop-shadow-lg leading-tight mt-8 sm:mt-0">
-            Livestock<span className="text-green-400">360</span>
+            {t('welcome_title')}<span className="text-green-400">360</span>
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl mb-10 sm:mb-12 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-md text-gray-100 md:translate-x-32">
-            - Manage Your Farm With Ease
+            {t('welcome_subtitle')}
           </p>
 
           {/* Role Selection */}
@@ -42,10 +44,10 @@ const Home = () => {
               <div className="w-full h-40 sm:h-48 mb-4 sm:mb-6 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all">
                 <img src={farmerImg} alt="Farmer" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 font-serif">I am a Farmer</h2>
-              <p className="text-gray-200 text-sm sm:text-base mb-4 sm:mb-6 leading-relaxed">Manage livestock, track products, and organize your farm efficiently.</p>
+              <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 font-serif">{t('role_farmer_title')}</h2>
+              <p className="text-gray-200 text-sm sm:text-base mb-4 sm:mb-6 leading-relaxed">{t('role_farmer_desc')}</p>
               <button className="px-6 py-3 sm:py-2 bg-green-600 hover:bg-green-500 text-white rounded-full font-semibold transition-colors w-full text-base sm:text-lg shadow-md">
-                Farmer Login
+                {t('role_farmer_btn')}
               </button>
             </div>
 
@@ -57,10 +59,10 @@ const Home = () => {
               <div className="w-full h-40 sm:h-48 mb-4 sm:mb-6 rounded-xl overflow-hidden shadow-lg group-hover:shadow-xl transition-all">
                 <img src={customerImg} alt="Customer" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 font-serif">I am a Customer</h2>
-              <p className="text-gray-200 text-sm sm:text-base mb-4 sm:mb-6 leading-relaxed">Discover fresh dairy, meat, and farm products directly from the source.</p>
+              <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 font-serif">{t('role_customer_title')}</h2>
+              <p className="text-gray-200 text-sm sm:text-base mb-4 sm:mb-6 leading-relaxed">{t('role_customer_desc')}</p>
               <button className="px-6 py-3 sm:py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-semibold transition-colors w-full text-base sm:text-lg shadow-md">
-                Customer Login
+                {t('role_customer_btn')}
               </button>
             </div>
           </div>
@@ -78,9 +80,9 @@ const Home = () => {
       <div className="bg-white py-12 sm:py-20 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4 font-serif">Why Livestock360?</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4 font-serif">{t('features_title')}</h2>
             <div className="w-20 h-1 bg-green-500 mx-auto rounded-full"></div>
-            <p className="mt-4 text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">Connecting traditional farming with modern technology for better efficiency and quality.</p>
+            <p className="mt-4 text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">{t('features_subtitle')}</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10">
@@ -91,8 +93,8 @@ const Home = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-3">Quality Assurance</h3>
-              <p className="text-gray-600 text-sm sm:text-base">Ensuring the highest standards for all livestock products through rigorous health monitoring.</p>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-3">{t('feature_quality_title')}</h3>
+              <p className="text-gray-600 text-sm sm:text-base">{t('feature_quality_desc')}</p>
             </div>
 
             {/* Feature 2 */}
@@ -102,8 +104,8 @@ const Home = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-3">Real-time Analytics</h3>
-              <p className="text-gray-600 text-sm sm:text-base">Farmers get detailed insights into milk production, livestock health, and sales trends.</p>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-3">{t('feature_analytics_title')}</h3>
+              <p className="text-gray-600 text-sm sm:text-base">{t('feature_analytics_desc')}</p>
             </div>
 
             {/* Feature 3 */}
@@ -113,8 +115,8 @@ const Home = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-3">Direct Marketplace</h3>
-              <p className="text-gray-600 text-sm sm:text-base">Eliminating middlemen by connecting farmers directly with customers for better prices.</p>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-3">{t('feature_market_title')}</h3>
+              <p className="text-gray-600 text-sm sm:text-base">{t('feature_market_desc')}</p>
             </div>
           </div>
         </div>
@@ -125,25 +127,25 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <h2 className="text-2xl font-bold font-serif mb-4 flex items-center">
-              Livestock<span className="text-green-500">360</span>
+              {t('welcome_title')}<span className="text-green-500">360</span>
             </h2>
             <p className="text-gray-400 max-w-sm">
-              Empowering responsible farming practices and bringing fresh, healthy produce to every table.
+              {t('footer_desc')}
             </p>
           </div>
 
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-gray-200">Quick Links</h4>
+            <h4 className="text-lg font-semibold mb-4 text-gray-200">{t('footer_quick_links')}</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><a href="#" className="hover:text-green-400 transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-green-400 transition-colors">Services</a></li>
-              <li><a href="#" className="hover:text-green-400 transition-colors">Contact</a></li>
-              <li><a href="#" className="hover:text-green-400 transition-colors">Privacy Policy</a></li>
+              <li><a href="#" className="hover:text-green-400 transition-colors">{t('footer_link_about')}</a></li>
+              <li><a href="#" className="hover:text-green-400 transition-colors">{t('footer_link_services')}</a></li>
+              <li><a href="#" className="hover:text-green-400 transition-colors">{t('footer_link_contact')}</a></li>
+              <li><a href="#" className="hover:text-green-400 transition-colors">{t('footer_link_privacy')}</a></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-gray-200">Contact</h4>
+            <h4 className="text-lg font-semibold mb-4 text-gray-200">{t('footer_contact')}</h4>
             <ul className="space-y-2 text-gray-400">
               <li className="flex items-center gap-2">
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
@@ -157,7 +159,7 @@ const Home = () => {
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 md:px-8 mt-12 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
-          &copy; {new Date().getFullYear()} Livestock360. All rights reserved.
+          &copy; {new Date().getFullYear()} Livestock360. {t('footer_rights')}
         </div>
       </footer>
     </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -17,6 +18,7 @@ import muttonImg from '../assets/Mutton.jpg';
 import defaultImg from '../assets/Milk.jpg';
 
 const CustomerOrders = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -87,11 +89,11 @@ const CustomerOrders = () => {
             if (data.success) {
                 setOrders(data.data);
             } else {
-                toast.error('Failed to fetch orders');
+                toast.error(t('fetch_orders_error'));
             }
         } catch (error) {
             console.error('Error fetching orders:', error);
-            toast.error('Error loading order history');
+            toast.error(t('fetch_orders_error'));
         } finally {
             setLoading(false);
         }
@@ -123,14 +125,14 @@ const CustomerOrders = () => {
 
             const data = await response.json();
             if (data.success) {
-                toast.success('Review submitted successfully!');
+                toast.success(t('review_submitted_msg'));
                 setIsReviewModalOpen(false);
             } else {
-                toast.error(data.message || 'Failed to submit review');
+                toast.error(data.message || t('review_failed_msg'));
             }
         } catch (error) {
             console.error('Error submitting review:', error);
-            toast.error('Error submitting review');
+            toast.error(t('review_failed_msg'));
         }
     };
 
@@ -147,23 +149,23 @@ const CustomerOrders = () => {
             <ToastContainer />
             <div className="max-w-4xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Order History</h1>
+                    <h1 className="text-3xl font-bold text-gray-800 dark:text-white">{t('order_history_title')}</h1>
                     <button
                         onClick={() => navigate('/customer/products')}
                         className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200 shadow-md"
                     >
-                        Back to Products
+                        {t('back_products_btn')}
                     </button>
                 </div>
 
                 {orders.length === 0 ? (
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
-                        <p className="text-gray-500 dark:text-gray-400 text-lg mb-4">You haven't placed any orders yet.</p>
+                        <p className="text-gray-500 dark:text-gray-400 text-lg mb-4">{t('no_orders_msg')}</p>
                         <button
                             onClick={() => navigate('/customer/products')}
                             className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
                         >
-                            Start Shopping
+                            {t('start_shopping_btn')}
                         </button>
                     </div>
                 ) : (
@@ -172,15 +174,15 @@ const CustomerOrders = () => {
                             <div key={order._id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
                                 <div className="bg-gray-50 dark:bg-gray-700 p-4 border-b border-gray-200 dark:border-gray-600 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                     <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">Order ID</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">{t('order_id_label')}</p>
                                         <p className="font-mono font-medium text-gray-800 dark:text-white text-sm">{order._id}</p>
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">Date</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">{t('date_label')}</p>
                                         <p className="font-medium text-gray-800 dark:text-white">{new Date(order.createdAt).toLocaleDateString()}</p>
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">Total Amount</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">{t('total_amount_label')}</p>
                                         <p className="font-bold text-green-600 text-lg">₹{order.totalAmount}</p>
                                     </div>
                                     <div className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-green-100 text-green-800">
@@ -188,7 +190,7 @@ const CustomerOrders = () => {
                                     </div>
                                 </div>
                                 <div className="p-4">
-                                    <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-3">Items</h4>
+                                    <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-3">{t('items_label')}</h4>
                                     <div className="space-y-4">
                                         {order.items.map((item, index) => (
                                             <div key={index} className="flex flex-col sm:flex-row justify-between items-center bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
@@ -206,14 +208,14 @@ const CustomerOrders = () => {
                                                         <p className="text-sm text-gray-500 dark:text-gray-400">
                                                             {item.quantity} {item.unit} x ₹{item.price}
                                                         </p>
-                                                        <p className="text-xs text-gray-400">Farmer: {item.farmerName || 'Unknown'}</p>
+                                                        <p className="text-xs text-gray-400">{t('farmer_label')} {item.farmerName || 'Unknown'}</p>
                                                     </div>
                                                 </div>
                                                 <button
                                                     onClick={() => handleOpenReviewModal(item)}
                                                     className="mt-2 sm:mt-0 text-white bg-blue-500 hover:bg-blue-600 px-4 py-1.5 rounded text-sm font-medium transition"
                                                 >
-                                                    Write Review
+                                                    {t('write_review_btn')}
                                                 </button>
                                             </div>
                                         ))}
@@ -230,11 +232,11 @@ const CustomerOrders = () => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 animate-fade-in-up">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                            Review {selectedItem?.productName}
+                            {t('review_product_title')} {selectedItem?.productName}
                         </h3>
                         <form onSubmit={handleSubmitReview}>
                             <div className="mb-4">
-                                <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Rating</label>
+                                <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">{t('rating_label')}</label>
                                 <div className="flex space-x-2">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                         <button
@@ -249,11 +251,11 @@ const CustomerOrders = () => {
                                 </div>
                             </div>
                             <div className="mb-6">
-                                <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Comment</label>
+                                <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">{t('comment_label')}</label>
                                 <textarea
                                     className="w-full px-3 py-2 text-gray-700 dark:text-white border rounded-lg focus:outline-none focus:border-green-500 dark:bg-gray-700 dark:border-gray-600"
                                     rows="4"
-                                    placeholder="Share your experience..."
+                                    placeholder={t('review_placeholder')}
                                     value={reviewComment}
                                     onChange={(e) => setReviewComment(e.target.value)}
                                     required
@@ -265,13 +267,13 @@ const CustomerOrders = () => {
                                     onClick={() => setIsReviewModalOpen(false)}
                                     className="px-4 py-2 text-gray-500 hover:text-gray-700 font-medium"
                                 >
-                                    Cancel
+                                    {t('cancel_btn')}
                                 </button>
                                 <button
                                     type="submit"
                                     className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition"
                                 >
-                                    Submit Review
+                                    {t('submit_review_btn')}
                                 </button>
                             </div>
                         </form>

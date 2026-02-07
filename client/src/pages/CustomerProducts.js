@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // Import Assets
 import milkImg from '../assets/Milk.jpg';
@@ -16,6 +17,7 @@ import defaultImg from '../assets/Milk.jpg';
 
 const CustomerProducts = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const [userName, setUserName] = useState('');
 
     useEffect(() => {
@@ -37,23 +39,23 @@ const CustomerProducts = () => {
     };
 
     const categories = [
-        { name: 'Milk', img: milkImg },
-        { name: 'Curd', img: curdImg },
-        { name: 'Butter', img: butterImg },
-        { name: 'Ghee', img: gheeImg },
-        { name: 'Paneer', img: paneerImg },
-        { name: 'Honey', img: honeyImg },
-        { name: 'Eggs', img: eggImg },
-        { name: 'Chicken', img: chickenImg },
-        { name: 'Country Chicken', img: countryChickenImg },
-        { name: 'Mutton', img: muttonImg },
+        { name: 'Milk', key: 'cat_milk', img: milkImg },
+        { name: 'Curd', key: 'cat_curd', img: curdImg },
+        { name: 'Butter', key: 'cat_butter', img: butterImg },
+        { name: 'Ghee', key: 'cat_ghee', img: gheeImg },
+        { name: 'Paneer', key: 'cat_paneer', img: paneerImg },
+        { name: 'Honey', key: 'cat_honey', img: honeyImg },
+        { name: 'Eggs', key: 'cat_eggs', img: eggImg },
+        { name: 'Chicken', key: 'cat_chicken', img: chickenImg },
+        { name: 'Country Chicken', key: 'cat_country_chicken', img: countryChickenImg },
+        { name: 'Mutton', key: 'cat_mutton', img: muttonImg },
         // { name: 'Meat', img: chickenImg }, // Hidden for now if redundant or use placeholder
     ];
 
     const [searchQuery, setSearchQuery] = useState('');
 
     const filteredCategories = categories.filter(cat =>
-        cat.name.toLowerCase().includes(searchQuery.toLowerCase())
+        t(cat.key).toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -67,12 +69,12 @@ const CustomerProducts = () => {
                         <h1 className="text-3xl md:text-4xl font-bold text-green-600 dark:text-green-400">Livestock360</h1>
                         <div className="flex items-center space-x-4 w-full md:w-auto justify-between md:justify-end">
                             <span className="text-lg md:text-xl font-medium text-gray-700 dark:text-gray-300 truncate max-w-[200px]">
-                                Hello, <span className="text-green-600 dark:text-green-400 font-bold">{userName}</span>
+                                {t('hello_greeting')} <span className="text-green-600 dark:text-green-400 font-bold">{userName}</span>
                             </span>
                             <button
                                 onClick={() => navigate('/customer/profile')}
                                 className="text-gray-600 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-400 transition-colors p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-                                title="Go to Profile"
+                                title={t('side_profile')}
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-8 md:w-8" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
@@ -90,7 +92,7 @@ const CustomerProducts = () => {
                             </div>
                             <input
                                 type="text"
-                                placeholder="Search for products..."
+                                placeholder={t('search_placeholder')}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition-all text-sm md:text-base"
@@ -104,21 +106,21 @@ const CustomerProducts = () => {
                                 className="flex-1 sm:flex-none justify-center items-center flex gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-200 text-sm md:text-base shadow-sm hover:shadow active:scale-95"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                                Cart
+                                {t('cart_btn')}
                             </button>
                             <button
                                 onClick={() => navigate('/customer/orders')}
                                 className="flex-1 sm:flex-none justify-center items-center flex gap-2 bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-semibold transition duration-200 text-sm md:text-base shadow-sm hover:shadow active:scale-95"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                Orders
+                                {t('orders_btn')}
                             </button>
                             <button
                                 onClick={handleLogout}
                                 className="flex-1 sm:flex-none justify-center items-center flex gap-2 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition duration-200 text-sm md:text-base shadow-sm hover:shadow active:scale-95"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                                Logout
+                                {t('side_logout')}
                             </button>
                         </div>
                     </div>
@@ -126,7 +128,7 @@ const CustomerProducts = () => {
 
                 {/* Category Grid */}
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6 lg:p-8 transition-colors duration-200">
-                    <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">Browse Categories</h2>
+                    <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">{t('browse_categories_title')}</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-6">
                         {filteredCategories.length > 0 ? (
                             filteredCategories.map((cat) => (
@@ -138,12 +140,12 @@ const CustomerProducts = () => {
                                     <div className="h-32 sm:h-40 w-full overflow-hidden bg-gray-200">
                                         <img
                                             src={cat.img}
-                                            alt={cat.name}
+                                            alt={t(cat.key)}
                                             className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
                                         />
                                     </div>
                                     <div className="p-3 sm:p-4 text-center">
-                                        <h3 className="text-sm sm:text-lg font-semibold text-gray-800 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 truncate">{cat.name}</h3>
+                                        <h3 className="text-sm sm:text-lg font-semibold text-gray-800 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 truncate">{t(cat.key)}</h3>
                                     </div>
                                 </div>
                             ))
@@ -153,13 +155,12 @@ const CustomerProducts = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 <p className="mt-4 text text-gray-500 dark:text-gray-400 text-lg">
-                                    No categories found matching "{searchQuery}"
+                                    {t('no_categories_found')} "{searchQuery}"
                                 </p>
                             </div>
                         )}
                     </div>
                 </div>
-
             </div>
         </div>
     );

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/authService';
 import farmerService from '../services/farmerService';
@@ -6,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 
 const FarmerRegistration = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     // Personal Details
@@ -243,7 +245,7 @@ const FarmerRegistration = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Farmer Registration</h2>
+          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">{t('farmer_registration_title')}</h2>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-8 transition-colors duration-200">
@@ -281,11 +283,11 @@ const FarmerRegistration = () => {
 
           {/* Personal Details Section */}
           <div className="mb-10">
-            <h3 className="text-xl font-semibold text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2 mb-6">Personal Details</h3>
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2 mb-6">{t('personal_details_section')}</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('full_name_label')}</label>
                 <input
                   type="text"
                   name="fullName"
@@ -300,7 +302,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('email_label')} *</label>
                 <input
                   type="email"
                   name="email"
@@ -315,7 +317,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('phone_label')}</label>
                 <input
                   type="tel"
                   name="phone"
@@ -326,7 +328,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aadhar Number *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('aadhar_label')}</label>
                 <input
                   type="text"
                   name="aadharNumber"
@@ -337,7 +339,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('password_label')} *</label>
                 <input
                   type="password"
                   name="password"
@@ -352,7 +354,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm Password *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('confirm_password_label')}</label>
                 <input
                   type="password"
                   name="confirmPassword"
@@ -367,7 +369,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Street Address *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('street_label')}</label>
                 <input
                   type="text"
                   name="addressStreet"
@@ -382,7 +384,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('city_label')}</label>
                 <input
                   type="text"
                   name="addressCity"
@@ -397,7 +399,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">State *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('state_label')}</label>
                 <input
                   type="text"
                   name="addressState"
@@ -412,7 +414,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pincode *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('pincode_label')}</label>
                 <input
                   type="text"
                   name="addressPincode"
@@ -430,11 +432,11 @@ const FarmerRegistration = () => {
 
           {/* Farm Details Section */}
           <div className="mb-10">
-            <h3 className="text-xl font-semibold text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2 mb-6">Farm Details</h3>
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2 mb-6">{t('farm_details_section')}</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Farm Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_name_label')}</label>
                 <input
                   type="text"
                   name="farmName"
@@ -449,7 +451,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Farm Size (acres) *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_size_label')}</label>
                 <input
                   type="number"
                   name="farmSize"
@@ -464,7 +466,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type of Farm *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_type_label')}</label>
                 <select
                   name="farmType"
                   value={formData.farmType}
@@ -479,7 +481,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Years of Farming *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('years_farming_label')}</label>
                 <input
                   type="number"
                   name="yearsOfFarming"
@@ -494,7 +496,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Farm Address *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_address_label')}</label>
                 <textarea
                   name="farmAddress"
                   value={formData.farmAddress}
@@ -512,11 +514,11 @@ const FarmerRegistration = () => {
 
           {/* Bank Details Section */}
           <div className="mb-10">
-            <h3 className="text-xl font-semibold text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2 mb-6">Bank Details</h3>
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2 mb-6">{t('bank_details_section')}</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bank Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('bank_name_label')}</label>
                 <input
                   type="text"
                   name="bankName"
@@ -531,7 +533,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Account Number *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('account_number_label')}</label>
                 <input
                   type="text"
                   name="accountNumber"
@@ -546,7 +548,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">IFSC Code *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('ifsc_label')}</label>
                 <input
                   type="text"
                   name="ifscCode"
@@ -562,7 +564,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Account Holder Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('holder_name_label')}</label>
                 <input
                   type="text"
                   name="accountHolderName"
@@ -586,25 +588,25 @@ const FarmerRegistration = () => {
                 disabled={loading}
                 className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed"
               >
-                Cancel
+                {t('cancel_button')}
               </button>
               <button
                 type="submit"
                 disabled={loading}
                 className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                {loading ? 'Registering...' : 'Register'}
+                {loading ? t('registering_button') : t('register_button')}
               </button>
             </div>
 
             <div className="text-center mt-4">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Already have an account?{' '}
+                {t('already_have_account')}{' '}
                 <Link
                   to="/farmer/login"
                   className="font-medium text-green-600 hover:text-green-500"
                 >
-                  Sign in
+                  {t('sign_in_button')}
                 </Link>
               </p>
             </div>

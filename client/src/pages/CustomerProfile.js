@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import customerService from '../services/customerService';
 import { toast } from 'react-toastify';
 
 const CustomerProfile = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('profile'); // 'profile' or 'security'
     const [loading, setLoading] = useState(true);
@@ -39,7 +41,7 @@ const CustomerProfile = () => {
             }
         } catch (error) {
             console.error('Error fetching profile:', error);
-            toast.error('Failed to load profile');
+            toast.error(t('profile_update_failed_msg'));
         } finally {
             setLoading(false);
         }
@@ -74,11 +76,13 @@ const CustomerProfile = () => {
                 const updatedUser = { ...existingUser, ...response.data.user };
                 localStorage.setItem('user', JSON.stringify(updatedUser));
 
-                toast.success('Profile updated successfully');
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+
+                toast.success(t('profile_updated_msg'));
             }
         } catch (error) {
             console.error('Update error:', error);
-            toast.error(error.message || 'Failed to update profile');
+            toast.error(error.message || t('profile_update_failed_msg'));
         }
     };
 
@@ -89,11 +93,11 @@ const CustomerProfile = () => {
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();
         if (passwordData.newPassword !== passwordData.confirmPassword) {
-            toast.error("New passwords don't match");
+            toast.error(t('password_mismatch_msg'));
             return;
         }
         if (passwordData.newPassword.length < 6) {
-            toast.error("Password must be at least 6 characters");
+            toast.error(t('password_min_length_msg'));
             return;
         }
 
@@ -102,15 +106,15 @@ const CustomerProfile = () => {
                 currentPassword: passwordData.currentPassword,
                 newPassword: passwordData.newPassword
             });
-            toast.success('Password changed successfully');
+            toast.success(t('password_changed_msg'));
             setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         } catch (error) {
             console.error('Password change error:', error);
-            toast.error(error.message || 'Failed to change password');
+            toast.error(error.message || t('password_change_failed_msg'));
         }
     };
 
-    if (loading) return <div className="p-8 text-center dark:text-white">Loading profile...</div>;
+    if (loading) return <div className="p-8 text-center dark:text-white">{t('loading_profile')}</div>;
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 md:p-8 transition-colors duration-200">
@@ -122,9 +126,9 @@ const CustomerProfile = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
                     </svg>
-                    Back to Products
+                    {t('back_products_btn')}
                 </button>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Account Settings</h1>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">{t('account_settings_title')}</h1>
 
                 {/* Tabs */}
                 <div className="flex border-b border-gray-200 dark:border-gray-700 mb-6">
@@ -135,7 +139,7 @@ const CustomerProfile = () => {
                             : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                             }`}
                     >
-                        Edit Profile
+                        {t('edit_profile_tab')}
                     </button>
                     <button
                         onClick={() => setActiveTab('security')}
@@ -144,7 +148,7 @@ const CustomerProfile = () => {
                             : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                             }`}
                     >
-                        Security
+                        {t('security_tab')}
                     </button>
                 </div>
 
@@ -155,11 +159,11 @@ const CustomerProfile = () => {
                             <div className="flex flex-col gap-6 md:grid md:grid-cols-2 md:gap-6">
 
                                 <div className="md:col-span-2">
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Personal Details</h3>
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('personal_details_title')}</h3>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('full_name_label')}</label>
                                     <input
                                         type="text"
                                         name="name"
@@ -170,7 +174,7 @@ const CustomerProfile = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('phone_label')}</label>
                                     <input
                                         type="text"
                                         name="phone"
@@ -183,19 +187,19 @@ const CustomerProfile = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('city_label')}</label>
                                     <input
                                         type="text"
                                         name="address.city"
                                         value={formData.address?.city || ''}
                                         onChange={handleProfileChange}
                                         className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                        placeholder="Enter your city"
+                                        placeholder={t('city_placeholder')}
                                     />
                                 </div>
 
                                 <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('email_label')}</label>
                                     <input
                                         type="text"
                                         value={formData.email}
@@ -211,7 +215,7 @@ const CustomerProfile = () => {
                                     type="submit"
                                     className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200"
                                 >
-                                    Save Changes
+                                    {t('save_changes_btn')}
                                 </button>
                             </div>
                         </form>
@@ -221,11 +225,11 @@ const CustomerProfile = () => {
                 {/* Security Content */}
                 {activeTab === 'security' && (
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Change Password</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">{t('change_password_title')}</h3>
                         <form onSubmit={handlePasswordSubmit} className="max-w-md">
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Password</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('current_password_label')}</label>
                                     <input
                                         type="password"
                                         name="currentPassword"
@@ -236,7 +240,7 @@ const CustomerProfile = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Password</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('new_password_label')}</label>
                                     <input
                                         type="password"
                                         name="newPassword"
@@ -248,7 +252,7 @@ const CustomerProfile = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm New Password</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('confirm_password_label')}</label>
                                     <input
                                         type="password"
                                         name="confirmPassword"
@@ -266,7 +270,7 @@ const CustomerProfile = () => {
                                     type="submit"
                                     className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200"
                                 >
-                                    Update Password
+                                    {t('update_password_btn')}
                                 </button>
                             </div>
                         </form>

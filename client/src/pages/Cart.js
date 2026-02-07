@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // Import hook
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -18,6 +19,7 @@ import muttonImg from '../assets/Mutton.jpg';
 import defaultImg from '../assets/Milk.jpg';
 
 const Cart = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [cartItems, setCartItems] = useState([]);
     const [userName, setUserName] = useState('');
@@ -84,14 +86,14 @@ const Cart = () => {
         const updatedCart = cartItems.filter(item => item.id !== id);
         setCartItems(updatedCart);
         localStorage.setItem('cartItems', JSON.stringify(updatedCart));
-        toast.info('Item removed from cart');
+        toast.info(t('item_removed_msg'));
     };
 
     const clearCart = () => {
-        if (window.confirm('Are you sure you want to clear your cart?')) {
+        if (window.confirm(t('clear_cart_confirm'))) {
             setCartItems([]);
             localStorage.removeItem('cartItems');
-            toast.info('Cart cleared');
+            toast.info(t('cart_cleared_msg'));
         }
     };
 
@@ -114,18 +116,18 @@ const Cart = () => {
                 <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
                     <h1 className="text-3xl font-bold text-green-600 dark:text-green-400 cursor-pointer" onClick={() => navigate('/customer/products')}>Livestock360</h1>
                     <div className="flex items-center space-x-4">
-                        <span className="text-gray-700 dark:text-gray-300 font-medium">Hello, <span className="text-green-600 dark:text-green-400 font-bold">{userName}</span></span>
+                        <span className="text-gray-700 dark:text-gray-300 font-medium">{t('hello_greeting')} <span className="text-green-600 dark:text-green-400 font-bold">{userName}</span></span>
                         {/* Optional Logout if needed usually cart has minimalist header */}
                     </div>
                 </div>
             </div>
 
             <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-                <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">Your Cart</h1>
+                <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">{t('cart_title')}</h1>
 
                 {cartItems.length > 0 && (
                     <div className="flex justify-end mb-6">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Total: ₹{calculateTotal()}</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('total_label')} ₹{calculateTotal()}</h2>
                     </div>
                 )}
 
@@ -136,13 +138,13 @@ const Cart = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                         </div>
-                        <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">Your cart is empty</h3>
-                        <p className="text-gray-500 dark:text-gray-400 mb-6">Looks like you haven't added anything yet.</p>
+                        <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">{t('cart_empty_title')}</h3>
+                        <p className="text-gray-500 dark:text-gray-400 mb-6">{t('cart_empty_msg')}</p>
                         <button
                             onClick={() => navigate('/customer/products')}
                             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200"
                         >
-                            Start Shopping
+                            {t('start_shopping_btn')}
                         </button>
                     </div>
                 ) : (
@@ -160,9 +162,9 @@ const Cart = () => {
 
                                 <div className="flex-1 text-center sm:text-left">
                                     <h3 className="text-xl font-bold text-gray-800 dark:text-white">{item.name}</h3>
-                                    <p className="text-gray-600 dark:text-gray-400 mt-1">Farmer: <span className="font-medium text-gray-800 dark:text-gray-200">{item.farmerName}</span></p>
-                                    <p className="text-gray-500 dark:text-gray-400 mt-1">Price per {item.unit}: ₹{item.price}</p>
-                                    <p className="text-blue-600 dark:text-blue-400 font-bold mt-2">Total: ₹{(item.price * item.quantity).toFixed(2)}</p>
+                                    <p className="text-gray-600 dark:text-gray-400 mt-1">{t('farmer_label')} <span className="font-medium text-gray-800 dark:text-gray-200">{item.farmerName}</span></p>
+                                    <p className="text-gray-500 dark:text-gray-400 mt-1">{t('price_per_label')} {item.unit}: ₹{item.price}</p>
+                                    <p className="text-blue-600 dark:text-blue-400 font-bold mt-2">{t('total_value_label')}: ₹{(item.price * item.quantity).toFixed(2)}</p>
                                 </div>
 
                                 <div className="flex items-center gap-6">
@@ -191,7 +193,7 @@ const Cart = () => {
                                         onClick={() => removeItem(item.id)}
                                         className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-md transition duration-200"
                                     >
-                                        Remove
+                                        {t('remove_btn')}
                                     </button>
                                 </div>
                             </div>
@@ -206,7 +208,7 @@ const Cart = () => {
                             onClick={() => navigate('/customer/products')}
                             className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
                         >
-                            Continue Shopping
+                            {t('continue_shopping_btn')}
                         </button>
 
                         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
@@ -214,13 +216,13 @@ const Cart = () => {
                                 onClick={clearCart}
                                 className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
                             >
-                                Clear Cart
+                                {t('clear_cart_btn')}
                             </button>
                             <button
                                 onClick={() => navigate('/customer/checkout', { state: { total: calculateTotal() } })}
                                 className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
                             >
-                                Proceed to Checkout
+                                {t('checkout_btn')}
                             </button>
                         </div>
                     </div>

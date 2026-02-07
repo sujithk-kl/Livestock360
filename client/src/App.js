@@ -25,6 +25,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import ThemeToggle from './components/ThemeToggle';
+import LanguageSwitcher from './components/LanguageSwitcher';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -34,6 +35,7 @@ function AppContent() {
 
   return (
     <div className="App min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+      <LanguageSwitcher />
       {showThemeToggle && <ThemeToggle />}
       <Routes>
         {/* Public Routes */}

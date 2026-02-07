@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import productService from '../services/productService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,6 +21,7 @@ import defaultImg from '../assets/Milk.jpg';
 const ProductDetails = () => {
     const { category } = useParams();
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const [products, setProducts] = useState([]); // These are the vendor offerings
     const [loading, setLoading] = useState(true);
     const [sortOption, setSortOption] = useState('price-asc');
@@ -114,7 +116,7 @@ const ProductDetails = () => {
                 }
             } catch (error) {
                 console.error(error);
-                toast.error('Failed to load offerings');
+                toast.error(t('failed_load_offerings_msg') || 'Failed to load offerings');
             } finally {
                 setLoading(false);
             }
@@ -142,7 +144,13 @@ const ProductDetails = () => {
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                         </button>
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Product Details</h1>
+                    {/* Display category name using the key if possible, but fallback to raw category check */}
+                    {/* We can reverse map or just use t(`cat_${category.toLowerCase().replace(' ', '_')}`) if strictly consistent */}
+                    {/* For now, let's try to map the display name */}
+                    <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+                        {/* Attempt to translate if it matches a key, otherwise show raw */}
+                        {t(`cat_${category.toLowerCase().replace(/ /g, '_')}`, category)} - {t('th_product')} {t('details')}
+                    </h1>
                     <div className="w-10"></div> {/* Spacer for alignment */}
                 </div>
             </div>
@@ -157,12 +165,14 @@ const ProductDetails = () => {
                             <div className="w-64 h-64 overflow-hidden rounded-full border-4 border-gray-100 dark:border-gray-700 mb-4">
                                 <img src={getImage(category)} alt={category} className="w-full h-full object-cover" />
                             </div>
-                            <h2 className="text-3xl font-bold text-blue-800 dark:text-blue-400 mb-2">{category}</h2>
+                            <h2 className="text-3xl font-bold text-blue-800 dark:text-blue-400 mb-2">
+                                {t(`cat_${category.toLowerCase().replace(/ /g, '_')}`, category)}
+                            </h2>
                         </div>
 
                         {/* Nutritional Facts Card */}
                         <div className="bg-blue-50 dark:bg-gray-700 rounded-xl border border-blue-100 dark:border-gray-600 p-6 transition-colors duration-200">
-                            <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100 mb-4">Nutritional Facts</h3>
+                            <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100 mb-4">{t('nutritional_facts_title')}</h3>
                             <ul className="space-y-3">
                                 {Object.entries(nutrition).map(([key, value]) => (
                                     <li key={key} className="flex justify-between border-b border-blue-100 dark:border-gray-600 pb-2 last:border-0">
@@ -179,7 +189,7 @@ const ProductDetails = () => {
                         {/* Controls */}
                         <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm mb-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                <h3 className="text-xl font-bold text-gray-800 dark:text-white">Farmers Offerings</h3>
+                                <h3 className="text-xl font-bold text-gray-800 dark:text-white">{t('farmers_offerings_title')}</h3>
                                 <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
                                     <div className="flex items-center w-full sm:w-auto justify-between sm:justify-start">
                                         <span className="text-sm text-gray-500 dark:text-gray-400 mr-2 whitespace-nowrap">Rating:</span>
@@ -198,16 +208,16 @@ const ProductDetails = () => {
                                     <div className="hidden sm:block h-6 w-px bg-gray-300 dark:bg-gray-600 mx-1"></div>
 
                                     <div className="flex items-center w-full sm:w-auto justify-between sm:justify-start">
-                                        <span className="text-sm text-gray-500 dark:text-gray-400 mr-2 whitespace-nowrap">Price:</span>
+                                        <span className="text-sm text-gray-500 dark:text-gray-400 mr-2 whitespace-nowrap">{t('price_sort_label')}</span>
                                         <select
                                             value={sortOption.includes('price') ? sortOption : ''}
                                             onChange={(e) => setSortOption(e.target.value)}
                                             className={`flex-1 sm:flex-none w-full sm:w-40 bg-gray-50 dark:bg-gray-700 border text-gray-700 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 ${sortOption.includes('price') ? 'border-gray-200 dark:border-gray-600' : 'border-transparent text-gray-400'
                                                 }`}
                                         >
-                                            <option value="" disabled>Select Order</option>
-                                            <option value="price-asc">Low to High</option>
-                                            <option value="price-desc">High to Low</option>
+                                            <option value="" disabled>{t('select_order_placeholder')}</option>
+                                            <option value="price-asc">{t('sort_low_high')}</option>
+                                            <option value="price-desc">{t('sort_high_low')}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -219,7 +229,7 @@ const ProductDetails = () => {
                             <div className="flex justify-center p-12"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-500"></div></div>
                         ) : sortedProducts.length === 0 ? (
                             <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-8 text-center text-gray-500 dark:text-gray-400">
-                                No farmers currently selling {category}.
+                                {t('no_farmers_selling_msg')} {t(`cat_${category.toLowerCase().replace(/ /g, '_')}`, category)}.
                             </div>
                         ) : (
                             <div className="space-y-4">
@@ -229,7 +239,7 @@ const ProductDetails = () => {
                                             <div className="w-full sm:w-auto">
                                                 <h4 className="text-lg font-bold text-gray-900 dark:text-white">{product.productName}</h4>
                                                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                                                    Farmer: {product.farmer?.name || 'Local Farmer'}
+                                                    {t('farmer_label')} {product.farmer?.name || 'Local Farmer'}
                                                 </p>
                                                 {/* Reviews */}
                                                 <div className="flex flex-col mt-2">
@@ -241,14 +251,14 @@ const ProductDetails = () => {
                                                             <span key={i} className={i < Math.round(product.averageRating || 0) ? 'text-yellow-400' : 'text-gray-300'}>★</span>
                                                         ))}
                                                         <span className="text-xs text-gray-500 ml-2 hover:text-blue-500 underline">
-                                                            {product.numReviews || 0} reviews
+                                                            {product.numReviews || 0} {t('reviews_count_label')}
                                                         </span>
                                                     </div>
 
                                                     {/* Always showing reviews if expanded, but also auto-expand if low count? */}
                                                     {expandedReviews[product._id] && (
                                                         <div className="mt-2 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg w-full">
-                                                            <h5 className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-2">Customer Reviews</h5>
+                                                            <h5 className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-2">{t('customer_reviews_title')}</h5>
                                                             {reviews[product._id] && reviews[product._id].length > 0 ? (
                                                                 <div className="space-y-2 max-h-40 overflow-y-auto custom-scrollbar">
                                                                     {reviews[product._id].map(review => (
@@ -263,7 +273,7 @@ const ProductDetails = () => {
                                                                 </div>
                                                             ) : (
                                                                 <div className="text-center py-2">
-                                                                    <p className="text-xs text-gray-500 italic">No reviews yet.</p>
+                                                                    <p className="text-xs text-gray-500 italic">{t('no_reviews_msg')}</p>
                                                                 </div>
                                                             )}
                                                         </div>
@@ -277,7 +287,7 @@ const ProductDetails = () => {
 
                                             </div>
                                             <div className="text-left sm:text-right w-full sm:w-auto mt-4 sm:mt-0 flex flex-row sm:flex-col justify-between sm:justify-start items-center sm:items-end border-t sm:border-0 border-gray-100 dark:border-gray-700 pt-4 sm:pt-0">
-                                                <div className="text-2xl font-bold text-gray-900 dark:text-white">₹{product.price} <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">per {product.unit}</span></div>
+                                                <div className="text-2xl font-bold text-gray-900 dark:text-white">₹{product.price} <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">{t('per_unit_label')} {product.unit}</span></div>
                                                 <div className="flex flex-col items-end">
                                                     <button
                                                         onClick={() => {
@@ -288,10 +298,10 @@ const ProductDetails = () => {
                                                         disabled={product.quantity <= 0}
                                                         className="mt-0 sm:mt-3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow transition duration-200 disabled:bg-gray-300 w-full sm:w-auto"
                                                     >
-                                                        {product.quantity > 0 ? 'Add to Cart' : 'Sold Out'}
+                                                        {product.quantity > 0 ? t('add_to_cart_btn') : t('sold_out_label')}
                                                     </button>
                                                     <p className={`text-xs mt-2 ${product.quantity > 0 ? 'text-green-600' : 'text-red-500'} hidden sm:block`}>
-                                                        {product.quantity > 0 ? 'In Stock' : 'Out of Stock'}
+                                                        {product.quantity > 0 ? t('in_stock_label') : t('out_of_stock_label')}
                                                     </p>
                                                 </div>
                                             </div>
@@ -317,15 +327,15 @@ const ProductDetails = () => {
                         <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
                             <div className="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                                 <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4" id="modal-title">
-                                    Add to Cart
+                                    {t('add_to_cart_btn')}
                                 </h3>
                                 <div className="mb-4">
                                     <h4 className="text-xl font-bold text-gray-800 dark:text-white">{selectedProduct.productName}</h4>
-                                    <p className="text-gray-500 dark:text-gray-400 text-sm">Price per {selectedProduct.unit}: ₹{selectedProduct.price}</p>
+                                    <p className="text-gray-500 dark:text-gray-400 text-sm">{t('price_per_label')} {selectedProduct.unit}: ₹{selectedProduct.price}</p>
                                 </div>
                                 <div className="mb-6">
                                     <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Quantity ({selectedProduct.unit})
+                                        {t('quantity_label')} ({selectedProduct.unit})
                                     </label>
                                     <input
                                         type="number"
@@ -348,7 +358,7 @@ const ProductDetails = () => {
                                         className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md p-2 border"
                                     />
                                     <p className="text-right text-lg font-bold text-gray-900 dark:text-white mt-2">
-                                        Total Cost: ₹{(selectedProduct.price * (quantity || 0)).toFixed(2)}
+                                        {t('total_cost_label')} ₹{(selectedProduct.price * (quantity || 0)).toFixed(2)}
                                     </p>
                                 </div>
                             </div>
@@ -381,25 +391,25 @@ const ProductDetails = () => {
                                         if (existingItemIndex > -1) {
                                             // Update quantity
                                             existingCart[existingItemIndex].quantity += quantity;
-                                            toast.success('Added to cart (Updated quantity)');
+                                            toast.success(t('updated_cart_msg') || 'Added to cart (Updated quantity)');
                                         } else {
                                             // Add new
                                             existingCart.push(cartItem);
-                                            toast.success('Added to cart');
+                                            toast.success(t('added_to_cart_msg') || 'Added to cart');
                                         }
 
                                         localStorage.setItem('cartItems', JSON.stringify(existingCart));
                                         setIsModalOpen(false);
                                     }}
                                 >
-                                    Add to Cart
+                                    {t('add_to_cart_btn')}
                                 </button>
                                 <button
                                     type="button"
                                     className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                                     onClick={() => setIsModalOpen(false)}
                                 >
-                                    Cancel
+                                    {t('cancel_btn')}
                                 </button>
                             </div>
                         </div>

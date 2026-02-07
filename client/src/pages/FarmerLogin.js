@@ -1,11 +1,13 @@
 // src/pages/FarmerLogin.js
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
 import farmerService from '../services/farmerService';
 import { useAuth } from '../context/AuthContext';
 
 const FarmerLogin = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
@@ -55,10 +57,10 @@ const FarmerLogin = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8 transition-colors duration-200">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-          Farmer Login
+          {t('farmer_login_title')}
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-          Access your Livestock360 farmer account
+          {t('farmer_login_subtitle')}
         </p>
       </div>
 
@@ -82,7 +84,7 @@ const FarmerLogin = () => {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Email address
+                {t('email_label')}
               </label>
               <div className="mt-1">
                 <input
@@ -100,7 +102,7 @@ const FarmerLogin = () => {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Password
+                {t('password_label')}
               </label>
               <div className="mt-1">
                 <input
@@ -125,13 +127,13 @@ const FarmerLogin = () => {
                   className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
-                  Remember me
+                  {t('remember_me')}
                 </label>
               </div>
 
               <div className="text-sm">
                 <a href="#" className="font-medium text-green-600 hover:text-green-500 dark:text-green-400 dark:hover:text-green-300">
-                  Forgot your password?
+                  {t('forgot_password')}
                 </a>
               </div>
             </div>
@@ -142,7 +144,7 @@ const FarmerLogin = () => {
                 disabled={loading}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                {loading ? 'Signing in...' : 'Sign in'}
+                {loading ? t('signing_in_button') : t('sign_in_button')}
               </button>
             </div>
           </form>
@@ -154,7 +156,7 @@ const FarmerLogin = () => {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                  Don't have an account?
+                  {t('no_account_text')}
                 </span>
               </div>
             </div>
@@ -164,7 +166,7 @@ const FarmerLogin = () => {
                 to="/farmer/register"
                 className="w-full flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-white bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
               >
-                Register as a Farmer
+                {t('register_farmer_link')}
               </Link>
             </div>
           </div>

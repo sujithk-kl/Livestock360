@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import farmerService from '../services/farmerService';
 
 const FarmerDashboard = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [farmerProfile, setFarmerProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -73,12 +75,12 @@ const FarmerDashboard = () => {
 
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {[
-            ['Dashboard', '/farmer/dashboard'],
-            ['Livestock', '/farmer/livestock'],
-            ['Products', '/farmer/products'],
-            ['Milk Production', '/farmer/milk-production'],
-            ['Staff', '/farmer/staff'],
-            ['Reports', '/farmer/reports'],
+            [t('side_dashboard'), '/farmer/dashboard'],
+            [t('side_livestock'), '/farmer/livestock'],
+            [t('side_products'), '/farmer/products'],
+            [t('side_milk'), '/farmer/milk-production'],
+            [t('side_staff'), '/farmer/staff'],
+            [t('side_reports'), '/farmer/reports'],
           ].map(([label, path]) => (
             <button
               key={label}
@@ -104,13 +106,13 @@ const FarmerDashboard = () => {
                 <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
               </svg>
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">View Profile</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('side_profile')}</p>
           </div>
           <button
             onClick={handleLogout}
             className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
           >
-            Logout
+            {t('side_logout')}
           </button>
         </div>
       </aside>
@@ -119,9 +121,9 @@ const FarmerDashboard = () => {
       <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 transition-all duration-200">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{t('dashboard_title')}</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm md:text-base">
-            Welcome back! Here’s an overview of your farm.
+            {t('dashboard_welcome')}
           </p>
         </div>
 
@@ -129,28 +131,28 @@ const FarmerDashboard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
           {/* Livestock */}
           <StatCard
-            title="Total Livestock"
+            title={t('stat_livestock')}
             value={farmerProfile.livestock?.length || 0}
             color="green"
           />
 
           {/* Products */}
           <StatCard
-            title="Products Listed"
+            title={t('stat_products')}
             value={farmerProfile.crops?.length || 0}
             color="blue"
           />
 
           {/* Milk */}
           <StatCard
-            title="Milk Today"
+            title={t('stat_milk')}
             value="0 L"
             color="yellow"
           />
 
           {/* Farm Size */}
           <StatCard
-            title="Farm Size"
+            title={t('stat_farm_size')}
             value={`${farmerProfile.farmSize} acres`}
             color="purple"
           />

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import paymentQr from '../assets/image.png';
 import { toast } from 'react-toastify';
 
 const CustomerCheckout = () => {
+    const { t } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
     const [status, setStatus] = useState('processing');
@@ -17,7 +19,7 @@ const CustomerCheckout = () => {
             const token = localStorage.getItem('token');
 
             if (!user || !token) {
-                toast.error('Please login to complete payment');
+                toast.error(t('login_required_msg'));
                 navigate('/customer/login');
                 return;
             }
@@ -54,16 +56,16 @@ const CustomerCheckout = () => {
             if (data.success) {
                 setStatus('success');
                 localStorage.removeItem('cartItems');
-                toast.success('Payment Successful!');
+                toast.success(t('payment_success_title'));
                 setTimeout(() => {
                     navigate('/customer/orders');
                 }, 2000);
             } else {
-                toast.error(data.message || 'Payment failed to record');
+                toast.error(data.message || t('payment_failed_msg'));
             }
         } catch (error) {
             console.error('Payment Error:', error);
-            toast.error('Error processing payment record');
+            toast.error(t('payment_error_msg'));
         }
     };
 
@@ -74,9 +76,9 @@ const CustomerCheckout = () => {
                 {status === 'processing' ? (
                     <>
                         <div className="mb-6">
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Checkout</h1>
-                            <p className="text-gray-500 dark:text-gray-400">Paying to <span className="font-semibold text-gray-900 dark:text-white">Livestock360</span></p>
-                            <p className="text-sm text-gray-400 mt-1">Thank you for your purchase! Please complete the payment.</p>
+                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t('checkout_title')}</h1>
+                            <p className="text-gray-500 dark:text-gray-400">{t('paying_to_label')} <span className="font-semibold text-gray-900 dark:text-white">Livestock360</span></p>
+                            <p className="text-sm text-gray-400 mt-1">{t('payment_instruction')}</p>
                         </div>
 
                         <div className="bg-white p-2 rounded-lg inline-block mb-6 border border-gray-200">
@@ -84,7 +86,7 @@ const CustomerCheckout = () => {
                         </div>
 
                         <p className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                            Scan to Pay ₹{total}
+                            {t('scan_pay_label')} ₹{total}
                         </p>
 
                         <div className="flex gap-4 justify-center">
@@ -92,18 +94,18 @@ const CustomerCheckout = () => {
                                 onClick={handlePaymentConfirmation}
                                 className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-200"
                             >
-                                Yes, I Have Paid
+                                {t('confirm_payment_btn')}
                             </button>
                             <button
                                 onClick={() => navigate('/customer/cart')}
                                 className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-200"
                             >
-                                No, Take Me Back
+                                {t('cancel_payment_btn')}
                             </button>
                         </div>
 
                         <p className="mt-6 text-sm text-gray-500 animate-pulse">
-                            Processing payment, please wait...
+                            {t('processing_payment_msg')}
                         </p>
 
                     </>
@@ -114,9 +116,9 @@ const CustomerCheckout = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                             </svg>
                         </div>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Payment Successful!</h2>
-                        <p className="text-gray-500 dark:text-gray-400 mb-6">Your order has been placed successfully.</p>
-                        <p className="text-sm text-gray-400">Redirecting to products...</p>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t('payment_success_title')}</h2>
+                        <p className="text-gray-500 dark:text-gray-400 mb-6">{t('order_placed_msg')}</p>
+                        <p className="text-sm text-gray-400">{t('redirecting_msg')}</p>
                     </div>
                 )}
             </div>
