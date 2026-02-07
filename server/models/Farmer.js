@@ -110,7 +110,11 @@ const farmerSchema = new mongoose.Schema({
             required: [true, 'Please provide account holder name'],
             trim: true
         }
-    }
+    },
+    // Reset Password Token
+    resetPasswordToken: String,
+    resetPasswordExpire: Date
+
 }, {
     timestamps: true
 });
@@ -123,6 +127,23 @@ farmerSchema.pre('save', async function () {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
 });
+
+// Method to get reset password token
+farmerSchema.methods.getResetPasswordToken = function () {
+    // Generate token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+
+    // Hash token and set to resetPasswordToken field
+    this.resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+
+    // Set expire time (e.g., 10 minutes)
+    this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
+};
 
 // Method to compare password
 farmerSchema.methods.comparePassword = async function (candidatePassword) {

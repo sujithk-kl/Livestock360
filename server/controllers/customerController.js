@@ -1,6 +1,7 @@
 const Customer = require('../models/Customer');
 const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -317,10 +318,98 @@ const changePassword = async (req, res) => {
     }
 };
 
+// @desc    Forgot Password
+// @route   POST /api/customers/forgotpassword
+// @access  Public
+const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const customer = await Customer.findOne({ email });
+
+        if (!customer) {
+            return res.status(404).json({ success: false, message: 'User not found with this email' });
+        }
+
+        // Get Reset Token
+        const resetToken = customer.getResetPasswordToken();
+
+        await customer.save({ validateBeforeSave: false });
+
+        // Create Reset URL
+        const resetUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
+
+        const message = `
+      <h1>You have requested a password reset</h1>
+      <p>Please go to this link to reset your password:</p>
+      <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
+    `;
+
+        try {
+            const sendEmail = require('../utils/sendEmail');
+            await sendEmail({
+                email: customer.email,
+                subject: 'Password Reset Request',
+                message
+            });
+
+            res.status(200).json({ success: true, data: 'Email Sent' });
+        } catch (error) {
+            console.error(error);
+            customer.resetPasswordToken = undefined;
+            customer.resetPasswordExpire = undefined;
+
+            await customer.save({ validateBeforeSave: false });
+
+            return res.status(500).json({ success: false, message: 'Email could not be sent' });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Reset Password
+// @route   PUT /api/customers/resetpassword/:resetToken
+// @access  Public
+const resetPassword = async (req, res) => {
+    // Get hashed token
+    const resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(req.params.resetToken)
+        .digest('hex');
+
+    try {
+        const customer = await Customer.findOne({
+            resetPasswordToken,
+            resetPasswordExpire: { $gt: Date.now() }
+        });
+
+        if (!customer) {
+            return res.status(400).json({ success: false, message: 'Invalid Token' });
+        }
+
+        customer.password = req.body.password;
+        customer.resetPasswordToken = undefined;
+        customer.resetPasswordExpire = undefined;
+
+        await customer.save();
+
+        res.status(201).json({
+            success: true,
+            data: 'Password Reset Success',
+            token: generateToken(customer._id)
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 module.exports = {
     loginCustomer,
     registerCustomer,
     getMyProfile,
     updateProfile,
-    changePassword
+    changePassword,
+    forgotPassword,
+    resetPassword
 };

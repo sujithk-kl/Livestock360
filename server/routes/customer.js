@@ -13,6 +13,16 @@ router.post(
   customerController.loginCustomer
 );
 
+// @route   POST /api/customers/forgotpassword
+// @desc    Forgot password
+// @access  Public
+router.post('/forgotpassword', customerController.forgotPassword);
+
+// @route   PUT /api/customers/resetpassword/:resetToken
+// @desc    Reset password
+// @access  Public
+router.put('/resetpassword/:resetToken', customerController.resetPassword);
+
 // @route   POST /api/customers/register
 // @desc    Register a new customer (creates user account if needed)
 // @access  Public

@@ -20,6 +20,8 @@ import Cart from './pages/Cart';
 import CustomerCheckout from './pages/CustomerCheckout';
 import CustomerOrders from './pages/CustomerOrders';
 import ProductDetails from './pages/ProductDetails';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
@@ -48,6 +50,10 @@ function AppContent() {
         {/* Customer Public Routes */}
         <Route path="/customer/login" element={<CustomerLogin />} />
         <Route path="/customer/register" element={<CustomerRegistration />} />
+
+        {/* Shared Public Routes */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
 
         {/* Farmer Protected Routes */}
         <Route element={<ProtectedRoute allowedRoles={['farmer']} />}>
