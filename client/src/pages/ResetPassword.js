@@ -1,75 +1,10 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import { toast } from 'react-toastify';
 
 const ResetPassword = () => {
-    const { resetToken } = useParams();
-    const navigate = useNavigate();
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [role, setRole] = useState('farmer'); // Or default to farmer, maybe verify token type later if needed
-    const [loading, setLoading] = useState(false);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (password !== confirmPassword) {
-            return toast.error("Passwords don't match");
-        }
-
-        setLoading(true);
-
-        try {
-            // Try farmer first
-            let endpoint = `/api/farmers/resetpassword/${resetToken}`;
-            let success = false;
-
-            try {
-                await axios.put(endpoint, { password });
-                success = true;
-            } catch (error) {
-                // Should handle specific error or try customer
-                // This is tricky without knowing the role. Ideally, the role should be passed or we accept distinct routes.
-                // For now, let's allow user to select role, OR we assume the link was specific.
-                // Our backend: PUT /api/farmers/resetpassword/:resetToken
-            }
-
-            // Re-evaluating strategy: Since the user clicks a link, they don't select a role.
-            // But the backend route IS specific (/api/farmers/... or /api/customers/...).
-            // However, the token is unique.
-            // Option 1: Try both endpoints.
-            // Option 2: Add role to the email link query param (?role=farmer).
-            // Let's implement Option 2 for better UX/Reliability.
-            // Updating my plan to check query params.
-
-            // WAIT: I can just put a role selector here too, OR just try both.
-            // Let's try explicit implementation first with a role selector or just try both.
-            // Trying both is robust.
-
-            if (!success) {
-                endpoint = `/api/customers/resetpassword/${resetToken}`;
-                await axios.put(endpoint, { password });
-            }
-
-            toast.success('Password reset successful! Please login.');
-            navigate('/farmer/login'); // Or customer login, generic redirect
-        } catch (error) {
-            toast.error(error.response?.data?.message || 'Error resetting password');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Better approach: Let's assume the link contains the role as a query parameter for simplicity if possible.
-    // If NOT, we have to try both endpoints.
-
-    // Let's implement the "Try Both" strategy in the handleSubmit for now, 
-    // but a cleaner UI would be to ask the user "Are you a Farmer or Customer?" if we don't know.
-    // However, the token is cryptographically secure. 
-
-    // Let's stick to the "Ask Role" approach for resetting? No, that's bad UX.
-    // "Try Both" is the best backend-agnostic way without changing the email template too much.
+    // ...
 
     const handleReset = async (e) => {
         e.preventDefault();
@@ -80,14 +15,14 @@ const ResetPassword = () => {
         setLoading(true);
         try {
             // Try Farmer
-            await axios.put(`/api/farmers/resetpassword/${resetToken}`, { password })
+            await api.put(`/farmers/resetpassword/${resetToken}`, { password })
                 .then(() => {
                     toast.success('Password Reset Successfully');
                     navigate('/farmer/login');
                 })
                 .catch(async () => {
                     // If farmer fails, try Customer
-                    await axios.put(`/api/customers/resetpassword/${resetToken}`, { password })
+                    await api.put(`/customers/resetpassword/${resetToken}`, { password })
                         .then(() => {
                             toast.success('Password Reset Successfully');
                             navigate('/customer/login');
