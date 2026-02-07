@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import api from '../services/api';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const ForgotPassword = () => {
-    // ... (rest of imports)
+    const { t } = useTranslation();
+    const location = useLocation();
+    const preselectedRole = location.state?.role;
 
-    // ...
+    const [email, setEmail] = useState('');
+    const [role, setRole] = useState(preselectedRole || 'farmer');
+    const [loading, setLoading] = useState(false);
+    const [emailSent, setEmailSent] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -14,10 +20,10 @@ const ForgotPassword = () => {
 
         try {
             const endpoint = role === 'farmer'
-                ? '/farmers/forgotpassword'
-                : '/customers/forgotpassword';
+                ? '/api/farmers/forgotpassword'
+                : '/api/customers/forgotpassword';
 
-            await api.post(endpoint, { email });
+            await axios.post(endpoint, { email });
             setEmailSent(true);
             toast.success('Email sent successfully');
         } catch (error) {
