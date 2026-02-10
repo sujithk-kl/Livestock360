@@ -111,7 +111,9 @@ app.use((err, req, res, next) => {
 
 const startServer = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000 // Timeout after 5s instead of 30s
+    });
     console.log('✅ MongoDB connected successfully');
 
     const PORT = process.env.PORT || 4000;
