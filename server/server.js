@@ -22,24 +22,20 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   'https://livestock360.vercel.app',
-  'https://livestock360-git-main-sujithks-projects.vercel.app', // Add potential Vercel preview/branch URLs
-  process.env.CLIENT_URL // Allow env variable override
+  'https://livestock360-git-main-sujithks-projects.vercel.app',
+  process.env.CLIENT_URL
 ].filter(Boolean);
 
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Enable pre-flight requests for all routes
+app.options('*', cors());
+
 app.use(express.json({ limit: '50mb' })); // Limit JSON body size to 50mb
 
 // Request timeout middleware (30 seconds for all routes)
