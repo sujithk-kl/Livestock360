@@ -3,12 +3,19 @@ const nodemailer = require('nodemailer');
 const sendEmail = async (options) => {
     // Create a transporter
     const transporter = nodemailer.createTransport({
+        service: 'gmail', // Use service 'gmail' for simpler config if possible, but keep host/port if explicit control needed
         host: 'smtp.gmail.com',
         port: 587,
         secure: false, // true for 465, false for other ports
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
+        },
+        // Force IPv4
+        family: 4,
+        // Allow potentially problematic certs (common in dev/cheap hosting)
+        tls: {
+            rejectUnauthorized: false
         }
     });
 
