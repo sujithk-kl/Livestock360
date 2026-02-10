@@ -24,7 +24,7 @@ app.use(express.json({ limit: '50mb' })); // Limit JSON body size to 50mb
 // Request timeout middleware (30 seconds for all routes)
 app.use((req, res, next) => {
   // Set timeout for all requests
-  const timeout = 30000; // 30 seconds
+  const timeout = 60000; // 60 seconds
 
   const timeoutId = setTimeout(() => {
     if (!res.headersSent) {
