@@ -5,8 +5,10 @@ const sendEmail = async (options) => {
     const transporter = nodemailer.createTransport({
         service: 'gmail', // Use service 'gmail' for simpler config if possible, but keep host/port if explicit control needed
         host: 'smtp.gmail.com',
-        port: 465,
-        secure: true, // true for 465, false for other ports
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        logger: true, // Enable logging
+        debug: true, // Show debug output
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
@@ -31,8 +33,10 @@ const sendEmail = async (options) => {
     console.log('[sendEmail] Transporter Config:', {
         service: 'gmail',
         host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
+        port: 587,
+        secure: false,
+        logger: true,
+        debug: true,
         authUser: process.env.EMAIL_USER ? '***' : 'MISSING',
         authPass: process.env.EMAIL_PASS ? '***' : 'MISSING',
         family: 4
