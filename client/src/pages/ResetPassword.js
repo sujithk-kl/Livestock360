@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import { toast } from 'react-toastify';
 
 const ResetPassword = () => {
@@ -22,11 +22,11 @@ const ResetPassword = () => {
 
         try {
             // Try farmer first
-            let endpoint = `/api/farmers/resetpassword/${resetToken}`;
+            let endpoint = `/farmers/resetpassword/${resetToken}`;
             let success = false;
 
             try {
-                await axios.put(endpoint, { password });
+                await api.put(endpoint, { password });
                 success = true;
             } catch (error) {
                 // Should handle specific error or try customer
@@ -48,8 +48,8 @@ const ResetPassword = () => {
             // Trying both is robust.
 
             if (!success) {
-                endpoint = `/api/customers/resetpassword/${resetToken}`;
-                await axios.put(endpoint, { password });
+                endpoint = `/customers/resetpassword/${resetToken}`;
+                await api.put(endpoint, { password });
             }
 
             toast.success('Password reset successful! Please login.');
@@ -80,14 +80,14 @@ const ResetPassword = () => {
         setLoading(true);
         try {
             // Try Farmer
-            await axios.put(`/api/farmers/resetpassword/${resetToken}`, { password })
+            await api.put(`/farmers/resetpassword/${resetToken}`, { password })
                 .then(() => {
                     toast.success('Password Reset Successfully');
                     navigate('/farmer/login');
                 })
                 .catch(async () => {
                     // If farmer fails, try Customer
-                    await axios.put(`/api/customers/resetpassword/${resetToken}`, { password })
+                    await api.put(`/customers/resetpassword/${resetToken}`, { password })
                         .then(() => {
                             toast.success('Password Reset Successfully');
                             navigate('/customer/login');

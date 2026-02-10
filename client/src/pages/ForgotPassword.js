@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import api from '../services/api';
 import { toast } from 'react-toastify';
 
 const ForgotPassword = () => {
@@ -20,10 +20,10 @@ const ForgotPassword = () => {
 
         try {
             const endpoint = role === 'farmer'
-                ? '/api/farmers/forgotpassword'
-                : '/api/customers/forgotpassword';
+                ? '/farmers/forgotpassword'
+                : '/customers/forgotpassword';
 
-            await axios.post(endpoint, { email });
+            await api.post(endpoint, { email });
             setEmailSent(true);
             toast.success('Email sent successfully');
         } catch (error) {

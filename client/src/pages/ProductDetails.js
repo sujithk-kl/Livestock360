@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import productService from '../services/productService';
+import api from '../services/api';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -41,8 +42,8 @@ const ProductDetails = () => {
         if (!reviews[productId]) {
             // Fetch reviews
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || '/api'}/reviews/${productId}`);
-                const data = await response.json();
+                const response = await api.get(`/reviews/${productId}`);
+                const data = response.data;
                 if (data.success) {
                     setReviews(prev => ({ ...prev, [productId]: data.data }));
                 }

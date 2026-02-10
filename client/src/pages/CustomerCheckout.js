@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import paymentQr from '../assets/image.png';
 import { toast } from 'react-toastify';
+import api from '../services/api';
 
 const CustomerCheckout = () => {
     const { t } = useTranslation();
@@ -41,17 +42,9 @@ const CustomerCheckout = () => {
             };
 
             // Send to backend
-            // Send to backend
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || '/api'}/orders`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(orderData)
-            });
+            const response = await api.post('/orders', orderData);
 
-            const data = await response.json();
+            const data = response.data;
 
             if (data.success) {
                 setStatus('success');

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../services/api';
 
 // Import Assets (Same as ProductDetails)
 import milkImg from '../assets/Milk.jpg';
@@ -80,12 +81,8 @@ const CustomerOrders = () => {
                 return;
             }
 
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || '/api'}/orders/my-orders`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            const data = await response.json();
+            const response = await api.get('/orders/my-orders');
+            const data = response.data;
             if (data.success) {
                 setOrders(data.data);
             } else {
@@ -110,20 +107,13 @@ const CustomerOrders = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || '/api'}/reviews`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    productId: selectedItem.product, // Assuming product ID is stored in 'product' field of item
-                    rating: reviewRating,
-                    comment: reviewComment
-                })
+            const response = await api.post('/reviews', {
+                productId: selectedItem.product, // Assuming product ID is stored in 'product' field of item
+                rating: reviewRating,
+                comment: reviewComment
             });
 
-            const data = await response.json();
+            const data = response.data;
             if (data.success) {
                 toast.success(t('review_submitted_msg'));
                 setIsReviewModalOpen(false);
