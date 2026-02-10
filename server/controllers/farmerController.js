@@ -399,21 +399,28 @@ const forgotPassword = async (req, res) => {
 
         try {
             const sendEmail = require('../utils/sendEmail');
-            await sendEmail({
+
+            // Send email asynchronously (fire and forget)
+            sendEmail({
                 email: farmer.email,
                 subject: 'Password Reset Request',
                 message
+            }).catch(err => {
+                console.error('Email sending failed in background:', err);
+                // Optionally: Log to a persistent error log or alert system
             });
 
-            res.status(200).json({ success: true, data: 'Email Sent' });
+            // Respond immediately to avoid timeout
+            res.status(200).json({
+                success: true,
+                data: 'If a user with this email exists, a password reset link has been sent.'
+            });
+
         } catch (error) {
             console.error(error);
-            farmer.resetPasswordToken = undefined;
-            farmer.resetPasswordExpire = undefined;
-
-            await farmer.save({ validateBeforeSave: false });
-
-            return res.status(500).json({ success: false, message: 'Email could not be sent' });
+            // This catch block might not be reached for sendEmail errors anymore since it's async
+            // But good to keep for require errors or other sync issues
+            return res.status(500).json({ success: false, message: 'Server Error' });
         }
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
