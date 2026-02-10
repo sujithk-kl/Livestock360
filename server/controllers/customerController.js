@@ -347,21 +347,22 @@ const forgotPassword = async (req, res) => {
 
         try {
             const sendEmail = require('../utils/sendEmail');
-            await sendEmail({
+
+            // Send email asynchronously (fire and forget) to prevent timeout
+            sendEmail({
                 email: customer.email,
                 subject: 'Password Reset Request',
                 message
+            }).catch(err => {
+                console.error('Email sending failed in background (Customer):', err);
             });
 
-            res.status(200).json({ success: true, data: 'Email Sent' });
+            // Respond immediately
+            res.status(200).json({ success: true, data: 'If a user with this email exists, a password reset link has been sent.' });
         } catch (error) {
-            console.error(error);
-            customer.resetPasswordToken = undefined;
-            customer.resetPasswordExpire = undefined;
-
-            await customer.save({ validateBeforeSave: false });
-
-            return res.status(500).json({ success: false, message: 'Email could not be sent' });
+            console.error('Server error preparing email:', error);
+            // Even if preparation fails, we shouldn't reveal too much, but logging is key
+            return res.status(500).json({ success: false, message: 'Server Error' });
         }
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
