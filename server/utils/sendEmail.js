@@ -32,7 +32,7 @@ const sendEmail = async (options) => {
         service: 'gmail',
         host: 'smtp.gmail.com',
         port: 587,
-        secure: false,
+        secure: true,
         authUser: process.env.EMAIL_USER ? '***' : 'MISSING',
         authPass: process.env.EMAIL_PASS ? '***' : 'MISSING',
         family: 4
