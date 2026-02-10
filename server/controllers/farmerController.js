@@ -373,13 +373,16 @@ const changePassword = async (req, res) => {
 // @access  Public
 const forgotPassword = async (req, res) => {
     const { email } = req.body;
+    console.log(`[forgotPassword] Request received for email: ${email}`);
 
     try {
         const farmer = await Farmer.findOne({ email });
 
         if (!farmer) {
+            console.log(`[forgotPassword] User not found for email: ${email}`);
             return res.status(404).json({ success: false, message: 'User not found with this email' });
         }
+        console.log(`[forgotPassword] User found: ${farmer._id}`);
 
         // Get Reset Token
         const resetToken = farmer.getResetPasswordToken();
@@ -390,6 +393,7 @@ const forgotPassword = async (req, res) => {
         // Example: http://localhost:3000/reset-password/token
         // We will receive the frontend base URL or assume standard
         const resetUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
+        console.log(`[forgotPassword] Reset URL generated: ${resetUrl}`);
 
         const message = `
       <h1>You have requested a password reset</h1>
@@ -401,11 +405,13 @@ const forgotPassword = async (req, res) => {
             const sendEmail = require('../utils/sendEmail');
 
             // Send email synchronously (await so we know if it failed)
+            console.log('[forgotPassword] Calling sendEmail...');
             await sendEmail({
                 email: farmer.email,
                 subject: 'Password Reset Request',
                 message
             });
+            console.log('[forgotPassword] sendEmail completed successfully');
 
             res.status(200).json({
                 success: true,
@@ -413,8 +419,8 @@ const forgotPassword = async (req, res) => {
             });
 
         } catch (error) {
-            console.error('Email sending failed:', error);
-            return res.status(500).json({ success: false, message: 'Email could not be sent' });
+            console.error('[forgotPassword] sendEmail failed:', error);
+            return res.status(500).json({ success: false, message: 'Email could not be sent', error: error.message });
         }
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });

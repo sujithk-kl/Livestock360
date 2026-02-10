@@ -23,10 +23,19 @@ const ForgotPassword = () => {
                 ? '/farmers/forgotpassword'
                 : '/customers/forgotpassword';
 
-            await api.post(endpoint, { email });
+            console.log(`[ForgotPassword] Submitting request for role: ${role}, email: ${email}`);
+            console.log(`[ForgotPassword] Endpoint: ${endpoint}`);
+
+            const response = await api.post(endpoint, { email });
+            console.log('[ForgotPassword] API Response:', response);
             setEmailSent(true);
             toast.success('Email sent successfully');
         } catch (error) {
+            console.error('[ForgotPassword] API Error:', error);
+            if (error.response) {
+                console.error('[ForgotPassword] Error Status:', error.response.status);
+                console.error('[ForgotPassword] Error Data:', error.response.data);
+            }
             toast.error(error.response?.data?.message || 'Error sending email');
         } finally {
             setLoading(false);

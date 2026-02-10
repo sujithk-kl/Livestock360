@@ -27,13 +27,29 @@ const sendEmail = async (options) => {
         html: options.message // HTML body
     };
 
+    // Log transporter config (sanitized)
+    console.log('[sendEmail] Transporter Config:', {
+        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        authUser: process.env.EMAIL_USER ? '***' : 'MISSING',
+        authPass: process.env.EMAIL_PASS ? '***' : 'MISSING',
+        family: 4
+    });
+
     // Send email
     try {
+        console.log(`[sendEmail] Attempting to send email to: ${options.email}`);
         const info = await transporter.sendMail(mailOptions);
-        console.log('Email sent: %s', info.messageId);
+        console.log('[sendEmail] Email sent successfully. MessageID: %s', info.messageId);
         return info;
     } catch (error) {
-        console.error('Error sending email:', error);
+        console.error('[sendEmail] Error sending email:', error);
+        console.error('[sendEmail] Error stack:', error.stack);
+        if (error.code === 'EAUTH') {
+            console.error('[sendEmail] Authentication failed. Check EMAIL_USER and EMAIL_PASS.');
+        }
         throw error;
     }
 };

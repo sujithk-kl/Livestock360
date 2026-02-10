@@ -323,13 +323,16 @@ const changePassword = async (req, res) => {
 // @access  Public
 const forgotPassword = async (req, res) => {
     const { email } = req.body;
+    console.log(`[forgotPassword] Request received for email: ${email}`);
 
     try {
         const customer = await Customer.findOne({ email });
 
         if (!customer) {
+            console.log(`[forgotPassword] User not found for email: ${email}`);
             return res.status(404).json({ success: false, message: 'User not found with this email' });
         }
+        console.log(`[forgotPassword] User found: ${customer._id}`);
 
         // Get Reset Token
         const resetToken = customer.getResetPasswordToken();
@@ -338,6 +341,7 @@ const forgotPassword = async (req, res) => {
 
         // Create Reset URL
         const resetUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
+        console.log(`[forgotPassword] Reset URL generated: ${resetUrl}`);
 
         const message = `
       <h1>You have requested a password reset</h1>
@@ -349,11 +353,13 @@ const forgotPassword = async (req, res) => {
             const sendEmail = require('../utils/sendEmail');
 
             // Send email synchronously (await so we know if it failed)
+            console.log('[forgotPassword] Calling sendEmail...');
             await sendEmail({
                 email: customer.email,
                 subject: 'Password Reset Request',
                 message
             });
+            console.log('[forgotPassword] sendEmail completed successfully');
 
             res.status(200).json({
                 success: true,
@@ -361,9 +367,9 @@ const forgotPassword = async (req, res) => {
             });
 
         } catch (error) {
-            console.error('Email sending failed:', error);
+            console.error('[forgotPassword] sendEmail failed:', error);
             // Even if preparation fails, we shouldn't reveal too much, but logging is key
-            return res.status(500).json({ success: false, message: 'Email could not be sent' });
+            return res.status(500).json({ success: false, message: 'Email could not be sent', error: error.message });
         }
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
