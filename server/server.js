@@ -111,12 +111,36 @@ app.use((err, req, res, next) => {
 
 const startServer = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000 // Timeout after 5s instead of 30s
-    });
-    console.log('✅ MongoDB connected successfully');
-
     const PORT = process.env.PORT || 4000;
+
+    // Log environment status (safety check)
+    console.log('Environment Check:');
+    console.log(`- NODE_ENV: ${process.env.NODE_ENV}`);
+    console.log(`- PORT: ${PORT}`);
+    console.log(`- MONGODB_URI defined: ${!!process.env.MONGODB_URI}`);
+
+    // Connect to MongoDB with retry logic
+    const connectDB = async (retries = 5) => {
+      try {
+        await mongoose.connect(process.env.MONGODB_URI, {
+          serverSelectionTimeoutMS: 5000
+        });
+        console.log('✅ MongoDB connected successfully');
+      } catch (err) {
+        console.error(`❌ MongoDB connection error (Attempts left: ${retries}):`, err.message);
+        if (retries > 0) {
+          console.log('Retrying in 5 seconds...');
+          await new Promise(resolve => setTimeout(resolve, 5000));
+          await connectDB(retries - 1);
+        } else {
+          console.error('❌ Failed to connect to MongoDB after multiple attempts.');
+          // Do not exit process, let server run to serve health check and logs
+        }
+      }
+    };
+
+    await connectDB();
+
     const server = app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
@@ -124,12 +148,11 @@ const startServer = async () => {
 
     process.on('unhandledRejection', (err) => {
       console.error('Unhandled Rejection:', err);
-      server.close(() => process.exit(1));
+      // server.close(() => process.exit(1)); // Don't crash on unhandled rejection for now
     });
 
   } catch (err) {
-    console.error('❌ MongoDB connection error:', err);
-    process.exit(1);
+    console.error('❌ Server startup error:', err);
   }
 };
 
