@@ -35,6 +35,8 @@ function AppContent() {
   const location = useLocation();
   const showThemeToggle = location.pathname !== '/';
 
+  console.log('DEBUG: VITE_API_URL is:', import.meta.env.VITE_API_URL);
+
   return (
     <div className="App min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       <LanguageSwitcher />
