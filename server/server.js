@@ -79,28 +79,8 @@ app.get('/', (req, res) => {
   res.send('Livestock360 API is running...');
 });
 
-// Temporary Email Test Route
-app.get('/test-email', async (req, res) => {
-  try {
-    const sendEmail = require('./utils/sendEmail');
-    await sendEmail({
-      email: process.env.EMAIL_USER, // Send to self
-      subject: 'Test Email from Production',
-      message: '<h1>It works!</h1><p>Email sending is properly configured.</p>'
-    });
-    res.send('Email sent successfully to ' + process.env.EMAIL_USER);
-  } catch (err) {
-    console.error('Test email failed:', err);
-    res.status(500).json({
-      success: false,
-      message: 'Email sending failed',
-      error: err.message,
-      stack: err.stack,
-      code: err.code,
-      details: err
-    });
-  }
-});
+
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {

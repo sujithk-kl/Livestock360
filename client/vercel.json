@@ -2,9 +2,10 @@
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "https://livestock360-production.up.railway.app/api/$1"
+            "destination": "https://livestock360-bgvg.onrender.com/api/$1"
         },
         {
+            
             "source": "/(.*)",
             "destination": "/index.html"
         }

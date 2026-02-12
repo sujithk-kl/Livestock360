@@ -234,6 +234,23 @@ const farmerService = {
       throw error.response?.data || { message: 'Failed to fetch dashboard stats' };
     }
   },
+  // Forgot Password
+  forgotPassword: async (email) => {
+    const response = await api.post('/farmers/forgotpassword', { email });
+    return response.data;
+  },
+
+  // Reset Password
+  resetPassword: async (token, password) => {
+    const response = await api.put(`/farmers/resetpassword/${token}`, { password });
+    if (response.data.success) {
+      localStorage.setItem('user', JSON.stringify(response.data.data.user));
+      if (response.data.data.token) {
+        localStorage.setItem('token', response.data.data.token);
+      }
+    }
+    return response.data;
+  },
 };
 
 export default farmerService;

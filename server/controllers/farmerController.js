@@ -2,6 +2,7 @@ const Farmer = require('../models/Farmer');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { validationResult } = require('express-validator');
+const sendEmail = require('../utils/sendEmail');
 
 // Login farmer
 const loginFarmer = async (req, res) => {
@@ -368,62 +369,50 @@ const changePassword = async (req, res) => {
     }
 };
 
+
 // @desc    Forgot Password
 // @route   POST /api/farmers/forgotpassword
 // @access  Public
 const forgotPassword = async (req, res) => {
     const { email } = req.body;
-    console.log(`[forgotPassword] Request received for email: ${email}`);
 
     try {
         const farmer = await Farmer.findOne({ email });
 
         if (!farmer) {
-            console.log(`[forgotPassword] User not found for email: ${email}`);
-            return res.status(404).json({ success: false, message: 'User not found with this email' });
+            return res.status(404).json({ success: false, message: 'Email not found' });
         }
-        console.log(`[forgotPassword] User found: ${farmer._id}`);
 
-        // Get Reset Token
+        // Get reset token
         const resetToken = farmer.getResetPasswordToken();
 
         await farmer.save({ validateBeforeSave: false });
 
-        // Create Reset URL
-        // Example: http://localhost:3000/reset-password/token
-        // We will receive the frontend base URL or assume standard
-        const resetUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
-        console.log(`[forgotPassword] Reset URL generated: ${resetUrl}`);
+        // Create reset URL
+        const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}?role=farmer`;
 
-        const message = `
-      <h1>You have requested a password reset</h1>
-      <p>Please go to this link to reset your password:</p>
-      <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
-    `;
+        const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;
 
         try {
-            const sendEmail = require('../utils/sendEmail');
-
-            // Send email synchronously (await so we know if it failed)
-            console.log('[forgotPassword] Calling sendEmail...');
             await sendEmail({
                 email: farmer.email,
-                subject: 'Password Reset Request',
+                subject: 'Password Reset Token',
                 message
             });
-            console.log('[forgotPassword] sendEmail completed successfully');
 
-            res.status(200).json({
-                success: true,
-                data: 'Email sent'
-            });
-
+            res.status(200).json({ success: true, data: 'Email sent' });
         } catch (error) {
-            console.error('[forgotPassword] sendEmail failed:', error);
-            return res.status(500).json({ success: false, message: 'Email could not be sent', error: error.message });
+            console.error(error);
+            farmer.resetPasswordToken = undefined;
+            farmer.resetPasswordExpire = undefined;
+
+            await farmer.save({ validateBeforeSave: false });
+
+            return res.status(500).json({ success: false, message: 'Email could not be sent' });
         }
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
 
@@ -444,24 +433,48 @@ const resetPassword = async (req, res) => {
         });
 
         if (!farmer) {
-            return res.status(400).json({ success: false, message: 'Invalid Token' });
+            return res.status(400).json({ success: false, message: 'Invalid token' });
         }
 
+        // Set new password
         farmer.password = req.body.password;
         farmer.resetPasswordToken = undefined;
         farmer.resetPasswordExpire = undefined;
 
         await farmer.save();
 
-        res.status(201).json({
+        // Log user in directly
+        const token = generateToken(farmer._id);
+
+        res.status(200).json({
             success: true,
-            data: 'Password Reset Success',
-            token: generateToken(farmer._id)
+            data: {
+                user: {
+                    id: farmer._id,
+                    name: farmer.name,
+                    email: farmer.email,
+                    roles: ['farmer'],
+                    phone: farmer.phone,
+                    address: farmer.address,
+                    farmSize: farmer.farmSize,
+                    farmName: farmer.farmName,
+                    farmAddress: farmer.farmAddress,
+                    farmType: farmer.farmType,
+                    yearsOfFarming: farmer.yearsOfFarming,
+                    crops: farmer.crops,
+                    livestock: farmer.livestock,
+                    aadharNumber: farmer.aadharNumber,
+                    bankDetails: farmer.getDecryptedBankDetails ? farmer.getDecryptedBankDetails() : farmer.bankDetails,
+                    token
+                }
+            }
         });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
+
 
 module.exports = {
     loginFarmer,

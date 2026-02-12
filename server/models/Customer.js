@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
 
 const customerSchema = new mongoose.Schema({
     name: {
@@ -66,10 +65,8 @@ const customerSchema = new mongoose.Schema({
             }
         }
     },
-    // Reset Password Token
     resetPasswordToken: String,
     resetPasswordExpire: Date
-
 }, {
     timestamps: true
 });
@@ -83,22 +80,7 @@ customerSchema.pre('save', async function () {
     this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Method to get reset password token
-customerSchema.methods.getResetPasswordToken = function () {
-    // Generate token
-    const resetToken = crypto.randomBytes(20).toString('hex');
 
-    // Hash token and set to resetPasswordToken field
-    this.resetPasswordToken = crypto
-        .createHash('sha256')
-        .update(resetToken)
-        .digest('hex');
-
-    // Set expire time (e.g., 10 minutes)
-    this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
-
-    return resetToken;
-};
 
 // Method to compare password
 customerSchema.methods.comparePassword = async function (candidatePassword) {
@@ -140,6 +122,24 @@ customerSchema.methods.resetLoginAttempts = function () {
         $unset: { lockUntil: 1 },
         $set: { failedAttempts: 0 }
     }).exec();
+};
+
+// Generate and hash password reset token
+customerSchema.methods.getResetPasswordToken = function () {
+    const crypto = require('crypto');
+    // Generate token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+
+    // Hash token and set to resetPasswordToken field
+    this.resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+
+    // Set expire
+    this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
 };
 
 // Index for faster queries
