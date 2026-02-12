@@ -2,7 +2,6 @@ const Farmer = require('../models/Farmer');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { validationResult } = require('express-validator');
-const sendEmail = require('../utils/sendEmail');
 
 // Login farmer
 const loginFarmer = async (req, res) => {
@@ -370,110 +369,6 @@ const changePassword = async (req, res) => {
 };
 
 
-// @desc    Forgot Password
-// @route   POST /api/farmers/forgotpassword
-// @access  Public
-const forgotPassword = async (req, res) => {
-    const { email } = req.body;
-
-    try {
-        const farmer = await Farmer.findOne({ email });
-
-        if (!farmer) {
-            return res.status(404).json({ success: false, message: 'Email not found' });
-        }
-
-        // Get reset token
-        const resetToken = farmer.getResetPasswordToken();
-
-        await farmer.save({ validateBeforeSave: false });
-
-        // Create reset URL
-        const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}?role=farmer`;
-
-        const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;
-
-        try {
-            await sendEmail({
-                email: farmer.email,
-                subject: 'Password Reset Token',
-                message
-            });
-
-            res.status(200).json({ success: true, data: 'Email sent' });
-        } catch (error) {
-            console.error(error);
-            farmer.resetPasswordToken = undefined;
-            farmer.resetPasswordExpire = undefined;
-
-            await farmer.save({ validateBeforeSave: false });
-
-            return res.status(500).json({ success: false, message: 'Email could not be sent' });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: 'Server Error' });
-    }
-};
-
-// @desc    Reset Password
-// @route   PUT /api/farmers/resetpassword/:resetToken
-// @access  Public
-const resetPassword = async (req, res) => {
-    // Get hashed token
-    const resetPasswordToken = crypto
-        .createHash('sha256')
-        .update(req.params.resetToken)
-        .digest('hex');
-
-    try {
-        const farmer = await Farmer.findOne({
-            resetPasswordToken,
-            resetPasswordExpire: { $gt: Date.now() }
-        });
-
-        if (!farmer) {
-            return res.status(400).json({ success: false, message: 'Invalid token' });
-        }
-
-        // Set new password
-        farmer.password = req.body.password;
-        farmer.resetPasswordToken = undefined;
-        farmer.resetPasswordExpire = undefined;
-
-        await farmer.save();
-
-        // Log user in directly
-        const token = generateToken(farmer._id);
-
-        res.status(200).json({
-            success: true,
-            data: {
-                user: {
-                    id: farmer._id,
-                    name: farmer.name,
-                    email: farmer.email,
-                    roles: ['farmer'],
-                    phone: farmer.phone,
-                    address: farmer.address,
-                    farmSize: farmer.farmSize,
-                    farmName: farmer.farmName,
-                    farmAddress: farmer.farmAddress,
-                    farmType: farmer.farmType,
-                    yearsOfFarming: farmer.yearsOfFarming,
-                    crops: farmer.crops,
-                    livestock: farmer.livestock,
-                    aadharNumber: farmer.aadharNumber,
-                    bankDetails: farmer.getDecryptedBankDetails ? farmer.getDecryptedBankDetails() : farmer.bankDetails,
-                    token
-                }
-            }
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: 'Server Error' });
-    }
-};
 
 
 module.exports = {
@@ -481,7 +376,5 @@ module.exports = {
     registerFarmer,
     getMyProfile,
     updateProfile,
-    changePassword,
-    forgotPassword,
-    resetPassword
+    changePassword
 };

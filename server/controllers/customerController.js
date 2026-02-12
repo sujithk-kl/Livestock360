@@ -2,7 +2,6 @@ const Customer = require('../models/Customer');
 const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const sendEmail = require('../utils/sendEmail');
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -320,102 +319,6 @@ const changePassword = async (req, res) => {
 };
 
 
-// @desc    Forgot Password
-// @route   POST /api/customers/forgotpassword
-// @access  Public
-const forgotPassword = async (req, res) => {
-    const { email } = req.body;
-
-    try {
-        const customer = await Customer.findOne({ email });
-
-        if (!customer) {
-            return res.status(404).json({ success: false, message: 'Email not found' });
-        }
-
-        // Get reset token
-        const resetToken = customer.getResetPasswordToken();
-
-        await customer.save({ validateBeforeSave: false });
-
-        // Create reset URL
-        const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}?role=customer`;
-
-        const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;
-
-        try {
-            await sendEmail({
-                email: customer.email,
-                subject: 'Password Reset Token',
-                message
-            });
-
-            res.status(200).json({ success: true, data: 'Email sent' });
-        } catch (error) {
-            console.error(error);
-            customer.resetPasswordToken = undefined;
-            customer.resetPasswordExpire = undefined;
-
-            await customer.save({ validateBeforeSave: false });
-
-            return res.status(500).json({ success: false, message: 'Email could not be sent' });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: 'Server Error' });
-    }
-};
-
-// @desc    Reset Password
-// @route   PUT /api/customers/resetpassword/:resetToken
-// @access  Public
-const resetPassword = async (req, res) => {
-    // Get hashed token
-    const resetPasswordToken = crypto
-        .createHash('sha256')
-        .update(req.params.resetToken)
-        .digest('hex');
-
-    try {
-        const customer = await Customer.findOne({
-            resetPasswordToken,
-            resetPasswordExpire: { $gt: Date.now() }
-        });
-
-        if (!customer) {
-            return res.status(400).json({ success: false, message: 'Invalid token' });
-        }
-
-        // Set new password
-        customer.password = req.body.password;
-        customer.resetPasswordToken = undefined;
-        customer.resetPasswordExpire = undefined;
-
-        await customer.save();
-
-        // Log user in directly
-        const token = generateToken(customer._id);
-
-        res.status(200).json({
-            success: true,
-            data: {
-                user: {
-                    id: customer._id,
-                    name: customer.name,
-                    email: customer.email,
-                    roles: ['customer'],
-                    phone: customer.phone,
-                    preferences: customer.preferences,
-                    address: customer.address,
-                    token
-                }
-            }
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: 'Server Error' });
-    }
-};
 
 
 module.exports = {
@@ -423,7 +326,5 @@ module.exports = {
     registerCustomer,
     getMyProfile,
     updateProfile,
-    changePassword,
-    forgotPassword,
-    resetPassword
+    changePassword
 };

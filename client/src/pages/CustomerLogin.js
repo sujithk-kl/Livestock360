@@ -118,13 +118,6 @@ const CustomerLogin = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-end">
-              <div className="text-sm">
-                <Link to="/forgot-password" className="font-medium text-green-600 hover:text-green-500">
-                  Forgot your password?
-                </Link>
-              </div>
-            </div>
 
             <div className="flex items-center">
               <input

@@ -22,15 +22,6 @@ router.post(
   customerController.registerCustomer
 );
 
-// @route   POST /api/customers/forgotpassword
-// @desc    Forgot Password
-// @access  Public
-router.post('/forgotpassword', customerController.forgotPassword);
-
-// @route   PUT /api/customers/resetpassword/:resetToken
-// @desc    Reset Password
-// @access  Public
-router.put('/resetpassword/:resetToken', customerController.resetPassword);
 
 // Apply authentication middleware to all routes below
 router.use(protect);

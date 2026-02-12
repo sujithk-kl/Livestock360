@@ -20,8 +20,6 @@ import Cart from './pages/Cart';
 import CustomerCheckout from './pages/CustomerCheckout';
 import CustomerOrders from './pages/CustomerOrders';
 import ProductDetails from './pages/ProductDetails';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
 
 
 import { ThemeProvider } from './context/ThemeContext';
@@ -45,8 +43,6 @@ function AppContent() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* Farmer Public Routes */}
         <Route path="/farmer/login" element={<FarmerLogin />} />

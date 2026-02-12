@@ -1,6 +1,7 @@
 // Authentication Service
 import farmerService from './farmerService';
 import customerService from './customerService';
+import api from './api';
 
 const authService = {
   // Login farmer or customer

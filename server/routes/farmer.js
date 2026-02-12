@@ -22,15 +22,6 @@ router.post(
   farmerController.registerFarmer
 );
 
-// @route   POST /api/farmers/forgotpassword
-// @desc    Forgot Password
-// @access  Public
-router.post('/forgotpassword', farmerController.forgotPassword);
-
-// @route   PUT /api/farmers/resetpassword/:resetToken
-// @desc    Reset Password
-// @access  Public
-router.put('/resetpassword/:resetToken', farmerController.resetPassword);
 
 // Apply authentication middleware to all routes below
 router.use(protect);
