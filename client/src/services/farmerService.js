@@ -226,9 +226,11 @@ const farmerService = {
     return response.data;
   },
 
+
+  // Get dashboard stats
   getDashboardStats: async () => {
     try {
-      const response = await api.get('/staff/stats/dashboard');
+      const response = await api.get('/farmers/dashboard');
       return response.data;
     } catch (error) {
       throw error.response?.data || { message: 'Failed to fetch dashboard stats' };

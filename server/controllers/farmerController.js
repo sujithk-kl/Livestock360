@@ -1,4 +1,7 @@
 const Farmer = require('../models/Farmer');
+const Livestock = require('../models/Livestock');
+const Product = require('../models/Product');
+const MilkProduction = require('../models/MilkProduction');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { validationResult } = require('express-validator');
@@ -371,10 +374,74 @@ const changePassword = async (req, res) => {
 
 
 
+// @desc    Get dashboard statistics
+// @route   GET /api/farmers/dashboard
+// @access  Private (Farmer only)
+const getDashboardStats = async (req, res) => {
+    try {
+        const farmerId = req.user.id;
+
+        // 1. Get Farmer Profile for Farm Size
+        const farmer = await Farmer.findById(farmerId);
+        if (!farmer) {
+            return res.status(404).json({ success: false, message: 'Farmer not found' });
+        }
+
+        // 2. Get Total Livestock Count
+        // Summing up the 'count' field of all livestock entries for this farmer
+        const livestockStats = await Livestock.aggregate([
+            { $match: { farmer: farmer._id } },
+            { $group: { _id: null, totalCount: { $sum: "$count" } } }
+        ]);
+        const totalLivestock = livestockStats.length > 0 ? livestockStats[0].totalCount : 0;
+
+        // 3. Get Products Listed Count
+        // Counting number of product documents
+        const totalProducts = await Product.countDocuments({ farmer: farmerId });
+
+        // 4. Get Milk Produced Today
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const milkStats = await MilkProduction.aggregate([
+            {
+                $match: {
+                    farmer: farmer._id,
+                    date: { $gte: startOfDay, $lte: endOfDay }
+                }
+            },
+            { $group: { _id: null, totalQuantity: { $sum: "$quantity" } } }
+        ]);
+        const milkToday = milkStats.length > 0 ? milkStats[0].totalQuantity : 0;
+
+        res.status(200).json({
+            success: true,
+            data: {
+                totalLivestock,
+                productsListed: totalProducts,
+                milkToday: milkToday, // in Litres
+                farmSize: farmer.farmSize // assuming farmSize is a number or string in profile
+            }
+        });
+
+    } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+};
+
 module.exports = {
     loginFarmer,
     registerFarmer,
     getMyProfile,
     updateProfile,
-    changePassword
+    changePassword,
+    getDashboardStats
 };

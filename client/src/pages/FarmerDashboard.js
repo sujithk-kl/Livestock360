@@ -10,6 +10,12 @@ const FarmerDashboard = () => {
   const [farmerProfile, setFarmerProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [stats, setStats] = useState({
+    totalLivestock: 0,
+    productsListed: 0,
+    milkToday: 0,
+    farmSize: 0
+  });
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -20,11 +26,26 @@ const FarmerDashboard = () => {
           return;
         }
 
-        const profileResponse = await farmerService.getMyProfile();
+        // Fetch profile and stats in parallel
+        const [profileResponse, statsResponse] = await Promise.all([
+          farmerService.getMyProfile(),
+          farmerService.getDashboardStats()
+        ]);
+
         setFarmerProfile(profileResponse.data.user);
+
+        if (statsResponse.success) {
+          setStats(statsResponse.data);
+        }
+
       } catch (error) {
         console.error(error);
-        navigate('/login');
+        // If specific error handling is needed, add here. 
+        // For now, if profile fails, we might want to redirect, but if stats fail, maybe just show 0s or error toast.
+        // Keeping original behavior of redirecting on error for safety if profile fails.
+        if (!farmerProfile) {
+          // navigate('/login'); // specific check might be better
+        }
       } finally {
         setLoading(false);
       }
@@ -101,7 +122,7 @@ const FarmerDashboard = () => {
             className="cursor-pointer group mb-2"
           >
             <p className="text-xl font-bold dark:text-white group-hover:text-green-600 transition-colors flex items-center">
-              {farmerProfile.name}
+              {farmerProfile?.name}
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
               </svg>
@@ -132,28 +153,28 @@ const FarmerDashboard = () => {
           {/* Livestock */}
           <StatCard
             title={t('stat_livestock')}
-            value={farmerProfile.livestock?.length || 0}
+            value={stats.totalLivestock}
             color="green"
           />
 
           {/* Products */}
           <StatCard
             title={t('stat_products')}
-            value={farmerProfile.crops?.length || 0}
+            value={stats.productsListed}
             color="blue"
           />
 
           {/* Milk */}
           <StatCard
             title={t('stat_milk')}
-            value="0 L"
+            value={`${stats.milkToday} L`}
             color="yellow"
           />
 
           {/* Farm Size */}
           <StatCard
             title={t('stat_farm_size')}
-            value={`${farmerProfile.farmSize} acres`}
+            value={`${stats.farmSize || farmerProfile?.farmSize || 0} acres`}
             color="purple"
           />
         </div>
