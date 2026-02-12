@@ -271,6 +271,28 @@ const FarmerProfile = () => {
                                     </select>
                                 </div>
 
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_size_label') || 'Farm Size (acres)'}</label>
+                                    <input
+                                        type="number"
+                                        name="farmSize"
+                                        value={formData.farmSize}
+                                        onChange={handleProfileChange}
+                                        className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('Years of Farming') || 'Years of Farming'}</label>
+                                    <input
+                                        type="number"
+                                        name="yearsOfFarming"
+                                        value={formData.yearsOfFarming}
+                                        onChange={handleProfileChange}
+                                        className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    />
+                                </div>
+
                                 <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_address_label')}</label>
                                     <textarea
