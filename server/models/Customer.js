@@ -23,11 +23,7 @@ const customerSchema = new mongoose.Schema({
         minlength: [6, 'Password must be at least 6 characters long'],
         select: false
     },
-    failedAttempts: {
-        type: Number,
-        default: 0
-    },
-    lockUntil: Date,
+
     phone: {
         type: String,
         required: [true, 'Please provide a phone number'],
@@ -88,38 +84,6 @@ customerSchema.methods.comparePassword = async function (candidatePassword) {
         console.error('Error comparing passwords:', error);
         return false;
     }
-};
-
-// Virtual for account lock status
-customerSchema.virtual('isLocked').get(function () {
-    return !!(this.lockUntil && this.lockUntil > Date.now());
-});
-
-// Method to increment failed login attempts
-customerSchema.methods.incLoginAttempts = function () {
-    // if we have a previous lock that has expired, restart at 1
-    if (this.lockUntil && this.lockUntil < Date.now()) {
-        return this.updateOne({
-            $unset: { lockUntil: 1 },
-            $set: { failedAttempts: 1 }
-        }).exec();
-    }
-    const updates = { $inc: { failedAttempts: 1 } };
-    // lock account after 5 failed attempts for 2 hours
-    if (this.failedAttempts + 1 >= 5 && !this.isLocked) {
-        updates.$set = {
-            lockUntil: Date.now() + 2 * 60 * 60 * 1000 // 2 hours
-        };
-    }
-    return this.updateOne(updates).exec();
-};
-
-// Method to reset failed login attempts
-customerSchema.methods.resetLoginAttempts = function () {
-    return this.updateOne({
-        $unset: { lockUntil: 1 },
-        $set: { failedAttempts: 0 }
-    }).exec();
 };
 
 

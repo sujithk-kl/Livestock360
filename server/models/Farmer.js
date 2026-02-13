@@ -20,11 +20,7 @@ const farmerSchema = new mongoose.Schema({
         minlength: [6, 'Password must be at least 6 characters long'],
         select: false
     },
-    failedAttempts: {
-        type: Number,
-        default: 0
-    },
-    lockUntil: Date,
+
 
     phone: {
         type: String,
@@ -136,11 +132,6 @@ farmerSchema.methods.comparePassword = async function (candidatePassword) {
     }
 };
 
-// Virtual for account lock status
-farmerSchema.virtual('isLocked').get(function () {
-    return !!(this.lockUntil && this.lockUntil > Date.now());
-});
-
 // Encryption configuration
 const algorithm = 'aes-256-cbc';
 const secretKey = process.env.ENCRYPTION_SECRET || 'your_32_byte_hex_secret_key_livestock360_secure';
@@ -197,33 +188,6 @@ farmerSchema.methods.getDecryptedBankDetails = function () {
     }
 
     return details;
-};
-
-// Method to increment failed login attempts
-farmerSchema.methods.incLoginAttempts = function () {
-    // if we have a previous lock that has expired, restart at 1
-    if (this.lockUntil && this.lockUntil < Date.now()) {
-        return this.updateOne({
-            $unset: { lockUntil: 1 },
-            $set: { failedAttempts: 1 }
-        }).exec();
-    }
-    const updates = { $inc: { failedAttempts: 1 } };
-    // lock account after 5 failed attempts for 2 hours
-    if (this.failedAttempts + 1 >= 5 && !this.isLocked) {
-        updates.$set = {
-            lockUntil: Date.now() + 2 * 60 * 60 * 1000
-        };
-    }
-    return this.updateOne(updates).exec();
-};
-
-// Method to reset failed login attempts
-farmerSchema.methods.resetLoginAttempts = function () {
-    return this.updateOne({
-        $unset: { lockUntil: 1 },
-        $set: { failedAttempts: 0 }
-    }).exec();
 };
 
 

@@ -24,7 +24,7 @@ const loginCustomer = async (req, res) => {
         const { email, password } = req.body;
 
         // Check customer
-        const customer = await Customer.findOne({ email }).select('+password +failedAttempts +lockUntil');
+        const customer = await Customer.findOne({ email }).select('+password');
 
         if (!customer) {
             return res.status(401).json({
@@ -33,26 +33,14 @@ const loginCustomer = async (req, res) => {
             });
         }
 
-        // Check if account is locked
-        if (customer.isLocked) {
-            return res.status(401).json({
-                success: false,
-                message: 'Account locked due to too many failed attempts'
-            });
-        }
-
         // Check password
         const isMatch = await customer.comparePassword(password);
         if (!isMatch) {
-            await customer.incLoginAttempts();
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
             });
         }
-
-        // Reset failed attempts on successful login
-        await customer.resetLoginAttempts();
 
         // Generate token
         const token = generateToken(customer._id);

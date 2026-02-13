@@ -20,7 +20,7 @@ const loginFarmer = async (req, res) => {
         const { email, password } = req.body;
 
         // Check farmer
-        const farmer = await Farmer.findOne({ email }).select('+password +failedAttempts +lockUntil');
+        const farmer = await Farmer.findOne({ email }).select('+password');
 
         if (!farmer) {
             return res.status(401).json({
@@ -29,26 +29,14 @@ const loginFarmer = async (req, res) => {
             });
         }
 
-        // Check if account is locked
-        if (farmer.isLocked) {
-            return res.status(401).json({
-                success: false,
-                message: 'Account locked due to too many failed attempts'
-            });
-        }
-
         // Check password
         const isMatch = await farmer.comparePassword(password);
         if (!isMatch) {
-            await farmer.incLoginAttempts();
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
             });
         }
-
-        // Reset failed attempts on successful login
-        await farmer.resetLoginAttempts();
 
         // Generate token
         const token = generateToken(farmer._id);
