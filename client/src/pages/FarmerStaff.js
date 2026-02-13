@@ -341,16 +341,16 @@ const FarmerStaff = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-l-4 border-blue-500">
             <p className="text-gray-500 dark:text-gray-400 text-sm">{t('stat_total_staff')}</p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.totalStaff}</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats?.totalStaff || 0}</p>
           </div>
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-l-4 border-green-500">
             <p className="text-gray-500 dark:text-gray-400 text-sm">{t('stat_present_today')}</p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.presentCount}</p>
-            <p className="text-xs text-green-500 mt-1">{stats.attendancePercentage}% Attendance</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats?.presentCount || 0}</p>
+            <p className="text-xs text-green-500 mt-1">{stats?.attendancePercentage || 0}% Attendance</p>
           </div>
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-l-4 border-purple-500">
             <p className="text-gray-500 dark:text-gray-400 text-sm">{t('stat_est_expense')}</p>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">₹{stats.estimatedMonthlyExpense.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">₹{(stats?.estimatedMonthlyExpense || 0).toLocaleString()}</p>
           </div>
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-l-4 border-yellow-500">
             <p className="text-gray-500 dark:text-gray-400 text-sm">{t('stat_active_workers')}</p>
