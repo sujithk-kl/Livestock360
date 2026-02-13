@@ -72,8 +72,9 @@ const Cart = () => {
     const updateQuantity = (id, change) => {
         const updatedCart = cartItems.map(item => {
             if (item.id === id) {
-                const newQty = item.quantity + change;
-                if (newQty < 1) return item; // Min quantity 1
+                // Determine precision based on step (handle floating point errors roughly)
+                const newQty = parseFloat((item.quantity + change).toFixed(2));
+                if (newQty <= 0) return item; // Min quantity > 0
                 return { ...item, quantity: newQty };
             }
             return item;
@@ -81,6 +82,7 @@ const Cart = () => {
         setCartItems(updatedCart);
         localStorage.setItem('cartItems', JSON.stringify(updatedCart));
     };
+
 
     const removeItem = (id) => {
         const updatedCart = cartItems.filter(item => item.id !== id);
@@ -170,19 +172,31 @@ const Cart = () => {
                                 <div className="flex items-center gap-6">
                                     <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-md">
                                         <button
-                                            onClick={() => updateQuantity(item.id, -1)}
+                                            onClick={() => updateQuantity(item.id, -0.5)}
                                             className="px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 font-bold rounded-l-md transition"
                                         >
                                             -
                                         </button>
                                         <input
-                                            type="text"
-                                            readOnly
+                                            type="number"
+                                            step="0.1"
+                                            min="0.1"
                                             value={item.quantity}
-                                            className="w-12 text-center border-x border-gray-300 dark:border-gray-600 py-1 focus:outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                const updatedCart = cartItems.map(cartItem =>
+                                                    cartItem.id === item.id ? { ...cartItem, quantity: val === '' ? '' : parseFloat(val) } : cartItem
+                                                );
+                                                setCartItems(updatedCart);
+                                                // Only save to local storage if valid number
+                                                if (val !== '' && !isNaN(val)) {
+                                                    localStorage.setItem('cartItems', JSON.stringify(updatedCart));
+                                                }
+                                            }}
+                                            className="w-16 text-center border-x border-gray-300 dark:border-gray-600 py-1 focus:outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                                         />
                                         <button
-                                            onClick={() => updateQuantity(item.id, 1)}
+                                            onClick={() => updateQuantity(item.id, 0.5)}
                                             className="px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 font-bold rounded-r-md transition"
                                         >
                                             +

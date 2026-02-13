@@ -341,7 +341,8 @@ const ProductDetails = () => {
                                     <input
                                         type="number"
                                         id="quantity"
-                                        min="1"
+                                        min="0.1"
+                                        step="0.1"
                                         max={selectedProduct.quantity}
                                         value={quantity}
                                         onChange={(e) => {
@@ -349,27 +350,24 @@ const ProductDetails = () => {
                                             if (val === '') {
                                                 setQuantity('');
                                             } else {
-                                                // Allow typing numbers, handle leading zeros naturally
-                                                const parsed = parseInt(val);
-                                                if (!isNaN(parsed)) {
-                                                    setQuantity(parsed);
-                                                }
+                                                setQuantity(val);
                                             }
                                         }}
                                         className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md p-2 border"
                                     />
                                     <p className="text-right text-lg font-bold text-gray-900 dark:text-white mt-2">
-                                        {t('total_cost_label')} ₹{(selectedProduct.price * (quantity || 0)).toFixed(2)}
+                                        {t('total_cost_label')} ₹{(selectedProduct.price * (parseFloat(quantity) || 0)).toFixed(2)}
                                     </p>
                                 </div>
                             </div>
                             <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                 <button
                                     type="button"
-                                    disabled={!quantity || quantity < 1}
-                                    className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm ${(!quantity || quantity < 1) ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+                                    disabled={!quantity || parseFloat(quantity) <= 0}
+                                    className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm ${(!quantity || parseFloat(quantity) <= 0) ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
                                     onClick={() => {
-                                        if (!quantity || quantity < 1) return;
+                                        const qty = parseFloat(quantity);
+                                        if (!qty || qty <= 0) return;
                                         const cartItem = {
                                             id: selectedProduct._id,
                                             productName: selectedProduct.productName,
@@ -379,7 +377,7 @@ const ProductDetails = () => {
                                             unit: selectedProduct.unit,
                                             farmerName: selectedProduct.farmer?.name || 'Local Farmer',
                                             farmerId: selectedProduct.farmer?._id,
-                                            quantity: quantity,
+                                            quantity: qty,
                                             maxQuantity: selectedProduct.quantity
                                         };
 
