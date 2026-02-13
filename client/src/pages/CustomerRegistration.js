@@ -200,7 +200,7 @@ const CustomerRegistration = () => {
 
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('full_name_label')}</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('full_name_label')} *</label>
               <input
                 type="text"
                 name="name"
@@ -212,7 +212,7 @@ const CustomerRegistration = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('email_label')}</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('email_label')} *</label>
               <input
                 type="email"
                 name="email"
@@ -224,7 +224,7 @@ const CustomerRegistration = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('phone_label')}</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('phone_label')} *</label>
               <input
                 type="tel"
                 name="phone"
@@ -237,7 +237,7 @@ const CustomerRegistration = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('city_label')}</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('city_label')} *</label>
               <input
                 type="text"
                 name="city"
@@ -250,7 +250,7 @@ const CustomerRegistration = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('password_label')}</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('password_label')} *</label>
               <input
                 type="password"
                 name="password"
@@ -266,7 +266,7 @@ const CustomerRegistration = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('confirm_password_label')}</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('confirm_password_label')} *</label>
               <input
                 type="password"
                 name="confirmPassword"

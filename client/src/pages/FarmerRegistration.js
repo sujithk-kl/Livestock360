@@ -287,7 +287,7 @@ const FarmerRegistration = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('full_name_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('full_name_label')} *</label>
                 <input
                   type="text"
                   name="fullName"
@@ -317,7 +317,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('phone_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('phone_label')} *</label>
                 <input
                   type="tel"
                   name="phone"
@@ -328,7 +328,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('aadhar_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('aadhar_label')} *</label>
                 <input
                   type="text"
                   name="aadharNumber"
@@ -354,7 +354,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('confirm_password_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('confirm_password_label')} *</label>
                 <input
                   type="password"
                   name="confirmPassword"
@@ -369,7 +369,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('street_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('street_label')} *</label>
                 <input
                   type="text"
                   name="addressStreet"
@@ -384,7 +384,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('city_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('city_label')} *</label>
                 <input
                   type="text"
                   name="addressCity"
@@ -399,7 +399,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('state_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('state_label')} *</label>
                 <input
                   type="text"
                   name="addressState"
@@ -414,7 +414,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('pincode_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('pincode_label')} *</label>
                 <input
                   type="text"
                   name="addressPincode"
@@ -436,7 +436,7 @@ const FarmerRegistration = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_name_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_name_label')} *</label>
                 <input
                   type="text"
                   name="farmName"
@@ -451,7 +451,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_size_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_size_label')} *</label>
                 <input
                   type="number"
                   name="farmSize"
@@ -466,7 +466,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_type_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_type_label')} *</label>
                 <select
                   name="farmType"
                   value={formData.farmType}
@@ -481,7 +481,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('years_farming_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('years_farming_label')} *</label>
                 <input
                   type="number"
                   name="yearsOfFarming"
@@ -496,7 +496,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_address_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('farm_address_label')} *</label>
                 <textarea
                   name="farmAddress"
                   value={formData.farmAddress}
@@ -518,7 +518,7 @@ const FarmerRegistration = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('bank_name_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('bank_name_label')} *</label>
                 <input
                   type="text"
                   name="bankName"
@@ -533,7 +533,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('account_number_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('account_number_label')} *</label>
                 <input
                   type="text"
                   name="accountNumber"
@@ -548,7 +548,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('ifsc_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('ifsc_label')} *</label>
                 <input
                   type="text"
                   name="ifscCode"
@@ -564,7 +564,7 @@ const FarmerRegistration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('holder_name_label')}</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('holder_name_label')} *</label>
                 <input
                   type="text"
                   name="accountHolderName"
