@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const Notification = require('../models/Notification');
 const { protect } = require('../middleware/auth');
 
 // Create a new order
@@ -18,9 +19,18 @@ router.post('/', protect, async (req, res) => {
 
         const savedOrder = await newOrder.save();
 
-        // Update product stock
+        // Update product stock and check for Out of Stock
         for (const item of items) {
-            await Product.findByIdAndUpdate(item.product, { $inc: { quantity: -item.quantity } });
+            const product = await Product.findByIdAndUpdate(item.product, { $inc: { quantity: -item.quantity } }, { new: true });
+
+            if (product && product.quantity === 0) {
+                await Notification.create({
+                    recipient: product.farmer,
+                    message: `Product "${product.productName}" is out of stock!`,
+                    type: 'OOS',
+                    product: product._id
+                });
+            }
         }
 
         res.status(201).json({ success: true, data: savedOrder });

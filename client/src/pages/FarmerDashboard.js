@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import farmerService from '../services/farmerService';
+import NotificationBell from '../components/NotificationBell';
 
 const FarmerDashboard = () => {
   const navigate = useNavigate();
@@ -142,11 +143,14 @@ const FarmerDashboard = () => {
       {/* Main Content */}
       <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 transition-all duration-200">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{t('dashboard_title')}</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm md:text-base">
-            {t('dashboard_welcome')}
-          </p>
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{t('dashboard_title')}</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm md:text-base">
+              {t('dashboard_welcome')}
+            </p>
+          </div>
+          <NotificationBell />
         </div>
 
         {/* Stats Cards */}
