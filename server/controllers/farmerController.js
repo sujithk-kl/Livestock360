@@ -8,6 +8,7 @@ const Review = require('../models/Review');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { validationResult } = require('express-validator');
+const sendEmail = require('../utils/sendEmail');
 
 // Login farmer
 const loginFarmer = async (req, res) => {
@@ -516,6 +517,156 @@ const getSalesReport = async (req, res) => {
     }
 };
 
+// @desc    Forgot password - send reset email
+// @route   POST /api/farmers/forgot-password
+// @access  Public
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide an email address'
+            });
+        }
+
+        // Find farmer by email
+        const farmer = await Farmer.findOne({ email });
+
+        if (!farmer) {
+            return res.status(404).json({
+                success: false,
+                message: 'No account found with that email address'
+            });
+        }
+
+        // Generate reset token
+        const resetToken = farmer.createPasswordResetToken();
+        await farmer.save({ validateBeforeSave: false });
+
+        // Create reset URL
+        const resetUrl = `${process.env.CLIENT_URL}/farmer-reset-password/${resetToken}`;
+
+        // Email content
+        const message = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #2c3e50;">Password Reset Request</h2>
+                <p>Hello ${farmer.name},</p>
+                <p>You requested to reset your password for your Livestock360 farmer account.</p>
+                <p>Please click the button below to reset your password:</p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${resetUrl}" 
+                       style="background-color: #16a34a; color: white; padding: 12px 30px; 
+                              text-decoration: none; border-radius: 5px; display: inline-block;">
+                        Reset Password
+                    </a>
+                </div>
+                <p>Or copy and paste this link into your browser:</p>
+                <p style="word-break: break-all; color: #3498db;">${resetUrl}</p>
+                <p><strong>This link will expire in 1 hour.</strong></p>
+                <p>If you didn't request this, please ignore this email.</p>
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+                <p style="color: #7f8c8d; font-size: 12px;">
+                    This is an automated message from Livestock360. Please do not reply to this email.
+                </p>
+            </div>
+        `;
+
+        try {
+            await sendEmail({
+                to: farmer.email,
+                subject: 'Password Reset Request - Livestock360',
+                html: message
+            });
+
+            res.status(200).json({
+                success: true,
+                message: 'Password reset email sent successfully. Please check your inbox.'
+            });
+        } catch (error) {
+            // If email sending fails, clear the reset token
+            farmer.resetPasswordToken = undefined;
+            farmer.resetPasswordExpires = undefined;
+            await farmer.save({ validateBeforeSave: false });
+
+            console.error('Error sending email:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Email could not be sent. Please try again later.'
+            });
+        }
+    } catch (error) {
+        console.error('Error in forgot password:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+};
+
+// @desc    Reset password
+// @route   PUT /api/farmers/reset-password/:token
+// @access  Public
+const resetPassword = async (req, res) => {
+    try {
+        const { newPassword } = req.body;
+        const { token } = req.params;
+
+        if (!newPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide a new password'
+            });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password must be at least 6 characters long'
+            });
+        }
+
+        // Hash the token from URL to match with stored hashed token
+        const hashedToken = crypto
+            .createHash('sha256')
+            .update(token)
+            .digest('hex');
+
+        // Find farmer with valid token and not expired
+        const farmer = await Farmer.findOne({
+            resetPasswordToken: hashedToken,
+            resetPasswordExpires: { $gt: Date.now() }
+        }).select('+resetPasswordToken +resetPasswordExpires');
+
+        if (!farmer) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid or expired reset token'
+            });
+        }
+
+        // Update password
+        farmer.password = newPassword;
+        farmer.resetPasswordToken = undefined;
+        farmer.resetPasswordExpires = undefined;
+        await farmer.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Password reset successful. You can now login with your new password.'
+        });
+    } catch (error) {
+        console.error('Error in reset password:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+};
+
 module.exports = {
     loginFarmer,
     registerFarmer,
@@ -523,5 +674,7 @@ module.exports = {
     updateProfile,
     changePassword,
     getDashboardStats,
-    getSalesReport
+    getSalesReport,
+    forgotPassword,
+    resetPassword
 };

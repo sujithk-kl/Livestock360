@@ -106,6 +106,14 @@ const farmerSchema = new mongoose.Schema({
             required: [true, 'Please provide account holder name'],
             trim: true
         }
+    },
+    resetPasswordToken: {
+        type: String,
+        select: false
+    },
+    resetPasswordExpires: {
+        type: Date,
+        select: false
     }
 }, {
     timestamps: true
@@ -188,6 +196,24 @@ farmerSchema.methods.getDecryptedBankDetails = function () {
     }
 
     return details;
+};
+
+// Method to create password reset token
+farmerSchema.methods.createPasswordResetToken = function () {
+    // Generate random token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    // Hash token and set to resetPasswordToken field
+    this.resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+
+    // Set token expiration to 1 hour from now
+    this.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+
+    // Return unhashed token to send via email
+    return resetToken;
 };
 
 

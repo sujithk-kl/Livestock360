@@ -12,9 +12,13 @@ import FarmerStaff from './pages/FarmerStaff';
 import FarmerReports from './pages/FarmerReports';
 import FarmerProfile from './pages/FarmerProfile';
 import FarmerSalesReport from './pages/FarmerSalesReport';
+import FarmerForgotPassword from './pages/FarmerForgotPassword';
+import FarmerResetPassword from './pages/FarmerResetPassword';
 import CustomerLogin from './pages/CustomerLogin';
 import CustomerRegistration from './pages/CustomerRegistration';
 import CustomerProfile from './pages/CustomerProfile';
+import CustomerForgotPassword from './pages/CustomerForgotPassword';
+import CustomerResetPassword from './pages/CustomerResetPassword';
 
 import CustomerProducts from './pages/CustomerProducts';
 import Cart from './pages/Cart';
@@ -48,10 +52,14 @@ function AppContent() {
         {/* Farmer Public Routes */}
         <Route path="/farmer/login" element={<FarmerLogin />} />
         <Route path="/farmer/register" element={<FarmerRegistration />} />
+        <Route path="/farmer-forgot-password" element={<FarmerForgotPassword />} />
+        <Route path="/farmer-reset-password/:token" element={<FarmerResetPassword />} />
 
         {/* Customer Public Routes */}
         <Route path="/customer/login" element={<CustomerLogin />} />
         <Route path="/customer/register" element={<CustomerRegistration />} />
+        <Route path="/customer-forgot-password" element={<CustomerForgotPassword />} />
+        <Route path="/customer-reset-password/:token" element={<CustomerResetPassword />} />
 
 
 

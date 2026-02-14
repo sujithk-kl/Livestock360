@@ -159,7 +159,13 @@ const CustomerLogin = () => {
                     {t('remember_me')}
                   </label>
                 </div>
+                <div className="text-sm">
+                  <Link to="/customer-forgot-password" className="font-medium text-secondary-600 hover:text-secondary-500 transition-colors">
+                    Forgot password?
+                  </Link>
+                </div>
               </div>
+
 
               <div>
                 <button

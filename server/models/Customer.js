@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const customerSchema = new mongoose.Schema({
     name: {
@@ -60,6 +61,14 @@ const customerSchema = new mongoose.Schema({
                 default: false
             }
         }
+    },
+    resetPasswordToken: {
+        type: String,
+        select: false
+    },
+    resetPasswordExpires: {
+        type: Date,
+        select: false
     }
 }, {
     timestamps: true
@@ -84,6 +93,24 @@ customerSchema.methods.comparePassword = async function (candidatePassword) {
         console.error('Error comparing passwords:', error);
         return false;
     }
+};
+
+// Method to create password reset token
+customerSchema.methods.createPasswordResetToken = function () {
+    // Generate random token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    // Hash token and set to resetPasswordToken field
+    this.resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+
+    // Set token expiration to 1 hour from now
+    this.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+
+    // Return unhashed token to send via email
+    return resetToken;
 };
 
 

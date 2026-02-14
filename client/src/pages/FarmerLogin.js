@@ -159,7 +159,13 @@ const FarmerLogin = () => {
                     {t('remember_me')}
                   </label>
                 </div>
+                <div className="text-sm">
+                  <Link to="/farmer-forgot-password" className="font-medium text-primary-600 hover:text-primary-500 transition-colors">
+                    Forgot password?
+                  </Link>
+                </div>
               </div>
+
 
               <div>
                 <button
