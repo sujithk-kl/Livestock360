@@ -305,5 +305,7 @@
     "review_failed_msg": "Failed to submit review",
     "fetch_orders_error": "Error fetching orders",
     "edit_profile_tab": "Edit Profile",
-    "security_tab": "Security"
+    "security_tab": "Security",
+    "out_of_stock_msg": "Out of Stock!",
+    "available_quantity": "Available:"
 }

@@ -304,5 +304,7 @@
     "review_failed_msg": "விமர்சனத்தை சமர்ப்பிக்க முடியவில்லை",
     "fetch_orders_error": "ஆர்டர்களைப் பெறுவதில் பிழை",
     "edit_profile_tab": "சுயவிவரத்தைத் திருத்தவும்",
-    "security_tab": "பாதுகாப்பு"
+    "security_tab": "பாதுகாப்பு",
+    "out_of_stock_msg": "கையிருப்பில் இல்லை!",
+    "available_quantity": "கிடைப்பவை:"
 }

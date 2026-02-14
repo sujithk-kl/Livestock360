@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
+const Product = require('../models/Product');
 const { protect } = require('../middleware/auth');
 
 // Create a new order
@@ -16,6 +17,12 @@ router.post('/', protect, async (req, res) => {
         });
 
         const savedOrder = await newOrder.save();
+
+        // Update product stock
+        for (const item of items) {
+            await Product.findByIdAndUpdate(item.product, { $inc: { quantity: -item.quantity } });
+        }
+
         res.status(201).json({ success: true, data: savedOrder });
     } catch (error) {
         console.error('Error creating order:', error);

@@ -368,6 +368,18 @@ const ProductDetails = () => {
                                     onClick={() => {
                                         const qty = parseFloat(quantity);
                                         if (!qty || qty <= 0) return;
+
+                                        // Check existing cart for this product
+                                        const existingCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+                                        const existingItem = existingCartItems.find(item => item.id === selectedProduct._id);
+                                        const existingQty = existingItem ? existingItem.quantity : 0;
+
+                                        // Check if total quantity exceeds stock
+                                        if (qty + existingQty > selectedProduct.quantity) {
+                                            const availableToAdd = selectedProduct.quantity - existingQty;
+                                            toast.error(`${t('out_of_stock_msg') || 'Out of Stock!'} ${t('available_quantity') || 'Available:'} ${Math.max(0, availableToAdd)} ${selectedProduct.unit} ${existingQty > 0 ? `(${existingQty} in cart)` : ''}`);
+                                            return;
+                                        }
                                         const cartItem = {
                                             id: selectedProduct._id,
                                             productName: selectedProduct.productName,
@@ -389,7 +401,7 @@ const ProductDetails = () => {
 
                                         if (existingItemIndex > -1) {
                                             // Update quantity
-                                            existingCart[existingItemIndex].quantity += quantity;
+                                            existingCart[existingItemIndex].quantity += qty;
                                             toast.success(t('updated_cart_msg') || 'Added to cart (Updated quantity)');
                                         } else {
                                             // Add new
