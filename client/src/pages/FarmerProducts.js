@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import productService from '../services/productService';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const FarmerProducts = () => {
@@ -134,7 +134,7 @@ const FarmerProducts = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       <div className="container mx-auto px-4 py-8">
-        <ToastContainer />
+
 
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center">

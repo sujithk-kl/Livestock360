@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next'; // Import hook
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Import Assets
@@ -111,7 +111,7 @@ const Cart = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans transition-colors duration-200">
-            <ToastContainer />
+
 
             {/* Header - Reuse from CustomerProducts but simpler */}
             <div className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-10 transition-colors duration-200">

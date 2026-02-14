@@ -11,25 +11,26 @@ exports.createProduct = async (req, res, next) => {
 
     const { productName, category, unit, price, qualityTag, quantity } = req.body;
 
-    // Check if product already exists for this farmer with same attributes and price
+    // Check if product already exists for this farmer with same category and unit
     let product = await Product.findOne({
       farmer: req.user.id,
-      productName: { $regex: new RegExp(`^${productName}$`, 'i') }, // Case-insensitive match for name
       category,
-      unit,
-      price,
-      qualityTag
+      unit
     });
 
     if (product) {
-      // If product exists, update quantity
+      // If product exists, update details and increment quantity
       product.quantity += Number(quantity);
+      product.price = price; // Update to latest price
+      product.qualityTag = qualityTag; // Update to latest quality tag
+      product.status = 'Available'; // Ensure it's available if it was sold out (since we added stock)
+
       await product.save();
 
       return res.status(200).json({
         success: true,
         data: product,
-        message: 'Product quantity updated successfully'
+        message: 'Product updated successfully'
       });
     }
 

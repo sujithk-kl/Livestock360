@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import api from '../services/api';
 
@@ -136,7 +136,7 @@ const CustomerOrders = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 font-sans">
-            <ToastContainer />
+
             <div className="max-w-4xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-3xl font-bold text-gray-800 dark:text-white">{t('order_history_title')}</h1>
