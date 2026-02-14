@@ -5,6 +5,8 @@ import productService from '../services/productService';
 import api from '../services/api';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { StarIcon, ShoppingCartIcon, ArrowLeftIcon, FunnelIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { StarIcon as StarIconOutline } from '@heroicons/react/24/outline';
 
 // Import Assets
 import milkImg from '../assets/Milk.jpg';
@@ -23,7 +25,7 @@ const ProductDetails = () => {
     const { category } = useParams();
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const [products, setProducts] = useState([]); // These are the vendor offerings
+    const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [sortOption, setSortOption] = useState('price-asc');
 
@@ -40,7 +42,6 @@ const ProductDetails = () => {
         setExpandedReviews(prev => ({ ...prev, [productId]: !prev[productId] }));
 
         if (!reviews[productId]) {
-            // Fetch reviews
             try {
                 const response = await api.get(`/reviews/${productId}`);
                 const data = response.data;
@@ -53,7 +54,6 @@ const ProductDetails = () => {
         }
     };
 
-    // Mappings
     const getImage = (cat) => {
         switch (cat) {
             case 'Milk': return milkImg;
@@ -66,13 +66,11 @@ const ProductDetails = () => {
             case 'Chicken': return chickenImg;
             case 'Country Chicken': return countryChickenImg;
             case 'Mutton': return muttonImg;
-            // Meat map to chicken for now if no generic meat image
             case 'Meat': return chickenImg;
             default: return defaultImg;
         }
     };
 
-    // Static Nutritional Data (Mock)
     const nutritionalData = {
         'Milk': { 'Serving Size': '100 ml', 'Calories': '42 kcal', 'Carbohydrates': '5 g', 'Protein': '3.4 g', 'Fat': '1 g', 'Calcium': '120 mg', 'Vitamin B12': '0.5 µg' },
         'Curd': { 'Serving Size': '100 g', 'Calories': '98 kcal', 'Carbohydrates': '3.6 g', 'Protein': '4.3 g', 'Fat': '4 g', 'Calcium': '121 mg', 'Vitamin B12': '0.8 µg', 'Probiotics': 'Present' },
@@ -84,7 +82,6 @@ const ProductDetails = () => {
         'Chicken': { 'Serving Size': '100 g', 'Calories': '239 kcal', 'Protein': '27 g', 'Fat': '14 g', 'Carbohydrates': '0 g', 'Iron': '1.3 mg' },
         'Country Chicken': { 'Serving Size': '100 g', 'Calories': '215 kcal', 'Protein': '25 g', 'Fat': '12 g', 'Carbohydrates': '0 g', 'Iron': '1.6 mg', 'Omega-3': 'Higher than broiler' },
         'Mutton': { 'Serving Size': '100 g', 'Calories': '294 kcal', 'Protein': '25 g', 'Fat': '21 g', 'Carbohydrates': '0 g', 'Iron': '2.7 mg', 'Vitamin B12': '2.6 µg' },
-        // Fallback
         'default': { 'Calories': 'N/A', 'Protein': 'N/A' }
     };
 
@@ -94,19 +91,15 @@ const ProductDetails = () => {
         const fetchOfferings = async () => {
             try {
                 setLoading(true);
-                // Fetch products specifically for this category
                 let city = null;
                 try {
                     const userStr = localStorage.getItem('user');
                     if (userStr) {
                         const user = JSON.parse(userStr);
-                        // Check if user has city directly or in address (handle both structures)
                         if (user.address?.city) city = user.address.city;
                         else if (user.city) city = user.city;
                     }
-                } catch (e) {
-                    // console.error("Error parsing user for city", e);
-                }
+                } catch (e) { }
 
                 const filters = { category: category };
                 if (city) filters.city = city;
@@ -130,298 +123,313 @@ const ProductDetails = () => {
         if (sortOption === 'price-desc') return b.price - a.price;
         if (sortOption === 'rating-desc') return (b.averageRating || 0) - (a.averageRating || 0);
         if (sortOption === 'rating-asc') return (a.averageRating || 0) - (b.averageRating || 0);
-        return 0; // Default
+        return 0;
     });
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans transition-colors duration-200">
-
-
             {/* Header */}
-            <div className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-10 transition-colors duration-200">
-                <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                    <div className="flex items-center">
-                        <button onClick={() => navigate(-1)} className="mr-4 text-gray-600 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                        </button>
+            <div className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-20 transition-colors duration-200">
+                <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex items-center gap-4">
+                    <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-full dark:text-gray-300 dark:hover:bg-gray-700 transition-colors">
+                        <ArrowLeftIcon className="w-5 h-5" />
+                    </button>
+                    <div>
+                        <h1 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            {t(`cat_${category.toLowerCase().replace(/ /g, '_')}`, category)}
+                            <span className="text-gray-400 font-normal text-sm hidden sm:inline-block">/ {t('th_product')} {t('details')}</span>
+                        </h1>
                     </div>
-                    {/* Display category name using the key if possible, but fallback to raw category check */}
-                    {/* We can reverse map or just use t(`cat_${category.toLowerCase().replace(' ', '_')}`) if strictly consistent */}
-                    {/* For now, let's try to map the display name */}
-                    <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-                        {/* Attempt to translate if it matches a key, otherwise show raw */}
-                        {t(`cat_${category.toLowerCase().replace(/ /g, '_')}`, category)} - {t('th_product')} {t('details')}
-                    </h1>
-                    <div className="w-10"></div> {/* Spacer for alignment */}
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+            <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
                 <div className="flex flex-col lg:flex-row gap-8">
-
-                    {/* Left Column: Product Info */}
-                    <div className="w-full lg:w-1/3">
-                        {/* Product Image Card */}
-                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6 flex flex-col items-center transition-colors duration-200">
-                            <div className="w-64 h-64 overflow-hidden rounded-full border-4 border-gray-100 dark:border-gray-700 mb-4">
-                                <img src={getImage(category)} alt={category} className="w-full h-full object-cover" />
+                    {/* Left Column: Product Category Info */}
+                    <div className="w-full lg:w-1/3 lg:sticky lg:top-24 h-fit space-y-6">
+                        {/* Image Card */}
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card overflow-hidden">
+                            <div className="aspect-w-4 aspect-h-3 w-full">
+                                <img src={getImage(category)} alt={category} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
                             </div>
-                            <h2 className="text-3xl font-bold text-blue-800 dark:text-blue-400 mb-2">
-                                {t(`cat_${category.toLowerCase().replace(/ /g, '_')}`, category)}
-                            </h2>
+                            <div className="p-6">
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                                    {t(`cat_${category.toLowerCase().replace(/ /g, '_')}`, category)}
+                                </h2>
+                                <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
+                                    Fresh and high-quality {category.toLowerCase()} sourced directly from local farmers.
+                                </p>
+                            </div>
                         </div>
 
-                        {/* Nutritional Facts Card */}
-                        <div className="bg-blue-50 dark:bg-gray-700 rounded-xl border border-blue-100 dark:border-gray-600 p-6 transition-colors duration-200">
-                            <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100 mb-4">{t('nutritional_facts_title')}</h3>
-                            <ul className="space-y-3">
+                        {/* Nutritional Facts */}
+                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card p-6 border border-gray-100 dark:border-gray-700">
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                                <span className="w-1 h-6 bg-secondary-500 rounded-full"></span>
+                                {t('nutritional_facts_title')}
+                            </h3>
+                            <div className="space-y-3">
                                 {Object.entries(nutrition).map(([key, value]) => (
-                                    <li key={key} className="flex justify-between border-b border-blue-100 dark:border-gray-600 pb-2 last:border-0">
-                                        <span className="text-gray-600 dark:text-gray-300 font-medium">• {key}</span>
-                                        <span className="text-blue-800 dark:text-blue-200 font-bold">{value}</span>
-                                    </li>
+                                    <div key={key} className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
+                                        <span className="text-gray-600 dark:text-gray-400 text-sm font-medium">{key}</span>
+                                        <span className="text-primary-700 dark:text-primary-400 font-bold text-sm bg-primary-50 dark:bg-primary-900/20 px-2 py-1 rounded-md">{value}</span>
+                                    </div>
                                 ))}
-                            </ul>
+                            </div>
                         </div>
                     </div>
 
                     {/* Right Column: Vendor Offerings */}
                     <div className="w-full lg:w-2/3">
-                        {/* Controls */}
-                        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm mb-6 border border-gray-100 dark:border-gray-700 transition-colors duration-200">
-                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                <h3 className="text-xl font-bold text-gray-800 dark:text-white">{t('farmers_offerings_title')}</h3>
-                                <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-                                    <div className="flex items-center w-full sm:w-auto justify-between sm:justify-start">
-                                        <span className="text-sm text-gray-500 dark:text-gray-400 mr-2 whitespace-nowrap">Rating:</span>
-                                        <select
-                                            value={sortOption.includes('rating') ? sortOption : ''}
-                                            onChange={(e) => setSortOption(e.target.value)}
-                                            className={`flex-1 sm:flex-none w-full sm:w-40 bg-gray-50 dark:bg-gray-700 border text-gray-700 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 ${sortOption.includes('rating') ? 'border-gray-200 dark:border-gray-600' : 'border-transparent text-gray-400'
-                                                }`}
-                                        >
-                                            <option value="" disabled>Select Order</option>
-                                            <option value="rating-desc">High to Low</option>
-                                            <option value="rating-asc">Low to High</option>
-                                        </select>
-                                    </div>
+                        {/* Filters & Sorting */}
+                        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm mb-6 border border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                <span className="bg-secondary-100 dark:bg-secondary-900/30 text-secondary-600 dark:text-secondary-400 p-1.5 rounded-lg">
+                                    <FunnelIcon className="w-4 h-4" />
+                                </span>
+                                {t('farmers_offerings_title')}
+                            </h3>
 
-                                    <div className="hidden sm:block h-6 w-px bg-gray-300 dark:bg-gray-600 mx-1"></div>
-
-                                    <div className="flex items-center w-full sm:w-auto justify-between sm:justify-start">
-                                        <span className="text-sm text-gray-500 dark:text-gray-400 mr-2 whitespace-nowrap">{t('price_sort_label')}</span>
-                                        <select
-                                            value={sortOption.includes('price') ? sortOption : ''}
-                                            onChange={(e) => setSortOption(e.target.value)}
-                                            className={`flex-1 sm:flex-none w-full sm:w-40 bg-gray-50 dark:bg-gray-700 border text-gray-700 dark:text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 ${sortOption.includes('price') ? 'border-gray-200 dark:border-gray-600' : 'border-transparent text-gray-400'
-                                                }`}
-                                        >
-                                            <option value="" disabled>{t('select_order_placeholder')}</option>
-                                            <option value="price-asc">{t('sort_low_high')}</option>
-                                            <option value="price-desc">{t('sort_high_low')}</option>
-                                        </select>
-                                    </div>
-                                </div>
+                            <div className="flex gap-2 w-full sm:w-auto">
+                                <select
+                                    value={sortOption}
+                                    onChange={(e) => setSortOption(e.target.value)}
+                                    className="w-full sm:w-auto bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5"
+                                >
+                                    <option value="price-asc">{t('sort_low_high')}</option>
+                                    <option value="price-desc">{t('sort_high_low')}</option>
+                                    <option value="rating-desc">Rating: High to Low</option>
+                                    <option value="rating-asc">Rating: Low to High</option>
+                                </select>
                             </div>
                         </div>
 
-                        {/* List */}
+                        {/* Product List */}
                         {loading ? (
-                            <div className="flex justify-center p-12"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-500"></div></div>
+                            <div className="flex justify-center py-20">
+                                <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
+                            </div>
                         ) : sortedProducts.length === 0 ? (
-                            <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-8 text-center text-gray-500 dark:text-gray-400">
-                                {t('no_farmers_selling_msg')} {t(`cat_${category.toLowerCase().replace(/ /g, '_')}`, category)}.
+                            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-12 text-center border border-dashed border-gray-200 dark:border-gray-700">
+                                <div className="mx-auto w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                                    <XMarkIcon className="w-8 h-8 text-gray-400" />
+                                </div>
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">No offers found</h3>
+                                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                                    {t('no_farmers_selling_msg')} {t(`cat_${category.toLowerCase().replace(/ /g, '_')}`, category)}.
+                                </p>
                             </div>
                         ) : (
                             <div className="space-y-4">
                                 {sortedProducts.map(product => (
-                                    <div key={product._id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 transition hover:shadow-md">
-                                        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                                            <div className="w-full sm:w-auto">
-                                                <h4 className="text-lg font-bold text-gray-900 dark:text-white">{product.productName}</h4>
-                                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                                                    {t('farmer_label')} {product.farmer?.name || 'Local Farmer'}
-                                                </p>
-                                                {/* Reviews */}
-                                                <div className="flex flex-col mt-2">
-                                                    <div className="flex items-center text-yellow-400 mb-1 cursor-pointer" onClick={() => toggleReviews(product._id)}>
-                                                        <span className="text-lg mr-1 font-bold">
-                                                            {product.averageRating ? product.averageRating.toFixed(1) : 'New'}
-                                                        </span>
-                                                        {[...Array(5)].map((_, i) => (
-                                                            <span key={i} className={i < Math.round(product.averageRating || 0) ? 'text-yellow-400' : 'text-gray-300'}>★</span>
-                                                        ))}
-                                                        <span className="text-xs text-gray-500 ml-2 hover:text-blue-500 underline">
-                                                            {product.numReviews || 0} {t('reviews_count_label')}
-                                                        </span>
+                                    <div key={product._id} className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 transition-all hover:shadow-card hover:border-primary-200 dark:hover:border-primary-800">
+                                        <div className="flex flex-col sm:flex-row justify-between gap-4">
+                                            <div className="flex-1">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-1 group-hover:text-primary-600 transition-colors">{product.productName}</h4>
+                                                        <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                                            <span className="font-medium">{product.farmer?.name || 'Local Farmer'}</span>
+                                                            <span className="text-gray-300">•</span>
+                                                            <span>{product.farmer?.address?.city}, {product.farmer?.address?.state}</span>
+                                                        </p>
                                                     </div>
-
-                                                    {/* Always showing reviews if expanded, but also auto-expand if low count? */}
-                                                    {expandedReviews[product._id] && (
-                                                        <div className="mt-2 bg-gray-50 dark:bg-gray-700 p-3 rounded-lg w-full">
-                                                            <h5 className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase mb-2">{t('customer_reviews_title')}</h5>
-                                                            {reviews[product._id] && reviews[product._id].length > 0 ? (
-                                                                <div className="space-y-2 max-h-40 overflow-y-auto custom-scrollbar">
-                                                                    {reviews[product._id].map(review => (
-                                                                        <div key={review._id} className="border-b border-gray-200 dark:border-gray-600 pb-2 last:border-0 last:pb-0">
-                                                                            <div className="flex justify-between items-start">
-                                                                                <span className="font-bold text-xs text-gray-800 dark:text-white">{review.userName}</span>
-                                                                                <span className="text-yellow-400 text-xs text-right">{'★'.repeat(review.rating)}</span>
-                                                                            </div>
-                                                                            <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">"{review.comment}"</p>
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            ) : (
-                                                                <div className="text-center py-2">
-                                                                    <p className="text-xs text-gray-500 italic">{t('no_reviews_msg')}</p>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    )}
+                                                    <div className="text-right sm:hidden">
+                                                        <div className="text-xl font-bold text-primary-600 dark:text-primary-400">₹{product.price}</div>
+                                                        <div className="text-xs text-gray-500">per {product.unit}</div>
+                                                    </div>
                                                 </div>
 
-                                                <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                                    {product.farmer?.address?.city}, {product.farmer?.address?.state}
-                                                </div>
-
-
-                                            </div>
-                                            <div className="text-left sm:text-right w-full sm:w-auto mt-4 sm:mt-0 flex flex-row sm:flex-col justify-between sm:justify-start items-center sm:items-end border-t sm:border-0 border-gray-100 dark:border-gray-700 pt-4 sm:pt-0">
-                                                <div className="text-2xl font-bold text-gray-900 dark:text-white">₹{product.price} <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">{t('per_unit_label')} {product.unit}</span></div>
-                                                <div className="flex flex-col items-end">
+                                                <div className="mt-4 flex items-center gap-4">
                                                     <button
-                                                        onClick={() => {
-                                                            setSelectedProduct(product);
-                                                            setQuantity(1); // Reset to 1 or default unit
-                                                            setIsModalOpen(true);
-                                                        }}
-                                                        disabled={product.quantity <= 0}
-                                                        className="mt-0 sm:mt-3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow transition duration-200 disabled:bg-gray-300 w-full sm:w-auto"
+                                                        onClick={(e) => { e.stopPropagation(); toggleReviews(product._id); }}
+                                                        className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-1 rounded-lg hover:bg-yellow-100 transition-colors"
                                                     >
-                                                        {product.quantity > 0 ? t('add_to_cart_btn') : t('sold_out_label')}
+                                                        <StarIcon className="w-4 h-4 text-yellow-500" />
+                                                        <span className="font-bold text-sm text-gray-700 dark:text-gray-200">{product.averageRating ? product.averageRating.toFixed(1) : 'New'}</span>
+                                                        <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">({product.numReviews || 0})</span>
                                                     </button>
-                                                    <p className={`text-xs mt-2 ${product.quantity > 0 ? 'text-green-600' : 'text-red-500'} hidden sm:block`}>
+
+                                                    <div className={`text-xs px-2 py-1 rounded-lg font-medium ${product.quantity > 0 ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400' : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'}`}>
                                                         {product.quantity > 0 ? t('in_stock_label') : t('out_of_stock_label')}
-                                                    </p>
+                                                    </div>
                                                 </div>
+
+                                                {/* Expanded Reviews */}
+                                                {expandedReviews[product._id] && (
+                                                    <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 animate-fade-in-down">
+                                                        <h5 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">{t('customer_reviews_title')}</h5>
+                                                        {reviews[product._id] && reviews[product._id].length > 0 ? (
+                                                            <div className="space-y-3 max-h-48 overflow-y-auto custom-scrollbar pr-2">
+                                                                {reviews[product._id].map(review => (
+                                                                    <div key={review._id} className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-xl text-sm">
+                                                                        <div className="flex justify-between items-center mb-1">
+                                                                            <span className="font-bold text-gray-900 dark:text-white">{review.userName}</span>
+                                                                            <div className="flex text-yellow-400">
+                                                                                {[...Array(5)].map((_, i) => (
+                                                                                    <StarIcon key={i} className={`w-3 h-3 ${i < review.rating ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`} />
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                        <p className="text-gray-600 dark:text-gray-300">{review.comment}</p>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <p className="text-sm text-gray-500 italic">{t('no_reviews_msg')}</p>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="hidden sm:flex flex-col items-end justify-between min-w-[140px]">
+                                                <div className="text-right">
+                                                    <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">₹{product.price}</div>
+                                                    <div className="text-sm text-gray-500">per {product.unit}</div>
+                                                </div>
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedProduct(product);
+                                                        setQuantity(1);
+                                                        setIsModalOpen(true);
+                                                    }}
+                                                    disabled={product.quantity <= 0}
+                                                    className="w-full mt-4 bg-primary-600 hover:bg-primary-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-md hover:shadow-lg active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2"
+                                                >
+                                                    <ShoppingCartIcon className="w-5 h-5" />
+                                                    {product.quantity > 0 ? t('add_to_cart_btn') : t('sold_out_label')}
+                                                </button>
+                                            </div>
+
+                                            {/* Mobile Add to Cart */}
+                                            <div className="sm:hidden mt-2">
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedProduct(product);
+                                                        setQuantity(1);
+                                                        setIsModalOpen(true);
+                                                    }}
+                                                    disabled={product.quantity <= 0}
+                                                    className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-4 rounded-xl shadow-md active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                >
+                                                    <ShoppingCartIcon className="w-5 h-5" />
+                                                    {product.quantity > 0 ? t('add_to_cart_btn') : t('sold_out_label')}
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         )}
-
                     </div>
                 </div>
-            </div>
+            </main>
 
             {/* Add to Cart Modal */}
             {isModalOpen && selectedProduct && (
                 <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                        {/* Background overlay */}
-                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onClick={() => setIsModalOpen(false)}></div>
-
-                        {/* Modal panel */}
+                    <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity backdrop-blur-sm" aria-hidden="true" onClick={() => setIsModalOpen(false)}></div>
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                        <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-                            <div className="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4" id="modal-title">
-                                    {t('add_to_cart_btn')}
-                                </h3>
-                                <div className="mb-4">
-                                    <h4 className="text-xl font-bold text-gray-800 dark:text-white">{selectedProduct.productName}</h4>
-                                    <p className="text-gray-500 dark:text-gray-400 text-sm">{t('price_per_label')} {selectedProduct.unit}: ₹{selectedProduct.price}</p>
+                        <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md w-full border border-gray-100 dark:border-gray-700">
+                            <div className="bg-white dark:bg-gray-800 px-6 pt-6 pb-4">
+                                <div className="flex justify-between items-start mb-4">
+                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white" id="modal-title">
+                                        {t('add_to_cart_btn')}
+                                    </h3>
+                                    <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-500">
+                                        <XMarkIcon className="w-6 h-6" />
+                                    </button>
                                 </div>
                                 <div className="mb-6">
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
+                                            <img src={getImage(category)} alt={selectedProduct.productName} className="w-full h-full object-cover" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-lg font-bold text-gray-800 dark:text-white">{selectedProduct.productName}</h4>
+                                            <p className="text-primary-600 dark:text-primary-400 font-bold">₹{selectedProduct.price} <span className="text-gray-400 font-normal text-sm">/ {selectedProduct.unit}</span></p>
+                                        </div>
+                                    </div>
+
                                     <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        {t('quantity_label')} ({selectedProduct.unit})
+                                        {t('quantity_label')}
                                     </label>
-                                    <input
-                                        type="number"
-                                        id="quantity"
-                                        min="0.1"
-                                        step="0.1"
-                                        max={selectedProduct.quantity}
-                                        value={quantity}
-                                        onChange={(e) => {
-                                            const val = e.target.value;
-                                            if (val === '') {
-                                                setQuantity('');
-                                            } else {
-                                                setQuantity(val);
-                                            }
-                                        }}
-                                        className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md p-2 border"
-                                    />
-                                    <p className="text-right text-lg font-bold text-gray-900 dark:text-white mt-2">
-                                        {t('total_cost_label')} ₹{(selectedProduct.price * (parseFloat(quantity) || 0)).toFixed(2)}
-                                    </p>
+                                    <div className="flex items-center gap-4">
+                                        <input
+                                            type="number"
+                                            id="quantity"
+                                            min="0.1"
+                                            step="0.1"
+                                            max={selectedProduct.quantity}
+                                            value={quantity}
+                                            onChange={(e) => setQuantity(e.target.value)}
+                                            className="block w-full rounded-xl border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:text-white py-2.5"
+                                        />
+                                        <div className="text-right min-w-[100px]">
+                                            <div className="text-xs text-gray-500">{t('total_cost_label')}</div>
+                                            <div className="text-xl font-bold text-gray-900 dark:text-white">
+                                                ₹{(selectedProduct.price * (parseFloat(quantity) || 0)).toFixed(2)}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                                <button
-                                    type="button"
-                                    disabled={!quantity || parseFloat(quantity) <= 0}
-                                    className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm ${(!quantity || parseFloat(quantity) <= 0) ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
-                                    onClick={() => {
-                                        const qty = parseFloat(quantity);
-                                        if (!qty || qty <= 0) return;
+                                <div className="flex gap-3">
+                                    <button
+                                        type="button"
+                                        className="flex-1 rounded-xl border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-3 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+                                        onClick={() => setIsModalOpen(false)}
+                                    >
+                                        {t('cancel_btn')}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        disabled={!quantity || parseFloat(quantity) <= 0}
+                                        className="flex-1 inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-3 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        onClick={() => {
+                                            const qty = parseFloat(quantity);
+                                            if (!qty || qty <= 0) return;
 
-                                        // Check existing cart for this product
-                                        const existingCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
-                                        const existingItem = existingCartItems.find(item => item.id === selectedProduct._id);
-                                        const existingQty = existingItem ? existingItem.quantity : 0;
+                                            const existingCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+                                            const existingItem = existingCartItems.find(item => item.id === selectedProduct._id);
+                                            const existingQty = existingItem ? existingItem.quantity : 0;
 
-                                        // Check if total quantity exceeds stock
-                                        if (qty + existingQty > selectedProduct.quantity) {
-                                            const availableToAdd = selectedProduct.quantity - existingQty;
-                                            toast.error(`${t('out_of_stock_msg') || 'Out of Stock!'} ${t('available_quantity') || 'Available:'} ${Math.max(0, availableToAdd)} ${selectedProduct.unit} ${existingQty > 0 ? `(${existingQty} in cart)` : ''}`);
-                                            return;
-                                        }
-                                        const cartItem = {
-                                            id: selectedProduct._id,
-                                            productName: selectedProduct.productName,
-                                            name: selectedProduct.productName,
-                                            category: category,
-                                            price: selectedProduct.price,
-                                            unit: selectedProduct.unit,
-                                            farmerName: selectedProduct.farmer?.name || 'Local Farmer',
-                                            farmerId: selectedProduct.farmer?._id,
-                                            quantity: qty,
-                                            maxQuantity: selectedProduct.quantity
-                                        };
+                                            if (qty + existingQty > selectedProduct.quantity) {
+                                                const availableToAdd = selectedProduct.quantity - existingQty;
+                                                toast.error(`${t('out_of_stock_msg') || 'Out of Stock!'} ${t('available_quantity') || 'Available:'} ${Math.max(0, availableToAdd)} ${selectedProduct.unit}`);
+                                                return;
+                                            }
+                                            const cartItem = {
+                                                id: selectedProduct._id,
+                                                productName: selectedProduct.productName,
+                                                name: selectedProduct.productName,
+                                                category: category,
+                                                price: selectedProduct.price,
+                                                unit: selectedProduct.unit,
+                                                farmerName: selectedProduct.farmer?.name || 'Local Farmer',
+                                                farmerId: selectedProduct.farmer?._id,
+                                                quantity: qty,
+                                                maxQuantity: selectedProduct.quantity
+                                            };
 
-                                        // Get existing cart
-                                        const existingCart = JSON.parse(localStorage.getItem('cartItems') || '[]');
+                                            const existingCart = JSON.parse(localStorage.getItem('cartItems') || '[]');
+                                            const existingItemIndex = existingCart.findIndex(item => item.id === cartItem.id);
 
-                                        // Check if item exists
-                                        const existingItemIndex = existingCart.findIndex(item => item.id === cartItem.id);
+                                            if (existingItemIndex > -1) {
+                                                existingCart[existingItemIndex].quantity += qty;
+                                                toast.success(t('updated_cart_msg') || 'Added to cart (Updated quantity)');
+                                            } else {
+                                                existingCart.push(cartItem);
+                                                toast.success(t('added_to_cart_msg') || 'Added to cart');
+                                            }
 
-                                        if (existingItemIndex > -1) {
-                                            // Update quantity
-                                            existingCart[existingItemIndex].quantity += qty;
-                                            toast.success(t('updated_cart_msg') || 'Added to cart (Updated quantity)');
-                                        } else {
-                                            // Add new
-                                            existingCart.push(cartItem);
-                                            toast.success(t('added_to_cart_msg') || 'Added to cart');
-                                        }
-
-                                        localStorage.setItem('cartItems', JSON.stringify(existingCart));
-                                        setIsModalOpen(false);
-                                    }}
-                                >
-                                    {t('add_to_cart_btn')}
-                                </button>
-                                <button
-                                    type="button"
-                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                                    onClick={() => setIsModalOpen(false)}
-                                >
-                                    {t('cancel_btn')}
-                                </button>
+                                            localStorage.setItem('cartItems', JSON.stringify(existingCart));
+                                            setIsModalOpen(false);
+                                        }}
+                                    >
+                                        {t('add_to_cart_btn')}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

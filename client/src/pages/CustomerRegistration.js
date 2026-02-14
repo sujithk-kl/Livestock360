@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
 import customerService from '../services/customerService';
 import { useAuth } from '../context/AuthContext';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, EyeSlashIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import authBg from '../assets/modern_farm_hero.png';
 
 const CustomerRegistration = () => {
   const navigate = useNavigate();
@@ -19,14 +20,8 @@ const CustomerRegistration = () => {
     city: '',
     preferences: {
       preferredProducts: [],
-      budgetRange: {
-        min: '',
-        max: ''
-      },
-      notifications: {
-        email: true,
-        sms: false
-      }
+      budgetRange: { min: '', max: '' },
+      notifications: { email: true, sms: false }
     }
   });
   const [errors, setErrors] = useState({});
@@ -39,7 +34,6 @@ const CustomerRegistration = () => {
     const { name, value, type, checked } = e.target;
 
     if (name.includes('.')) {
-      // Handle nested object properties
       const [parent, child] = name.split('.');
       setFormData(prev => ({
         ...prev,
@@ -55,44 +49,28 @@ const CustomerRegistration = () => {
       }));
     }
 
-    // Clear error when user types
     if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: undefined
-      }));
+      setErrors(prev => ({ ...prev, [name]: undefined }));
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
+    if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (loading) return; // Prevent double submission
-
-    if (!validateForm()) {
-      return;
-    }
+    if (loading) return;
+    if (!validateForm()) return;
 
     setLoading(true);
     setErrors({});
 
     try {
-      // Prepare customer data for registration
       const customerData = {
         name: formData.name,
         email: formData.email,
@@ -109,99 +87,89 @@ const CustomerRegistration = () => {
         }
       };
 
-      // Register customer
       const response = await customerService.registerCustomer(customerData);
 
-      console.log('Customer registered:', response);
-
-      // Auto-login using context
       if (response.data && response.data.user && response.data.user.token) {
         login(response.data.user, response.data.user.token);
       }
 
-      // Show success message
       setSuccessMessage('Registration successful! Redirecting...');
-
-      // Redirect to customer products after 2 seconds
-      setTimeout(() => {
-        navigate('/customer/products');
-      }, 2000);
+      setTimeout(() => navigate('/customer/products'), 2000);
 
     } catch (err) {
       console.error('Registration error:', err);
-      console.error('Error details:', JSON.stringify(err, null, 2));
+      let errorMessage = 'Registration failed. Please try again.';
 
-      // Handle different types of errors
       if (err.errors && Array.isArray(err.errors)) {
-        // Express-validator errors
-        setErrors({ general: err.errors.map(e => e.msg).join(', ') });
+        errorMessage = err.errors.map(e => e.msg).join(', ');
       } else if (err.message) {
-        // Standard error message
-        setErrors({ general: err.message });
+        errorMessage = err.message;
       } else if (err.response && err.response.data) {
-        // Axios error with response
         const errorData = err.response.data;
-        if (errorData.errors && Array.isArray(errorData.errors)) {
-          setErrors({ general: errorData.errors.map(e => e.msg || e.message).join(', ') });
-        } else if (errorData.message) {
-          setErrors({ general: errorData.message });
-        } else {
-          setErrors({ general: 'Registration failed. Please try again.' });
-        }
-      } else if (err.request) {
-        // Network error
-        setErrors({ general: 'Network error. Please check your connection and try again.' });
-      } else {
-        // Unknown error
-        setErrors({ general: 'Registration failed. Please try again.' });
+        if (errorData.errors) errorMessage = errorData.errors.map(e => e.msg || e.message).join(', ');
+        else if (errorData.message) errorMessage = errorData.message;
       }
+
+      setErrors({ general: errorMessage });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">{t('customer_registration_title')}</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">{t('customer_registration_subtitle')}</p>
+    <div className="h-screen overflow-hidden bg-white dark:bg-gray-900 flex font-sans">
+      {/* Left Side - Image */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-gray-900">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${authBg})` }}
+        ></div>
+        <div className="absolute inset-0 bg-secondary-900/60 backdrop-blur-sm"></div>
+        <div className="relative z-10 flex flex-col justify-between p-12 text-white h-full w-full">
+          <div onClick={() => navigate('/')} className="cursor-pointer flex items-center gap-2 w-fit hover:text-secondary-200 transition-colors">
+            <ArrowLeftIcon className="w-5 h-5" />
+            <span className="text-sm font-medium">Back to Home</span>
+          </div>
+          <div>
+            <h1 className="text-4xl font-serif font-bold mb-4">Join <span className="text-secondary-300">Livestock360</span></h1>
+            <p className="text-lg text-secondary-100 max-w-md leading-relaxed">
+              Create an account to access fresh, locally sourced livestock products delivered to your doorstep.
+            </p>
+          </div>
+          <div className="text-sm text-secondary-200">
+            &copy; {new Date().getFullYear()} Livestock360
+          </div>
         </div>
+      </div>
 
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-8 max-w-2xl transition-colors duration-200">
-          {/* Success Message */}
-          {successMessage && (
-            <div className="mb-6 bg-green-50 border-l-4 border-green-500 p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-green-700">{successMessage}</p>
-                </div>
-              </div>
+      {/* Right Side - Scrollable Form */}
+      <div className="flex-1 flex flex-col h-full overflow-y-auto">
+        <div className="w-full max-w-xl mx-auto py-12 px-4 sm:px-6">
+          <div className="lg:hidden mb-8" onClick={() => navigate('/')}>
+            <span className="flex items-center gap-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white cursor-pointer transition-colors">
+              <ArrowLeftIcon className="w-4 h-4" /> Back
+            </span>
+          </div>
+
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white font-serif tracking-tight">
+              {t('customer_registration_title')}
+            </h2>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              Already have an account?{' '}
+              <Link to="/customer/login" className="font-medium text-secondary-600 hover:text-secondary-500 transition-colors">
+                {t('sign_in_button')}
+              </Link>
+            </p>
+          </div>
+
+          {(successMessage || errors.general) && (
+            <div className={`rounded-xl p-4 mb-6 flex items-start gap-3 border transition-all ${successMessage ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
+              <div className="text-sm font-medium">{successMessage || errors.general}</div>
             </div>
           )}
 
-          {/* Error Message */}
-          {errors.general && (
-            <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-red-700">{errors.general}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('full_name_label')} *</label>
               <input
@@ -209,7 +177,7 @@ const CustomerRegistration = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white"
+                className="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-secondary-500 focus:border-transparent dark:bg-gray-800 dark:text-white transition shadow-sm"
                 required
               />
             </div>
@@ -221,7 +189,7 @@ const CustomerRegistration = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white"
+                className="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-secondary-500 focus:border-transparent dark:bg-gray-800 dark:text-white transition shadow-sm"
                 required
               />
             </div>
@@ -233,8 +201,8 @@ const CustomerRegistration = () => {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white"
-                placeholder="10-digit phone number"
+                className="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-secondary-500 focus:border-transparent dark:bg-gray-800 dark:text-white transition shadow-sm"
+                placeholder="10-digit number"
                 required
               />
             </div>
@@ -246,7 +214,7 @@ const CustomerRegistration = () => {
                 name="city"
                 value={formData.city}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white"
+                className="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-secondary-500 focus:border-transparent dark:bg-gray-800 dark:text-white transition shadow-sm"
                 placeholder="Enter your city"
                 required
               />
@@ -260,25 +228,14 @@ const CustomerRegistration = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white pr-10`}
+                  className={`block w-full px-4 py-3 rounded-lg border ${errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} focus:ring-2 focus:ring-secondary-500 focus:border-transparent dark:bg-gray-800 dark:text-white transition shadow-sm pr-10`}
                   required
                 />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeSlashIcon className="h-5 w-5 text-gray-500" aria-hidden="true" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5 text-gray-500" aria-hidden="true" />
-                  )}
-                </button>
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <EyeSlashIcon className="h-5 w-5 text-gray-400" /> : <EyeIcon className="h-5 w-5 text-gray-400" />}
+                </div>
               </div>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
-              )}
+              {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
             </div>
 
             <div>
@@ -289,68 +246,31 @@ const CustomerRegistration = () => {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                    } rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white pr-10`}
+                  className={`block w-full px-4 py-3 rounded-lg border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} focus:ring-2 focus:ring-secondary-500 focus:border-transparent dark:bg-gray-800 dark:text-white transition shadow-sm pr-10`}
                   required
                 />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? (
-                    <EyeSlashIcon className="h-5 w-5 text-gray-500" aria-hidden="true" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5 text-gray-500" aria-hidden="true" />
-                  )}
-                </button>
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                  {showConfirmPassword ? <EyeSlashIcon className="h-5 w-5 text-gray-400" /> : <EyeIcon className="h-5 w-5 text-gray-400" />}
+                </div>
               </div>
-              {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
-              )}
+              {errors.confirmPassword && <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>}
             </div>
 
-
-
-
-
-
-
-
-          </div>
-
-          <div className="flex flex-col space-y-4 mt-6">
-            <div className="flex justify-end space-x-4">
-              <button
-                type="button"
-                onClick={() => navigate('/')}
-                disabled={loading}
-                className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:bg-gray-200 disabled:cursor-not-allowed"
-              >
-                {t('cancel_button')}
-              </button>
+            <div className="pt-4">
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-bold text-white bg-secondary-600 hover:bg-secondary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5"
               >
-                {loading ? t('registering_button') : t('register_button')}
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  t('register_button')
+                )}
               </button>
             </div>
-
-            <div className="text-center mt-4">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                {t('already_have_account')}{' '}
-                <Link
-                  to="/customer/login"
-                  className="font-medium text-green-600 hover:text-green-500"
-                >
-                  {t('sign_in_button')}
-                </Link>
-              </p>
-            </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

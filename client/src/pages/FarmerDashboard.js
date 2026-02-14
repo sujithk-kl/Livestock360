@@ -1,12 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import authService from '../services/authService';
 import farmerService from '../services/farmerService';
 import NotificationBell from '../components/NotificationBell';
+import {
+  HomeIcon,
+  CubeIcon,
+  BeakerIcon,
+  UserGroupIcon,
+  ChartBarIcon,
+  DocumentTextIcon,
+  ArrowLeftOnRectangleIcon,
+  Bars3Icon,
+  XMarkIcon,
+  UserCircleIcon
+} from '@heroicons/react/24/outline';
 
 const FarmerDashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const [farmerProfile, setFarmerProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +40,6 @@ const FarmerDashboard = () => {
           return;
         }
 
-        // Fetch profile and stats in parallel
         const [profileResponse, statsResponse] = await Promise.all([
           farmerService.getMyProfile(),
           farmerService.getDashboardStats()
@@ -41,11 +53,8 @@ const FarmerDashboard = () => {
 
       } catch (error) {
         console.error(error);
-        // If specific error handling is needed, add here. 
-        // For now, if profile fails, we might want to redirect, but if stats fail, maybe just show 0s or error toast.
-        // Keeping original behavior of redirecting on error for safety if profile fails.
         if (!farmerProfile) {
-          // navigate('/login'); // specific check might be better
+          // navigate('/login'); 
         }
       } finally {
         setLoading(false);
@@ -60,128 +69,162 @@ const FarmerDashboard = () => {
     navigate('/login');
   };
 
+  const navItems = [
+    { label: t('side_dashboard'), path: '/farmer/dashboard', icon: HomeIcon },
+    { label: t('side_livestock'), path: '/farmer/livestock', icon: CubeIcon },
+    { label: t('side_products'), path: '/farmer/products', icon: BeakerIcon },
+    { label: t('side_milk'), path: '/farmer/milk-production', icon: ChartBarIcon }, // Changed icon for variety
+    { label: t('side_staff'), path: '/farmer/staff', icon: UserGroupIcon },
+    { label: t('side_reports'), path: '/farmer/reports', icon: DocumentTextIcon },
+    { label: 'Sales Report', path: '/farmer/sales-report', icon: ChartBarIcon },
+  ];
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin h-12 w-12 border-4 border-green-600 border-t-transparent rounded-full"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="animate-spin h-12 w-12 border-4 border-primary-500 border-t-transparent rounded-full"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-100 dark:bg-gray-900 transition-colors duration-200 relative">
-      {/* Mobile Header for Hamburger */}
-      <div className="md:hidden fixed top-0 w-full bg-green-600 z-20 flex items-center justify-between px-4 h-16 shadow-md text-white">
-        <span className="font-bold text-lg">Livestock360</span>
-        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 focus:outline-none">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        </button>
+    <div className="min-h-screen flex bg-gray-50 dark:bg-gray-900 transition-colors duration-200 font-sans">
+      {/* Mobile Header */}
+      <div className="md:hidden fixed top-0 w-full bg-white dark:bg-gray-800 z-30 flex items-center justify-between px-4 h-16 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <span className="font-bold text-lg font-serif text-gray-900 dark:text-white">Livestock<span className="text-primary-500">360</span></span>
+        <div className="flex items-center gap-4">
+          <NotificationBell />
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 text-gray-600 dark:text-gray-300 focus:outline-none">
+            {sidebarOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
 
-      {/* Overlay for mobile sidebar */}
+      {/* Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 md:hidden"
           onClick={() => setSidebarOpen(false)}
         ></div>
       )}
 
       {/* Sidebar */}
       <aside className={`
-        fixed md:static inset-y-0 left-0 z-30 w-72 bg-white dark:bg-gray-800 shadow-lg flex flex-col transition-transform duration-300 transform
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
+        fixed md:static inset-y-0 left-0 z-40 w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-transform duration-300 transform
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 shadow-xl md:shadow-none
       `}>
-        <div className="h-16 flex items-center px-6 bg-gradient-to-r from-green-600 to-green-700 text-white font-bold text-xl">
-          Livestock360
+        <div className="h-20 flex items-center px-8 border-b border-gray-100 dark:border-gray-700">
+          <span className="text-2xl font-bold font-serif text-gray-900 dark:text-white">Livestock<span className="text-primary-500">360</span></span>
         </div>
 
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-          {[
-            [t('side_dashboard'), '/farmer/dashboard'],
-            [t('side_livestock'), '/farmer/livestock'],
-            [t('side_products'), '/farmer/products'],
-            [t('side_milk'), '/farmer/milk-production'],
-            [t('side_staff'), '/farmer/staff'],
-            [t('side_reports'), '/farmer/reports'],
-            ['Sales Report', '/farmer/sales-report'],
-          ].map(([label, path]) => (
-            <button
-              key={label}
-              onClick={() => {
-                navigate(path);
-                setSidebarOpen(false);
-              }}
-              className="w-full text-left px-4 py-3 rounded-lg hover:bg-green-100 hover:text-green-700 dark:text-gray-200 dark:hover:bg-gray-700 dark:hover:text-green-400 transition font-medium"
-            >
-              {label}
-            </button>
-          ))}
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar">
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <button
+                key={item.path}
+                onClick={() => {
+                  navigate(item.path);
+                  setSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium group
+                  ${isActive
+                    ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 shadow-sm'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-200'
+                  }`}
+              >
+                <item.icon className={`w-5 h-5 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'}`} />
+                {item.label}
+              </button>
+            );
+          })}
         </nav>
 
-        <div className="p-4 border-t dark:border-gray-700">
+        <div className="p-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
           <div
             onClick={() => navigate('/farmer/profile')}
-            className="cursor-pointer group mb-2"
+            className="flex items-center gap-3 p-3 rounded-xl hover:bg-white dark:hover:bg-gray-700 cursor-pointer transition-colors shadow-sm hover:shadow-md mb-3 border border-transparent hover:border-gray-100 dark:hover:border-gray-600"
           >
-            <p className="text-xl font-bold dark:text-white group-hover:text-green-600 transition-colors flex items-center">
-              {farmerProfile?.name}
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-              </svg>
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{t('side_profile')}</p>
+            <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-700 dark:text-primary-300 font-bold text-lg">
+              {farmerProfile?.name?.charAt(0) || <UserCircleIcon className="w-6 h-6" />}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{farmerProfile?.name}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{t('side_profile')}</p>
+            </div>
           </div>
           <button
             onClick={handleLogout}
-            className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition"
+            className="w-full flex items-center justify-center gap-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 py-2.5 rounded-xl hover:bg-red-50 hover:text-red-600 hover:border-red-100 dark:hover:bg-red-900/20 dark:hover:text-red-400 dark:hover:border-red-900/30 transition-all font-medium shadow-sm"
           >
+            <ArrowLeftOnRectangleIcon className="w-5 h-5" />
             {t('side_logout')}
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 transition-all duration-200">
-        {/* Header */}
-        <div className="mb-8 flex justify-between items-start">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{t('dashboard_title')}</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm md:text-base">
-              {t('dashboard_welcome')}
-            </p>
+      <main className="flex-1 min-w-0 overflow-y-auto">
+        <div className="p-4 md:p-8 pt-20 md:pt-8 max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white font-serif">{t('dashboard_title')}</h1>
+              <p className="text-gray-500 dark:text-gray-400 mt-1">
+                {t('dashboard_welcome')}
+              </p>
+            </div>
+            <div className="hidden md:block">
+              <NotificationBell />
+            </div>
           </div>
-          <NotificationBell />
-        </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
-          {/* Livestock */}
-          <StatCard
-            title={t('stat_livestock')}
-            value={stats.totalLivestock}
-            color="green"
-          />
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <StatCard
+              title={t('stat_livestock')}
+              value={stats.totalLivestock}
+              icon={CubeIcon}
+              color="emerald"
+            />
+            <StatCard
+              title={t('stat_products')}
+              value={stats.productsListed}
+              icon={BeakerIcon}
+              color="blue"
+            />
+            <StatCard
+              title={t('stat_milk')}
+              value={`${stats.milkToday} L`}
+              icon={BeakerIcon} // Could use a specific icon if available
+              color="amber"
+            />
+            <StatCard
+              title={t('stat_farm_size')}
+              value={`${stats.farmSize || farmerProfile?.farmSize || 0} ac`}
+              icon={HomeIcon}
+              color="purple"
+            />
+          </div>
 
-          {/* Products */}
-          <StatCard
-            title={t('stat_products')}
-            value={stats.productsListed}
-            color="blue"
-          />
-
-          {/* Milk */}
-          <StatCard
-            title={t('stat_milk')}
-            value={`${stats.milkToday} L`}
-            color="yellow"
-          />
-
-          {/* Farm Size */}
-          <StatCard
-            title={t('stat_farm_size')}
-            value={`${stats.farmSize || farmerProfile?.farmSize || 0} acres`}
-            color="purple"
-          />
+          {/* Recent Activity / Placeholder Area - simplified for now */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-card border border-gray-100 dark:border-gray-700">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <button onClick={() => navigate('/farmer/livestock')} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/20 text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors text-center border border-dashed border-gray-300 dark:border-gray-600 hover:border-primary-300">
+                <span className="block font-medium">Add Livestock</span>
+              </button>
+              <button onClick={() => navigate('/farmer/products')} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-center border border-dashed border-gray-300 dark:border-gray-600 hover:border-blue-300">
+                <span className="block font-medium">List Product</span>
+              </button>
+              <button onClick={() => navigate('/farmer/milk-production')} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-900/20 text-gray-700 dark:text-gray-200 hover:text-amber-600 dark:hover:text-amber-400 transition-colors text-center border border-dashed border-gray-300 dark:border-gray-600 hover:border-amber-300">
+                <span className="block font-medium">Record Milk</span>
+              </button>
+              <button onClick={() => navigate('/farmer/sales-report')} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-900/20 text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors text-center border border-dashed border-gray-300 dark:border-gray-600 hover:border-purple-300">
+                <span className="block font-medium">View Sales</span>
+              </button>
+            </div>
+          </div>
         </div>
       </main>
     </div>
@@ -189,23 +232,23 @@ const FarmerDashboard = () => {
 };
 
 /* Reusable Card Component */
-const StatCard = ({ title, value, color }) => {
-  const colors = {
-    green: 'bg-green-100 text-green-600',
-    blue: 'bg-blue-100 text-blue-600',
-    yellow: 'bg-yellow-100 text-yellow-600',
-    purple: 'bg-purple-100 text-purple-600',
+const StatCard = ({ title, value, icon: Icon, color }) => {
+  const colorMap = {
+    emerald: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
+    blue: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+    amber: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+    purple: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition border border-gray-100 dark:border-gray-700">
-      <div className="p-6 flex items-center gap-5">
-        <div className={`h-12 w-12 rounded-lg flex items-center justify-center ${colors[color]} dark:opacity-90`}>
-          <span className="text-lg font-bold">{value.toString()[0]}</span>
-        </div>
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card p-6 border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow duration-300">
+      <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{title}</p>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{value}</h3>
+        </div>
+        <div className={`p-3 rounded-xl ${colorMap[color] || colorMap.emerald}`}>
+          {Icon && <Icon className="w-6 h-6" />}
         </div>
       </div>
     </div>
