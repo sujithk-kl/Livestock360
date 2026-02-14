@@ -1,7 +1,10 @@
 const Farmer = require('../models/Farmer');
+const mongoose = require('mongoose');
 const Livestock = require('../models/Livestock');
 const Product = require('../models/Product');
 const MilkProduction = require('../models/MilkProduction');
+const Order = require('../models/Order');
+const Review = require('../models/Review');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { validationResult } = require('express-validator');
@@ -425,11 +428,100 @@ const getDashboardStats = async (req, res) => {
     }
 };
 
+// @desc    Get sales report (orders containing farmer's products)
+// @route   GET /api/farmers/sales-report
+// @access  Private (Farmer only)
+const getSalesReport = async (req, res) => {
+    try {
+        const farmerId = req.user.id;
+
+        // Aggregation pipeline to get robust data
+        const sales = await Order.aggregate([
+            // 1. Find orders that contain items from this farmer
+            { $match: { "items.farmer": new mongoose.Types.ObjectId(farmerId) } },
+
+            // 2. Unwind items to filter specific products from this farmer
+            { $unwind: "$items" },
+
+            // 3. Match only the items that belong to this farmer
+            { $match: { "items.farmer": new mongoose.Types.ObjectId(farmerId) } },
+
+            // 4. Lookup Customer details
+            {
+                $lookup: {
+                    from: "customers", // collection name for Customer model
+                    localField: "customer",
+                    foreignField: "_id",
+                    as: "customerParams"
+                }
+            },
+            { $unwind: { path: "$customerParams", preserveNullAndEmptyArrays: true } },
+
+            // 5. Lookup Review for this product by this customer
+            {
+                $lookup: {
+                    from: "reviews",
+                    let: { productId: "$items.product", customerId: "$customer" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$product", "$$productId"] },
+                                        { $eq: ["$user", "$$customerId"] }
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    as: "reviewParams"
+                }
+            },
+            { $unwind: { path: "$reviewParams", preserveNullAndEmptyArrays: true } },
+
+            // 6. Project final shape
+            {
+                $project: {
+                    _id: 1, // Order ID
+                    date: "$createdAt",
+                    customerName: { $ifNull: ["$customerParams.name", "Unknown Customer"] },
+                    customerEmail: "$customerParams.email",
+                    productName: "$items.productName",
+                    category: "$items.category",
+                    quantity: "$items.quantity",
+                    unit: "$items.unit",
+                    price: "$items.price",
+                    total: "$items.total",
+                    rating: { $ifNull: ["$reviewParams.rating", null] }, // Rating if exists, else null
+                    reviewComment: { $ifNull: ["$reviewParams.comment", null] }
+                }
+            },
+            // 7. Sort by date descending
+            { $sort: { date: -1 } }
+        ]);
+
+        res.status(200).json({
+            success: true,
+            count: sales.length,
+            data: sales
+        });
+
+    } catch (error) {
+        console.error('Error fetching sales report:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+};
+
 module.exports = {
     loginFarmer,
     registerFarmer,
     getMyProfile,
     updateProfile,
     changePassword,
-    getDashboardStats
+    getDashboardStats,
+    getSalesReport
 };

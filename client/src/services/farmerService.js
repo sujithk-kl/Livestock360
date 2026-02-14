@@ -1,6 +1,10 @@
 // Farmer Service
 import api from './api';
 
+const getSalesReport = () => {
+  return api.get('/farmers/sales-report');
+};
+
 const farmerService = {
   // Login farmer
   login: async (credentials) => {
@@ -236,6 +240,16 @@ const farmerService = {
       throw error.response?.data || { message: 'Failed to fetch dashboard stats' };
     }
   },
+
+  getSalesReport: async () => {
+    try {
+      const response = await api.get('/farmers/sales-report');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to fetch sales report' };
+    }
+  },
 };
+
 
 export default farmerService;

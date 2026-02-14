@@ -11,6 +11,7 @@ import FarmerMilkProduction from './pages/FarmerMilkProduction';
 import FarmerStaff from './pages/FarmerStaff';
 import FarmerReports from './pages/FarmerReports';
 import FarmerProfile from './pages/FarmerProfile';
+import FarmerSalesReport from './pages/FarmerSalesReport';
 import CustomerLogin from './pages/CustomerLogin';
 import CustomerRegistration from './pages/CustomerRegistration';
 import CustomerProfile from './pages/CustomerProfile';
@@ -62,6 +63,7 @@ function AppContent() {
           <Route path="/farmer/milk-production" element={<FarmerMilkProduction />} />
           <Route path="/farmer/staff" element={<FarmerStaff />} />
           <Route path="/farmer/reports" element={<FarmerReports />} />
+          <Route path="/farmer/sales-report" element={<FarmerSalesReport />} />
           <Route path="/farmer/profile" element={<FarmerProfile />} />
         </Route>
 

@@ -54,6 +54,16 @@ router.get(
   farmerController.getDashboardStats
 );
 
+
+// @route   GET /api/farmers/sales-report
+// @desc    Get sales report
+// @access  Private (Farmer only)
+router.get(
+  '/sales-report',
+  authorize('farmer', 'admin'),
+  farmerController.getSalesReport
+);
+
 // @route   PUT /api/farmers/password
 // @desc    Change farmer password
 // @access  Private

@@ -102,6 +102,7 @@ const FarmerDashboard = () => {
             [t('side_milk'), '/farmer/milk-production'],
             [t('side_staff'), '/farmer/staff'],
             [t('side_reports'), '/farmer/reports'],
+            ['Sales Report', '/farmer/sales-report'],
           ].map(([label, path]) => (
             <button
               key={label}
