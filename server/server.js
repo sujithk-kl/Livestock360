@@ -2,6 +2,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+
+// Load environment variables FIRST, before any other imports
+dotenv.config();
+
 // const connectDB = require('./config/db'); // Removed missing import
 
 const connectDB = async () => {
@@ -15,7 +19,7 @@ const connectDB = async () => {
 };
 
 
-// Import Routes
+// Import Routes (after dotenv.config() so environment variables are available)
 // Import Routes
 // const authRoutes = require('./routes/authRoutes'); // Removed as auth is handled in farmer/customer routes
 const farmerRoutes = require('./routes/farmer');
@@ -29,7 +33,6 @@ const milkProductionRoutes = require('./routes/milkProduction');
 const livestockRoutes = require('./routes/livestock');
 // const orderRoutes = require('./routes/orderRoutes'); // REMOVED DUPLICATE
 
-dotenv.config();
 
 const app = express();
 
