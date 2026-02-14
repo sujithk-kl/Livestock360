@@ -29,7 +29,8 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.1",
     "nodemailer": "^8.0.0",
-    "razorpay": "^2.9.6"
+    "razorpay": "^2.9.6",
+    "resend": "^6.9.2"
   },
   "devDependencies": {
     "concurrently": "^8.2.1",
