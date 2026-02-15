@@ -1,10 +1,7 @@
-const { Resend } = require('resend');
-
-// Initialize Resend with API key
-const resend = new Resend(process.env.RESEND_API_KEY);
+const brevo = require('@getbrevo/brevo');
 
 /**
- * Send email using Resend
+ * Send email using Brevo (formerly Sendinblue)
  * @param {Object} options - Email options
  * @param {string} options.to - Recipient email address
  * @param {string} options.subject - Email subject
@@ -12,23 +9,31 @@ const resend = new Resend(process.env.RESEND_API_KEY);
  */
 const sendEmail = async (options) => {
     try {
-        // Send email via Resend API
-        const { data, error } = await resend.emails.send({
-            from: 'Livestock360 <onboarding@resend.dev>', // Resend's verified domain for testing
-            to: options.to,
-            subject: options.subject,
-            html: options.html
-        });
+        // Initialize Brevo API client
+        const apiInstance = new brevo.TransactionalEmailsApi();
 
-        if (error) {
-            console.error('Resend API error:', error);
-            throw new Error(`Email could not be sent: ${error.message}`);
-        }
+        // Set API key
+        apiInstance.setApiKey(
+            brevo.TransactionalEmailsApiApiKeys.apiKey,
+            process.env.BREVO_API_KEY
+        );
 
-        console.log('Email sent successfully via Resend:', data.id);
-        return data;
+        // Prepare email data
+        const sendSmtpEmail = new brevo.SendSmtpEmail();
+        sendSmtpEmail.sender = {
+            name: 'Livestock360',
+            email: 'cyhawkzy@gmail.com'
+        };
+        sendSmtpEmail.to = [{ email: options.to }];
+        sendSmtpEmail.subject = options.subject;
+        sendSmtpEmail.htmlContent = options.html;
+
+        // Send email
+        const result = await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log('Email sent successfully via Brevo:', result.messageId);
+        return result;
     } catch (error) {
-        console.error('Error sending email:', error);
+        console.error('Brevo API error:', error);
         throw new Error('Email could not be sent');
     }
 };
