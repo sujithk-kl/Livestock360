@@ -2,9 +2,31 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const cron = require('node-cron');
 
 // Load environment variables FIRST, before any other imports
 dotenv.config();
+
+// Keep-alive mechanism: Ping server every 14 minutes to prevent sleeping
+if (process.env.BACKEND_URL) {
+  cron.schedule('*/14 * * * *', async () => {
+    try {
+      const https = require('https');
+      const http = require('http');
+      const url = process.env.BACKEND_URL;
+      const protocol = url.startsWith('https') ? https : http;
+
+      protocol.get(url, (res) => {
+        console.log(`Keep-alive ping successful: ${res.statusCode}`);
+      }).on('error', (err) => {
+        console.error('Keep-alive ping failed:', err.message);
+      });
+    } catch (error) {
+      console.error('Keep-alive error:', error.message);
+    }
+  });
+  console.log('Keep-alive cron job initialized - running every 14 minutes');
+}
 
 // const connectDB = require('./config/db'); // Removed missing import
 
