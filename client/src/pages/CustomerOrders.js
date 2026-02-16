@@ -248,7 +248,6 @@ const CustomerOrders = () => {
                                     placeholder={t('review_placeholder')}
                                     value={reviewComment}
                                     onChange={(e) => setReviewComment(e.target.value)}
-                                    required
                                 ></textarea>
                             </div>
                             <div className="flex justify-end gap-3">

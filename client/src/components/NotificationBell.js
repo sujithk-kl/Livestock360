@@ -49,6 +49,16 @@ const NotificationBell = () => {
         }
     };
 
+    const handleDelete = async (id, event) => {
+        event.stopPropagation(); // Prevent marking as read when deleting
+        try {
+            await notificationService.deleteNotification(id);
+            fetchNotifications(); // Refresh
+        } catch (error) {
+            console.error('Failed to delete notification', error);
+        }
+    };
+
     return (
         <div className="relative" ref={dropdownRef}>
             <button
@@ -75,11 +85,31 @@ const NotificationBell = () => {
                                 {notifications.map(notification => (
                                     <div
                                         key={notification._id}
-                                        onClick={() => handleMarkRead(notification._id, notification.product)}
-                                        className={`px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-700 ${!notification.isRead ? 'bg-green-50 dark:bg-gray-700' : ''}`}
+                                        className={`px-4 py-3 border-b border-gray-100 dark:border-gray-700 ${!notification.isRead ? 'bg-green-50 dark:bg-gray-700' : ''}`}
                                     >
-                                        <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{notification.message}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{new Date(notification.createdAt).toLocaleDateString()}</p>
+                                        <div onClick={() => handleMarkRead(notification._id, notification.product)} className="cursor-pointer">
+                                            <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">{notification.message}</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{new Date(notification.createdAt).toLocaleDateString()}</p>
+                                        </div>
+                                        <div className="flex gap-2 mt-2">
+                                            {!notification.isRead && (
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleMarkRead(notification._id);
+                                                    }}
+                                                    className="text-xs px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors"
+                                                >
+                                                    Mark as Done
+                                                </button>
+                                            )}
+                                            <button
+                                                onClick={(e) => handleDelete(notification._id, e)}
+                                                className="text-xs px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
                                     </div>
                                 ))}
                             </div>

@@ -52,3 +52,36 @@ exports.markRead = async (req, res, next) => {
         next(err);
     }
 };
+
+// @desc    Delete notification
+// @route   DELETE /api/notifications/:id
+// @access  Private (Farmer)
+exports.deleteNotification = async (req, res, next) => {
+    try {
+        const notification = await Notification.findById(req.params.id);
+
+        if (!notification) {
+            return res.status(404).json({
+                success: false,
+                message: 'Notification not found'
+            });
+        }
+
+        // Ensure accessible only by recipient
+        if (notification.recipient.toString() !== req.user.id) {
+            return res.status(401).json({
+                success: false,
+                message: 'Not authorized'
+            });
+        }
+
+        await notification.deleteOne();
+
+        res.status(200).json({
+            success: true,
+            message: 'Notification deleted'
+        });
+    } catch (err) {
+        next(err);
+    }
+};
