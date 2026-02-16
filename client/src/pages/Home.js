@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import homeBg from '../assets/tamil_nadu_farm_4k.jpg';
 import Footer from '../components/Footer';
+import Navbar from '../components/Navbar';
 import farmerImg from '../assets/farmer_card.png';
 import customerImg from '../assets/customer_card.png';
 import { ChevronDownIcon, UserGroupIcon, ShoppingBagIcon, ChartBarIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
@@ -20,6 +21,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-900 transition-colors duration-300">
+      <Navbar />
 
       {/* Hero Section */}
       <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">

@@ -9,13 +9,13 @@ const LanguageSwitcher = () => {
     };
 
     return (
-        <div className="fixed top-4 right-20 z-50">
-            <div className="flex bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="flex items-center">
+            <div className="flex bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <button
                     onClick={() => changeLanguage('en')}
                     className={`px-3 py-1 text-sm font-medium transition-colors ${i18n.language === 'en'
-                            ? 'bg-blue-600 text-white'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                         }`}
                 >
                     EN
@@ -24,8 +24,8 @@ const LanguageSwitcher = () => {
                 <button
                     onClick={() => changeLanguage('ta')}
                     className={`px-3 py-1 text-sm font-medium transition-colors ${i18n.language === 'ta'
-                            ? 'bg-green-600 text-white'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        ? 'bg-green-600 text-white'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                         }`}
                 >
                     தமிழ்

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import LanguageSwitcher from './LanguageSwitcher';
+import ThemeToggle from './ThemeToggle';
 
 const Navbar = () => {
     const { t } = useTranslation();
@@ -43,6 +45,10 @@ const Navbar = () => {
                                 {t(`nav_${link.name.toLowerCase()}`)}
                             </Link>
                         ))}
+                        <div className="flex items-center space-x-4 border-l border-gray-200 dark:border-gray-700 pl-4 ml-4">
+                            <LanguageSwitcher />
+                            <ThemeToggle />
+                        </div>
                     </div>
 
                     {/* Mobile menu button */}
@@ -78,6 +84,10 @@ const Navbar = () => {
                             {t(`nav_${link.name.toLowerCase()}`)}
                         </Link>
                     ))}
+                    <div className="flex items-center space-x-4 px-3 py-2 mt-2 border-t border-gray-100 dark:border-gray-800">
+                        <LanguageSwitcher />
+                        <ThemeToggle />
+                    </div>
                 </div>
             </div>
         </nav>

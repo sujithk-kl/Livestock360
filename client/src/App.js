@@ -34,21 +34,15 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import ThemeToggle from './components/ThemeToggle';
-import LanguageSwitcher from './components/LanguageSwitcher';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function AppContent() {
   const location = useLocation();
-  const showThemeToggle = location.pathname !== '/';
-
   console.log('DEBUG: VITE_API_BASE_URL is:', import.meta.env.VITE_API_BASE_URL);
 
   return (
     <div className="App min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-      <LanguageSwitcher />
-      {showThemeToggle && <ThemeToggle />}
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
