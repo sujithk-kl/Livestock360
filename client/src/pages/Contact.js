@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import api from '../services/api';
 
 const Contact = () => {
     const [formData, setFormData] = useState({
@@ -10,16 +11,31 @@ const Contact = () => {
         message: ''
     });
 
+    const [loading, setLoading] = useState(false);
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Here you would typically handle form submission, e.g., send data to backend
-        console.log('Form submitted:', formData);
-        alert('Thank you for your message! We will get back to you soon.');
-        setFormData({ name: '', email: '', subject: '', message: '' });
+        setLoading(true);
+
+        try {
+            const response = await api.post('/contact', formData);
+
+            if (response.data.success) {
+                alert('Thank you for your message! We will get back to you soon.');
+                setFormData({ name: '', email: '', subject: '', message: '' });
+            } else {
+                alert(response.data.message || 'Something went wrong. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            alert(error.response?.data?.message || 'Failed to send message. Please check your connection and try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -148,7 +164,7 @@ const Contact = () => {
                                     type="submit"
                                     className="w-full py-3 px-6 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg shadow-md transition-transform transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                                 >
-                                    Send Message
+                                    {loading ? 'Sending...' : 'Send Message'}
                                 </button>
                             </form>
                         </div>
