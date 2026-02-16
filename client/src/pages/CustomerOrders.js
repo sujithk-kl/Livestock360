@@ -122,7 +122,9 @@ const CustomerOrders = () => {
             }
         } catch (error) {
             console.error('Error submitting review:', error);
-            toast.error(t('review_failed_msg'));
+            // Show server error message if available
+            const errorMessage = error.response?.data?.message || t('review_failed_msg');
+            toast.error(errorMessage);
         }
     };
 
