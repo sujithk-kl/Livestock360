@@ -47,7 +47,7 @@ const Home = () => {
           </div>
 
           {/* Role Selection Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
             {/* Farmer Card */}
             <div
               onClick={() => navigate('/farmer/login')}
@@ -55,12 +55,10 @@ const Home = () => {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-primary-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative z-10 flex flex-col items-center">
-                <div className="w-full h-48 mb-6 rounded-2xl overflow-hidden shadow-lg relative group-hover:shadow-primary-500/20">
+                <div className="w-full h-56 mb-6 rounded-2xl overflow-hidden shadow-lg relative group-hover:shadow-primary-500/20">
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300 z-10"></div>
-                  <img src={farmerImg} alt="Farmer" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
+                  <img src={farmerImg} alt="Farmer" className="w-full h-full object-cover object-center transform group-hover:scale-110 transition-transform duration-700" />
                 </div>
-                <h2 className="text-3xl font-bold mb-3 font-serif text-white group-hover:text-primary-300 transition-colors">{t('role_farmer_title')}</h2>
-                <p className="text-gray-300 text-sm mb-6 leading-relaxed px-4">{t('role_farmer_desc')}</p>
                 <div className="w-full py-4 bg-primary-600 hover:bg-primary-500 text-white rounded-xl font-bold tracking-wide shadow-lg transition-all duration-300 transform group-hover:translate-y-0 translate-y-2 opacity-90 group-hover:opacity-100 flex items-center justify-center gap-2">
                   <span>{t('role_farmer_btn')}</span>
                   <ShoppingBagIcon className="w-5 h-5" />
@@ -75,12 +73,10 @@ const Home = () => {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-secondary-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative z-10 flex flex-col items-center">
-                <div className="w-full h-48 mb-6 rounded-2xl overflow-hidden shadow-lg relative group-hover:shadow-secondary-500/20">
+                <div className="w-full h-56 mb-6 rounded-2xl overflow-hidden shadow-lg relative group-hover:shadow-secondary-500/20">
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300 z-10"></div>
-                  <img src={customerImg} alt="Customer" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
+                  <img src={customerImg} alt="Customer" className="w-full h-full object-cover object-center transform group-hover:scale-110 transition-transform duration-700" />
                 </div>
-                <h2 className="text-3xl font-bold mb-3 font-serif text-white group-hover:text-secondary-300 transition-colors">{t('role_customer_title')}</h2>
-                <p className="text-gray-300 text-sm mb-6 leading-relaxed px-4">{t('role_customer_desc')}</p>
                 <div className="w-full py-4 bg-secondary-600 hover:bg-secondary-500 text-white rounded-xl font-bold tracking-wide shadow-lg transition-all duration-300 transform group-hover:translate-y-0 translate-y-2 opacity-90 group-hover:opacity-100 flex items-center justify-center gap-2">
                   <span>{t('role_customer_btn')}</span>
                   <UserGroupIcon className="w-5 h-5" />
