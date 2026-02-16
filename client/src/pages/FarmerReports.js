@@ -37,18 +37,18 @@ const FarmerReports = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   const months = [
-    { value: 1, label: 'January' },
-    { value: 2, label: 'February' },
-    { value: 3, label: 'March' },
-    { value: 4, label: 'April' },
-    { value: 5, label: 'May' },
-    { value: 6, label: 'June' },
-    { value: 7, label: 'July' },
-    { value: 8, label: 'August' },
-    { value: 9, label: 'September' },
-    { value: 10, label: 'October' },
-    { value: 11, label: 'November' },
-    { value: 12, label: 'December' }
+    { value: 1, label: t('month_january') },
+    { value: 2, label: t('month_february') },
+    { value: 3, label: t('month_march') },
+    { value: 4, label: t('month_april') },
+    { value: 5, label: t('month_may') },
+    { value: 6, label: t('month_june') },
+    { value: 7, label: t('month_july') },
+    { value: 8, label: t('month_august') },
+    { value: 9, label: t('month_september') },
+    { value: 10, label: t('month_october') },
+    { value: 11, label: t('month_november') },
+    { value: 12, label: t('month_december') }
   ];
 
   const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
@@ -159,7 +159,7 @@ const FarmerReports = () => {
   };
 
   const pieData = reportData ? {
-    labels: ['Milk Revenue', 'Product Sales', 'Staff Expenses'],
+    labels: [t('report_milk_revenue'), t('report_product_sales'), t('report_staff_expenses')],
     datasets: [
       {
         data: [
@@ -190,13 +190,13 @@ const FarmerReports = () => {
           className="mb-6 flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
         >
           <ArrowLeftIcon className="w-5 h-5" />
-          <span>Back to Dashboard</span>
+          <span>{t('back_to_dashboard')}</span>
         </button>
 
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white font-serif">Monthly Profit Report</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Analyze your farm's financial performance</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white font-serif">{t('report_title')}</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">{t('report_subtitle')}</p>
           </div>
 
           <div className="flex flex-wrap gap-3">
@@ -226,7 +226,7 @@ const FarmerReports = () => {
               className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <ArrowDownTrayIcon className="w-5 h-5" />
-              Download PDF
+              {t('download_report_btn')}
             </button>
           </div>
         </div>
@@ -277,7 +277,7 @@ const FarmerReports = () => {
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Net Profit</p>
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('report_net_profit')}</p>
                     <h3 className={`text-2xl font-bold mt-1 ${reportData.netProfit >= 0 ? 'text-primary-600 dark:text-primary-400' : 'text-red-600'}`}>
                       ₹ {reportData.netProfit.toLocaleString()}
                     </h3>
@@ -287,7 +287,7 @@ const FarmerReports = () => {
                   </div>
                 </div>
                 <div className="mt-4 text-xs text-gray-500">
-                  <span>{reportData.netProfit >= 0 ? 'Profitable Month' : 'Operating at Loss'}</span>
+                  <span>{reportData.netProfit >= 0 ? t('report_profitable') : t('report_loss')}</span>
                 </div>
               </div>
             </div>
@@ -297,7 +297,7 @@ const FarmerReports = () => {
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <ChartPieIcon className="w-5 h-5 text-gray-500" />
-                  Revenue vs Expenses Breakdown
+                  {t('report_revenue_expenses_breakdown')}
                 </h3>
                 <div className="h-64 flex justify-center">
                   {pieData && <Pie data={pieData} options={{ responsive: true, maintainAspectRatio: false }} />}
@@ -305,18 +305,18 @@ const FarmerReports = () => {
               </div>
 
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Quick Stats</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">{t('report_quick_stats')}</h3>
                 <div className="space-y-4">
                   <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                    <span className="text-gray-600 dark:text-gray-300">Days with Milk Production</span>
+                    <span className="text-gray-600 dark:text-gray-300">{t('report_days_milk')}</span>
                     <span className="font-bold text-gray-900 dark:text-white">{reportData.details.milkProductionCount}</span>
                   </div>
                   <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                    <span className="text-gray-600 dark:text-gray-300">Total Product Sales</span>
+                    <span className="text-gray-600 dark:text-gray-300">{t('report_total_product_sales')}</span>
                     <span className="font-bold text-gray-900 dark:text-white">{reportData.details.productSalesCount}</span>
                   </div>
                   <div className="flex justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                    <span className="text-gray-600 dark:text-gray-300">Active Staff Paid</span>
+                    <span className="text-gray-600 dark:text-gray-300">{t('report_active_staff_paid')}</span>
                     <span className="font-bold text-gray-900 dark:text-white">{reportData.details.staffCount}</span>
                   </div>
                 </div>
@@ -326,16 +326,16 @@ const FarmerReports = () => {
             {/* Detailed Tables */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
               <div className="p-6 border-b border-gray-100 dark:border-gray-700">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Staff Expenses Detail</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('report_staff_expenses_detail')}</h3>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm text-gray-600 dark:text-gray-400">
                   <thead className="bg-gray-50 dark:bg-gray-700/50 text-xs uppercase font-medium">
                     <tr>
-                      <th className="px-6 py-3">Name</th>
-                      <th className="px-6 py-3">Role</th>
-                      <th className="px-6 py-3">Wage Type</th>
-                      <th className="px-6 py-3 text-right">Amount</th>
+                      <th className="px-6 py-3">{t('name_label')}</th>
+                      <th className="px-6 py-3">{t('role_label')}</th>
+                      <th className="px-6 py-3">{t('wage_type_label')}</th>
+                      <th className="px-6 py-3 text-right">{t('form_total_amount')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -352,7 +352,7 @@ const FarmerReports = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="4" className="px-6 py-8 text-center text-gray-500">No staff expenses recorded for this month.</td>
+                        <td colSpan="4" className="px-6 py-8 text-center text-gray-500">{t('report_no_staff_expenses')}</td>
                       </tr>
                     )}
                   </tbody>
@@ -363,7 +363,7 @@ const FarmerReports = () => {
           </div>
         ) : (
           <div className="text-center py-20 text-gray-500 dark:text-gray-400">
-            Select a month and year to view the report.
+            {t('report_select_month_year')}
           </div>
         )}
       </div>

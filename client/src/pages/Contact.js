@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import api from '../services/api';
 
 const Contact = () => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -44,9 +46,9 @@ const Contact = () => {
             <div className="flex-grow">
                 <div className="max-w-7xl mx-auto px-6 py-16">
                     <div className="text-center mb-16">
-                        <h1 className="text-4xl md:text-5xl font-bold font-serif text-gray-900 dark:text-white mb-6">Contact Us</h1>
+                        <h1 className="text-4xl md:text-5xl font-bold font-serif text-gray-900 dark:text-white mb-6">{t('contact_title')}</h1>
                         <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                            Have questions or need support? We're here to help you.
+                            {t('contact_subtitle')}
                         </p>
                     </div>
 
@@ -54,7 +56,7 @@ const Contact = () => {
                         {/* Contact Info */}
                         <div className="space-y-8">
                             <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-                                <h3 className="text-2xl font-bold font-serif text-gray-900 dark:text-white mb-6">Get in Touch</h3>
+                                <h3 className="text-2xl font-bold font-serif text-gray-900 dark:text-white mb-6">{t('contact_get_in_touch')}</h3>
                                 <div className="space-y-6">
                                     <div className="flex items-start gap-4">
                                         <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center flex-shrink-0">
@@ -104,11 +106,11 @@ const Contact = () => {
 
                         {/* Contact Form */}
                         <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
-                            <h3 className="text-2xl font-bold font-serif text-gray-900 dark:text-white mb-6">Send us a Message</h3>
+                            <h3 className="text-2xl font-bold font-serif text-gray-900 dark:text-white mb-6">{t('contact_form_title')}</h3>
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Name</label>
+                                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('full_name_label')}</label>
                                         <input
                                             type="text"
                                             id="name"
@@ -117,11 +119,11 @@ const Contact = () => {
                                             onChange={handleChange}
                                             required
                                             className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-shadow"
-                                            placeholder="Your Name"
+                                            placeholder={t('contact_name_placeholder')}
                                         />
                                     </div>
                                     <div>
-                                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('email_label')}</label>
                                         <input
                                             type="email"
                                             id="email"
@@ -130,12 +132,12 @@ const Contact = () => {
                                             onChange={handleChange}
                                             required
                                             className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-shadow"
-                                            placeholder="you@example.com"
+                                            placeholder={t('contact_email_placeholder')}
                                         />
                                     </div>
                                 </div>
                                 <div>
-                                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subject</label>
+                                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('contact_subject_label')}</label>
                                     <input
                                         type="text"
                                         id="subject"
@@ -144,11 +146,11 @@ const Contact = () => {
                                         onChange={handleChange}
                                         required
                                         className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-shadow"
-                                        placeholder="Subject"
+                                        placeholder={t('contact_subject_placeholder')}
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Message</label>
+                                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('contact_message_label')}</label>
                                     <textarea
                                         id="message"
                                         name="message"
@@ -157,14 +159,14 @@ const Contact = () => {
                                         required
                                         rows="4"
                                         className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-shadow"
-                                        placeholder="How can we help you?"
+                                        placeholder={t('contact_message_placeholder')}
                                     ></textarea>
                                 </div>
                                 <button
                                     type="submit"
                                     className="w-full py-3 px-6 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-lg shadow-md transition-transform transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                                 >
-                                    {loading ? 'Sending...' : 'Send Message'}
+                                    {loading ? t('contact_sending_btn') : t('contact_send_btn')}
                                 </button>
                             </form>
                         </div>

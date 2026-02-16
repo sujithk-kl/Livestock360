@@ -14,7 +14,7 @@ const Footer = () => {
                         {t('welcome_title')}<span className="text-primary-500">360</span>
                     </h2>
                     <p className="text-gray-400 max-w-sm leading-relaxed mb-6">
-                        {t('footer_desc')}
+                        {t('footer_description')}
                     </p>
                     <div className="flex gap-4">
                         {/* Facebook */}
@@ -43,19 +43,19 @@ const Footer = () => {
                     <ul className="space-y-4 text-gray-400">
                         <li><Link to="/about" className="hover:text-primary-400 transition-colors flex items-center gap-2">
                             <span className="w-1.5 h-1.5 bg-primary-500 rounded-full opacity-0 hover:opacity-100 transition-opacity"></span>
-                            About
+                            {t('nav_about')}
                         </Link></li>
                         <li><Link to="/services" className="hover:text-primary-400 transition-colors flex items-center gap-2">
                             <span className="w-1.5 h-1.5 bg-primary-500 rounded-full opacity-0 hover:opacity-100 transition-opacity"></span>
-                            Services
+                            {t('nav_services')}
                         </Link></li>
                         <li><Link to="/contact" className="hover:text-primary-400 transition-colors flex items-center gap-2">
                             <span className="w-1.5 h-1.5 bg-primary-500 rounded-full opacity-0 hover:opacity-100 transition-opacity"></span>
-                            Contact
+                            {t('nav_contact')}
                         </Link></li>
                         <li><Link to="/privacy-policy" className="hover:text-primary-400 transition-colors flex items-center gap-2">
                             <span className="w-1.5 h-1.5 bg-primary-500 rounded-full opacity-0 hover:opacity-100 transition-opacity"></span>
-                            Privacy Policy
+                            {t('footer_link_privacy')}
                         </Link></li>
                     </ul>
                 </div>
@@ -75,7 +75,7 @@ const Footer = () => {
                 </div>
             </div>
             <div className="max-w-7xl mx-auto px-6 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm pb-8">
-                <p>&copy; {new Date().getFullYear()} Livestock360. All rights reserved.</p>
+                <p>&copy; {new Date().getFullYear()} Livestock360. {t('footer_rights')}</p>
                 <p>Designed for Farmers & Customers</p>
             </div>
         </footer>
