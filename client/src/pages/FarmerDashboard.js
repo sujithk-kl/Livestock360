@@ -76,7 +76,7 @@ const FarmerDashboard = () => {
     { label: t('side_milk'), path: '/farmer/milk-production', icon: ChartBarIcon }, // Changed icon for variety
     { label: t('side_staff'), path: '/farmer/staff', icon: UserGroupIcon },
     { label: t('side_reports'), path: '/farmer/reports', icon: DocumentTextIcon },
-    { label: 'Sales Report', path: '/farmer/sales-report', icon: ChartBarIcon },
+    { label: t('side_sales_report'), path: '/farmer/sales-report', icon: ChartBarIcon },
   ];
 
   if (loading) {
@@ -209,19 +209,19 @@ const FarmerDashboard = () => {
 
           {/* Recent Activity / Placeholder Area - simplified for now */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-card border border-gray-100 dark:border-gray-700">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{t('quick_actions')}</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <button onClick={() => navigate('/farmer/livestock')} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/20 text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-400 transition-colors text-center border border-dashed border-gray-300 dark:border-gray-600 hover:border-primary-300">
-                <span className="block font-medium">Add Livestock</span>
+                <span className="block font-medium">{t('action_add_livestock')}</span>
               </button>
               <button onClick={() => navigate('/farmer/products')} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-center border border-dashed border-gray-300 dark:border-gray-600 hover:border-blue-300">
-                <span className="block font-medium">List Product</span>
+                <span className="block font-medium">{t('action_list_product')}</span>
               </button>
               <button onClick={() => navigate('/farmer/milk-production')} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-900/20 text-gray-700 dark:text-gray-200 hover:text-amber-600 dark:hover:text-amber-400 transition-colors text-center border border-dashed border-gray-300 dark:border-gray-600 hover:border-amber-300">
-                <span className="block font-medium">Record Milk</span>
+                <span className="block font-medium">{t('action_record_milk')}</span>
               </button>
               <button onClick={() => navigate('/farmer/sales-report')} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-purple-50 dark:hover:bg-purple-900/20 text-gray-700 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors text-center border border-dashed border-gray-300 dark:border-gray-600 hover:border-purple-300">
-                <span className="block font-medium">View Sales</span>
+                <span className="block font-medium">{t('action_view_sales')}</span>
               </button>
             </div>
           </div>
