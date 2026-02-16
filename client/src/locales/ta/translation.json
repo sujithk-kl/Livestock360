@@ -371,5 +371,17 @@
     "report_milk_revenue": "பால் வருவாய்",
     "report_product_sales": "தயாரிப்பு விற்பனை",
     "report_staff_expenses": "பணியாளர் செலவுகள்",
-    "back_to_dashboard": "முகப்பு பலகைக்கு திரும்பவும்"
+    "back_to_dashboard": "முகப்பு பலகைக்கு திரும்பவும்",
+    "month_january": "ஜனவரி",
+    "month_february": "பிப்ரவரி",
+    "month_march": "மார்ச்",
+    "month_april": "ஏப்ரல்",
+    "month_may": "மே",
+    "month_june": "ஜூன்",
+    "month_july": "ஜூலை",
+    "month_august": "ஆகஸ்ட்",
+    "month_september": "செப்டம்பர்",
+    "month_october": "அக்டோபர்",
+    "month_november": "நவம்பர்",
+    "month_december": "டிசம்பர்"
 }
