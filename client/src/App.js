@@ -25,6 +25,10 @@ import Cart from './pages/Cart';
 import CustomerCheckout from './pages/CustomerCheckout';
 import CustomerOrders from './pages/CustomerOrders';
 import ProductDetails from './pages/ProductDetails';
+import About from './pages/About';
+import Services from './pages/Services';
+import Contact from './pages/Contact';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 
 import { ThemeProvider } from './context/ThemeContext';
@@ -48,6 +52,10 @@ function AppContent() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
         {/* Farmer Public Routes */}
         <Route path="/farmer/login" element={<FarmerLogin />} />
