@@ -95,13 +95,13 @@ const FarmerReports = () => {
 
     autoTable(doc, {
       startY: 50,
-      head: [['Category', 'Amount (₹)']],
+      head: [['Category', 'Amount (INR)']],
       body: [
-        ['Total Revenue', `₹ ${reportData.revenue.total.toLocaleString()}`],
-        ['  - Milk Sales', `₹ ${reportData.revenue.milk.toLocaleString()}`],
-        ['  - Product Sales', `₹ ${reportData.revenue.products.toLocaleString()}`],
-        ['Total Expenses (Staff)', `₹ ${reportData.expenses.total.toLocaleString()}`],
-        ['Net Profit', `₹ ${reportData.netProfit.toLocaleString()}`],
+        ['Total Revenue', `${reportData.revenue.total.toLocaleString()}`],
+        ['  - Milk Sales', `${reportData.revenue.milk.toLocaleString()}`],
+        ['  - Product Sales', `${reportData.revenue.products.toLocaleString()}`],
+        ['Total Expenses (Staff)', `${reportData.expenses.total.toLocaleString()}`],
+        ['Net Profit', `${reportData.netProfit.toLocaleString()}`],
       ],
       theme: 'grid',
       headStyles: { fillColor: [40, 167, 69] }, // Green header
@@ -116,12 +116,12 @@ const FarmerReports = () => {
         staff.name,
         staff.role,
         staff.wageType,
-        `₹ ${staff.amount.toLocaleString()}`
+        `${staff.amount.toLocaleString()}`
       ]);
 
       autoTable(doc, {
         startY: doc.lastAutoTable.finalY + 20,
-        head: [['Name', 'Role', 'Wage Type', 'Amount Paid']],
+        head: [['Name', 'Role', 'Wage Type', 'Amount (INR)']],
         body: staffRows,
         theme: 'striped'
       });
@@ -135,12 +135,12 @@ const FarmerReports = () => {
         new Date(sale.date).toLocaleDateString(),
         sale.productName,
         `${sale.quantity} ${sale.unit}`,
-        `₹ ${sale.total.toLocaleString()}`
+        `${sale.total.toLocaleString()}`
       ]);
 
       autoTable(doc, {
         startY: doc.lastAutoTable.finalY + 20,
-        head: [['Date', 'Product', 'Quantity', 'Amount']],
+        head: [['Date', 'Product', 'Quantity', 'Amount (INR)']],
         body: productRows,
         theme: 'striped'
       });
