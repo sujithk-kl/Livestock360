@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import homeBg from '../assets/modern_farm_hero.png';
+import homeBg from '../assets/tamil_nadu_farm_4k.jpg';
 import farmerImg from '../assets/farmer_card.png';
 import customerImg from '../assets/customer_card.png';
 import { ChevronDownIcon, UserGroupIcon, ShoppingBagIcon, ChartBarIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
