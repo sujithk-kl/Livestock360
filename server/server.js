@@ -54,6 +54,7 @@ const notificationRoutes = require('./routes/notificationRoutes');
 const milkProductionRoutes = require('./routes/milkProduction');
 const livestockRoutes = require('./routes/livestock');
 const contactRoutes = require('./routes/contact');
+const reportRoutes = require('./routes/reports');
 // const orderRoutes = require('./routes/orderRoutes'); // REMOVED DUPLICATE
 
 
@@ -90,6 +91,7 @@ app.use('/api/milk-production', milkProductionRoutes);
 app.use('/api/milk-production', milkProductionRoutes);
 app.use('/api/livestock', livestockRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Test Route
 app.get('/', (req, res) => {

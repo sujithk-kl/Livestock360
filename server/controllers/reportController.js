@@ -1,151 +1,123 @@
 const MilkProduction = require('../models/MilkProduction');
-const Product = require('../models/Product');
+const Order = require('../models/Order');
 const Staff = require('../models/Staff');
+const asyncHandler = require('express-async-handler');
 
-// @desc    Get milk production report grouped by day
-// @route   GET /api/reports/milk-production
+// @desc    Get monthly report (Revenue, Expenses, Profit)
+// @route   GET /api/reports/monthly
 // @access  Private (Farmer)
-const getMilkProductionReport = async (req, res) => {
-  try {
-    const { start, end } = req.query;
-    const match = { farmer: req.user.id };
+const getMonthlyReport = asyncHandler(async (req, res) => {
+  const { month, year } = req.query;
 
-    if (start || end) {
-      match.date = {};
-      if (start) {
-        match.date.$gte = new Date(start);
+  if (!month || !year) {
+    res.status(400);
+    throw new Error('Please provide month and year');
+  }
+
+  // Create Date objects for the start and end of the month
+  // Note: Month in JS Date is 0-indexed (0 = Jan, 11 = Dec)
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+
+  // 1. Milk Revenue
+  const milkProduction = await MilkProduction.find({
+    farmer: req.user.id,
+    date: { $gte: startDate, $lte: endDate }
+  });
+
+  const milkRevenue = milkProduction.reduce((acc, curr) => acc + curr.totalAmount, 0);
+
+  // 2. Product Sales Revenue
+  // Find orders that are 'Success' and paid within the month
+  const orders = await Order.find({
+    paymentStatus: 'Success',
+    paymentDate: { $gte: startDate, $lte: endDate },
+    'items.farmer': req.user.id
+  });
+
+  let productRevenue = 0;
+  const productSales = [];
+
+  orders.forEach(order => {
+    order.items.forEach(item => {
+      // Check if item belongs to this farmer AND data integrity
+      if (item.farmer && item.farmer.toString() === req.user.id) {
+        productRevenue += item.total;
+        productSales.push({
+          date: order.paymentDate,
+          productName: item.productName,
+          quantity: item.quantity,
+          unit: item.unit,
+          total: item.total
+        });
       }
-      if (end) {
-        match.date.$lte = new Date(end);
-      }
+    });
+  });
+
+  // 3. Staff Expenses
+  const staffMembers = await Staff.find({
+    farmer: req.user.id,
+    status: 'active'
+  });
+
+  let staffExpenses = 0;
+  const staffDetails = [];
+
+  staffMembers.forEach(staff => {
+    let monthlyWage = 0;
+
+    if (staff.wageType === 'monthly') {
+      // Simplification: Full salary for the month
+      monthlyWage = staff.salary;
+    } else if (staff.wageType === 'daily') {
+      // Calculate based on attendance
+      const attendanceInMonth = staff.attendance.filter(record => {
+        const recordDate = new Date(record.date);
+        return recordDate >= startDate && recordDate <= endDate;
+      });
+
+      let daysWorked = 0;
+      attendanceInMonth.forEach(record => {
+        if (record.status === 'present') daysWorked += 1;
+        if (record.status === 'half-day') daysWorked += 0.5;
+      });
+
+      monthlyWage = daysWorked * staff.salary;
     }
 
-    const report = await MilkProduction.aggregate([
-      { $match: match },
-      {
-        $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$date' } },
-          totalQuantity: { $sum: '$quantity' },
-          entries: { $sum: 1 }
-        }
-      },
-      { $sort: { _id: 1 } }
-    ]);
+    staffExpenses += monthlyWage;
+    if (monthlyWage > 0) {
+      staffDetails.push({
+        name: staff.name,
+        role: staff.role,
+        wageType: staff.wageType,
+        amount: monthlyWage
+      });
+    }
+  });
 
-    res.status(200).json({
-      success: true,
-      data: report.map((item) => ({
-        date: item._id,
-        totalQuantity: item.totalQuantity,
-        entries: item.entries
-      }))
-    });
-  } catch (error) {
-    console.error('Error generating milk production report:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while generating milk production report',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  }
-};
-
-// @desc    Get product sales summary
-// @route   GET /api/reports/product-sales
-// @access  Private (Farmer)
-const getProductSalesSummary = async (req, res) => {
-  try {
-    const summary = await Product.aggregate([
-      { $match: { farmer: req.user.id } },
-      {
-        $project: {
-          name: 1,
-          price: 1,
-          availableQuantity: 1,
-          soldQuantity: 1,
-          revenue: { $multiply: ['$price', '$soldQuantity'] }
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          totalRevenue: { $sum: '$revenue' },
-          totalSoldQuantity: { $sum: '$soldQuantity' },
-          products: { $push: '$$ROOT' }
-        }
-      }
-    ]);
-
-    const data = summary[0] || { totalRevenue: 0, totalSoldQuantity: 0, products: [] };
-
-    res.status(200).json({
-      success: true,
-      data
-    });
-  } catch (error) {
-    console.error('Error generating product sales summary:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while generating product sales summary',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  }
-};
-
-// @desc    Get simple profit analysis
-// @route   GET /api/reports/profit-analysis
-// @access  Private (Farmer)
-const getProfitAnalysis = async (req, res) => {
-  try {
-    const staffCosts = await Staff.aggregate([
-      { $match: { farmer: req.user.id } },
-      {
-        $group: {
-          _id: null,
-          totalSalary: { $sum: '$salary' }
-        }
-      }
-    ]);
-
-    const productSales = await Product.aggregate([
-      { $match: { farmer: req.user.id } },
-      {
-        $project: {
-          revenue: { $multiply: ['$price', '$soldQuantity'] }
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          totalRevenue: { $sum: '$revenue' }
-        }
-      }
-    ]);
-
-    const totalRevenue = productSales[0]?.totalRevenue || 0;
-    const totalSalary = staffCosts[0]?.totalSalary || 0;
-    const profit = totalRevenue - totalSalary;
-
-    res.status(200).json({
-      success: true,
-      data: {
-        totalRevenue,
-        totalSalary,
-        profit
-      }
-    });
-  } catch (error) {
-    console.error('Error generating profit analysis:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while generating profit analysis',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  }
-};
+  res.status(200).json({
+    period: { month, year },
+    revenue: {
+      milk: milkRevenue,
+      products: productRevenue,
+      total: milkRevenue + productRevenue
+    },
+    expenses: {
+      staff: staffExpenses,
+      total: staffExpenses
+    },
+    netProfit: (milkRevenue + productRevenue) - staffExpenses,
+    details: {
+      milkProductionCount: milkProduction.length,
+      productSalesCount: productSales.length,
+      staffCount: staffDetails.length,
+      productSales,
+      staffDetails
+    }
+  });
+});
 
 module.exports = {
-  getMilkProductionReport,
-  getProductSalesSummary,
-  getProfitAnalysis
+  getMonthlyReport
 };
