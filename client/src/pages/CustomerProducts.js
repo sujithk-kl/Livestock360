@@ -148,9 +148,19 @@ const CustomerProducts = () => {
                 {/* Promo/Welcome Banner */}
                 <div className="bg-gradient-to-r from-secondary-500 to-secondary-600 rounded-3xl p-8 mb-12 text-white shadow-lg relative overflow-hidden transition-all hover:shadow-xl">
                     <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-                    <div className="relative z-10">
-                        <h1 className="text-3xl md:text-4xl font-bold font-serif mb-2">{t('hello_greeting')} {userName},</h1>
-                        <p className="text-secondary-100 text-lg">Find the freshest farm products near you.</p>
+                    <div className="relative z-10 flex justify-between items-center">
+                        <div>
+                            <h1 className="text-3xl md:text-4xl font-bold font-serif mb-2">{t('hello_greeting')} {userName},</h1>
+                            <p className="text-secondary-100 text-lg">Find the freshest farm products near you.</p>
+                        </div>
+                        <div className="hidden md:block relative h-32 w-32">
+                            {/* Bouncing Milk Bag/Bottle */}
+                            <div className="absolute top-8 right-8 animate-bounce">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-16 h-16 text-white opacity-90 drop-shadow-md">
+                                    <path fillRule="evenodd" d="M7.5 6v.75H5.513c-.96 0-1.764.724-1.865 1.679l-1.263 12A1.875 1.875 0 004.25 22.5h15.5a1.875 1.875 0 001.865-2.071l-1.263-12a1.875 1.875 0 00-1.865-1.679H16.5V6a4.5 4.5 0 10-9 0zM12 3a3 3 0 00-3 3v.75h6V6a3 3 0 00-3-3zm-3 8.25a3 3 0 106 0v7.125a3 3 0 10-6 0V11.25z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
