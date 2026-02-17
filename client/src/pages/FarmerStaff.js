@@ -64,7 +64,7 @@ const FarmerStaff = () => {
         estimatedMonthlyExpense: 0
       });
     } catch (err) {
-      setError(err.message || 'Failed to load data');
+      setError(err.message || t('failed_load_data'));
     } finally {
       setLoading(false);
     }
@@ -94,7 +94,7 @@ const FarmerStaff = () => {
     try {
       if (editingStaff) {
         await farmerService.updateStaff(editingStaff._id, formData);
-        setSuccess('Staff updated successfully');
+        setSuccess(t('staff_updated_msg'));
       } else {
         await farmerService.createStaff(formData);
         setSuccess(t('staff_added_msg') || 'Staff added successfully');
@@ -103,7 +103,7 @@ const FarmerStaff = () => {
       fetchData();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(err.message || 'Failed to save staff');
+      setError(err.message || t('failed_save_staff'));
       setTimeout(() => setError(''), 3000);
     }
   };
@@ -123,14 +123,14 @@ const FarmerStaff = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this staff member?')) return;
+    if (!window.confirm(t('confirm_delete_staff'))) return;
     try {
       await farmerService.deleteStaff(id);
       setSuccess(t('staff_deleted_msg') || 'Staff deleted successfully');
       fetchData();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(err.message || 'Failed to delete staff');
+      setError(err.message || t('failed_delete_staff'));
     }
   };
 
@@ -190,7 +190,7 @@ const FarmerStaff = () => {
       fetchData();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(err.message || 'Failed to mark attendance');
+      setError(err.message || t('failed_mark_attendance'));
     }
   };
 
@@ -293,7 +293,7 @@ const FarmerStaff = () => {
       doc.save(`Staff_Report_${monthName}_${reportYear}.pdf`);
     } catch (err) {
       console.error("PDF Generation Error:", err);
-      alert("Failed to generate PDF. Please check console for details.");
+      alert(t('failed_generate_pdf'));
     }
   };
 
@@ -346,7 +346,7 @@ const FarmerStaff = () => {
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-l-4 border-green-500">
             <p className="text-gray-500 dark:text-gray-400 text-sm">{t('stat_present_today')}</p>
             <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats?.presentCount || 0}</p>
-            <p className="text-xs text-green-500 mt-1">{stats?.attendancePercentage || 0}% Attendance</p>
+            <p className="text-xs text-green-500 mt-1">{stats?.attendancePercentage || 0}{t('attendance_percentage')}</p>
           </div>
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-l-4 border-purple-500">
             <p className="text-gray-500 dark:text-gray-400 text-sm">{t('stat_est_expense')}</p>
@@ -664,7 +664,7 @@ const FarmerStaff = () => {
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {loading ? (
                   <tr>
-                    <td colSpan="6" className="px-6 py-8 text-center text-gray-500">Loading...</td>
+                    <td colSpan="6" className="px-6 py-8 text-center text-gray-500">{t('loading_text')}</td>
                   </tr>
                 ) : staffList.length === 0 ? (
                   <tr>

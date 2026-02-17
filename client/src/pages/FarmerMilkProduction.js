@@ -123,13 +123,13 @@ const FarmerMilkProduction = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this record?')) {
+    if (window.confirm(t('confirm_delete_record'))) {
       try {
         await milkProductionService.delete(id);
         fetchRecords();
       } catch (error) {
         console.error('Error deleting record:', error);
-        alert('Failed to delete record');
+        alert(t('failed_delete_record'));
       }
     }
   };
@@ -153,7 +153,7 @@ const FarmerMilkProduction = () => {
       resetForm();
     } catch (error) {
       console.error('Error saving record:', error);
-      alert(error.message || 'Failed to save record');
+      alert(error.message || t('failed_save_record'));
     }
   };
 
@@ -224,9 +224,9 @@ const FarmerMilkProduction = () => {
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
                 >
-                  <option value="Cow">Cow</option>
-                  <option value="Buffalo">Buffalo</option>
-                  <option value="Goat">Goat</option>
+                  <option value="Cow">{t('animal_cow')}</option>
+                  <option value="Buffalo">{t('animal_buffalo')}</option>
+                  <option value="Goat">{t('animal_goat')}</option>
                 </select>
               </div>
 
@@ -253,7 +253,7 @@ const FarmerMilkProduction = () => {
                   name="quantity"
                   value={formData.quantity}
                   onChange={handleInputChange}
-                  placeholder="e.g. 12.5"
+                  placeholder={t('placeholder_quantity')}
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
                   required
                 />
@@ -267,7 +267,7 @@ const FarmerMilkProduction = () => {
                   name="pricePerLitre"
                   value={formData.pricePerLitre}
                   onChange={handleInputChange}
-                  placeholder="e.g. 45"
+                  placeholder={t('placeholder_price')}
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
                   required
                 />
@@ -289,7 +289,7 @@ const FarmerMilkProduction = () => {
                   name="notes"
                   value={formData.notes}
                   onChange={handleInputChange}
-                  placeholder="e.g. Morning milking only"
+                  placeholder={t('placeholder_notes')}
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
                 />
               </div>

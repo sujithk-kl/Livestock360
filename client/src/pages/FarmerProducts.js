@@ -74,7 +74,7 @@ const FarmerProducts = () => {
         }
       }
     } catch (error) {
-      toast.error(error.message || 'Error processing request');
+      toast.error(error.message || t('error_processing'));
     }
   };
 
@@ -93,7 +93,7 @@ const FarmerProducts = () => {
   };
 
   const onDelete = async id => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+    if (window.confirm(t('confirm_delete_product'))) {
       try {
         const res = await productService.delete(id);
         if (res.success) {
@@ -101,7 +101,7 @@ const FarmerProducts = () => {
           fetchProducts();
         }
       } catch (error) {
-        toast.error(error.message || 'Delete failed');
+        toast.error(error.message || t('delete_failed'));
       }
     }
   };
@@ -120,7 +120,7 @@ const FarmerProducts = () => {
             </button>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('manage_products_title')}</h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Add, edit, and manage your farm offerings</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('product_subtitle')}</p>
             </div>
           </div>
         </div>
@@ -229,8 +229,8 @@ const FarmerProducts = () => {
                     onChange={onChange}
                     className="w-full rounded-xl border-gray-300 dark:border-gray-600 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:text-white py-2.5"
                   >
-                    <option value="Available">Available</option>
-                    <option value="Out of Stock">Out of Stock</option>
+                    <option value="Available">{t('status_available')}</option>
+                    <option value="Out of Stock">{t('status_out_stock')}</option>
                   </select>
                 </div>
 
@@ -264,22 +264,22 @@ const FarmerProducts = () => {
               <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('my_products_title')}</h3>
                 <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-bold px-3 py-1 rounded-full">
-                  {products.length} Items
+                  {products.length} {t('items_text')}
                 </span>
               </div>
 
               {loading ? (
                 <div className="p-12 text-center">
                   <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600 mx-auto mb-4"></div>
-                  <p className="text-gray-500 dark:text-gray-400">Loading your improved farm inventory...</p>
+                  <p className="text-gray-500 dark:text-gray-400">{t('loading_inventory')}</p>
                 </div>
               ) : products.length === 0 ? (
                 <div className="p-16 text-center">
                   <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                     <TagIcon className="w-8 h-8 text-gray-400" />
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">No products yet</h3>
-                  <p className="text-gray-500 dark:text-gray-400">Start adding your farm produce to reach customers.</p>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">{t('no_products_heading')}</h3>
+                  <p className="text-gray-500 dark:text-gray-400">{t('start_adding_products')}</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">

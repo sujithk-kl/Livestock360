@@ -142,7 +142,7 @@ const FarmerLivestock = () => {
       const response = await farmerService.getLivestockList();
       setLivestockList(response.data || []);
     } catch (err) {
-      setError(err.message || 'Failed to fetch livestock data');
+      setError(err.message || t('failed_fetch_livestock'));
     } finally {
       setLoading(false);
     }
@@ -176,12 +176,12 @@ const FarmerLivestock = () => {
     try {
       // Validate
       if (!formData.animalType || !formData.count) {
-        setError('Animal type and count are required');
+        setError(t('animal_count_required'));
         return;
       }
 
       if (formData.count <= 0) {
-        setError('Count must be greater than 0');
+        setError(t('count_greater_zero'));
         return;
       }
 
@@ -192,11 +192,11 @@ const FarmerLivestock = () => {
       if (editingLivestock) {
         // Update existing livestock
         await farmerService.updateLivestock(editingLivestock._id, formData);
-        setSuccess('Livestock updated successfully!');
+        setSuccess(t('livestock_updated_msg'));
       } else {
         // Create new livestock
         await farmerService.createLivestock(formData);
-        setSuccess('Livestock added successfully!');
+        setSuccess(t('livestock_added_msg'));
       }
 
       resetForm();
@@ -205,7 +205,7 @@ const FarmerLivestock = () => {
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(err.message || 'Failed to save livestock data');
+      setError(err.message || t('failed_save_livestock'));
     }
   };
 
@@ -226,20 +226,20 @@ const FarmerLivestock = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this livestock record?')) {
+    if (!window.confirm(t('confirm_delete_livestock'))) {
       return;
     }
 
     try {
       setError('');
       await farmerService.deleteLivestock(id);
-      setSuccess('Livestock deleted successfully!');
+      setSuccess(t('livestock_deleted_msg'));
       fetchLivestockList();
 
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(err.message || 'Failed to delete livestock');
+      setError(err.message || t('failed_delete_livestock'));
     }
   };
 
@@ -354,7 +354,7 @@ const FarmerLivestock = () => {
                     onChange={handleInputChange}
                     min="1"
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
-                    placeholder="Enter animal count"
+                    placeholder={t('placeholder_animal_count')}
                     required
                   />
                 </div>
@@ -370,7 +370,7 @@ const FarmerLivestock = () => {
                     onChange={handleInputChange}
                     rows="3"
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
-                    placeholder="Enter health observations, conditions, treatments, etc."
+                    placeholder={t('placeholder_health_notes')}
                   ></textarea>
                 </div>
 
