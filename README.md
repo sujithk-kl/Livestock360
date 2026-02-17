@@ -228,15 +228,12 @@ Contributions are welcome! Please follow these steps:
 
 This project is open source and available under the [MIT License](LICENSE).
 
-## 👨‍💻 Developer
+## 👨‍💻 Developers
 
-Developed with ❤️ by Sujith K L
-
-## 🐛 Known Issues
-
-- Port 4000 may occasionally need to be manually cleared on Windows (`taskkill /F /IM node.exe`)
-- PDF reports are generated in English only to avoid font rendering issues with Tamil characters
-
+Developed with ❤️ by :
+                     Sujith K
+                     Sheguvara A
+                     Sririthanya S P
 ## 🔄 Recent Updates
 
 - ✅ Added bilingual support (English/Tamil)
