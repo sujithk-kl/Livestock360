@@ -10,6 +10,7 @@ const CustomerCheckout = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [status, setStatus] = useState('processing');
+    const paymentMethod = 'Online'; // Fixed to Online
     const { total } = location.state || { total: '0.00' };
 
     // Generate UPI string
@@ -41,7 +42,8 @@ const CustomerCheckout = () => {
                     total: item.price * item.quantity
                 })),
                 totalAmount: total,
-                paymentStatus: 'Success'
+                paymentStatus: 'Success', // Always Success for Online
+                paymentMethod: paymentMethod
             };
 
             // Send to backend
