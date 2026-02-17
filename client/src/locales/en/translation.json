@@ -450,5 +450,6 @@
     "password_reset_send_failed": "Failed to send reset email. Please try again.",
     "password_reset_success_redirect": "Password reset successful! Redirecting to login...",
     "password_reset_failed": "Failed to reset password. The link may be invalid or expired.",
-    "passwords_do_not_match": "Passwords do not match"
+    "passwords_do_not_match": "Passwords do not match",
+    "reset_password_title": "Reset Password"
 }
