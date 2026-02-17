@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const path = require('path');
-const Order = require(path.join(__dirname, 'server', 'models', 'Order'));
-require('dotenv').config({ path: path.join(__dirname, 'server', '.env') });
+const Order = require(path.join(__dirname, 'models', 'Order'));
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 async function checkOrder() {
   try {

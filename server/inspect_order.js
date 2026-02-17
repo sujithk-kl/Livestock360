@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const path = require('path');
-const Review = require(path.resolve(__dirname, 'server/models/Review'));
-require('dotenv').config({ path: path.resolve(__dirname, 'server/.env') });
+const Review = require(path.resolve(__dirname, 'models/Review'));
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 async function checkReviews() {
     try {
