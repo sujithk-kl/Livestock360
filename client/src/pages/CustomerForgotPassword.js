@@ -21,10 +21,10 @@ const CustomerForgotPassword = () => {
 
         try {
             const response = await api.post('/customers/forgot-password', { email });
-            setSuccess(response.data.message || 'Password reset email sent successfully. Please check your inbox.');
+            setSuccess(response.data.message || t('password_reset_sent_success'));
             setEmail('');
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to send reset email. Please try again.');
+            setError(err.response?.data?.message || t('password_reset_send_failed'));
         } finally {
             setLoading(false);
         }
@@ -42,12 +42,12 @@ const CustomerForgotPassword = () => {
                 <div className="relative z-10 flex flex-col justify-between p-12 text-white h-full">
                     <div onClick={() => navigate('/customer/login')} className="cursor-pointer flex items-center gap-2 w-fit">
                         <ArrowLeftIcon className="w-5 h-5" />
-                        <span className="text-sm font-medium">Back to Login</span>
+                        <span className="text-sm font-medium">{t('back_to_login')}</span>
                     </div>
                     <div>
-                        <h1 className="text-4xl font-serif font-bold mb-4">Reset Your Password</h1>
+                        <h1 className="text-4xl font-serif font-bold mb-4">{t('reset_your_password_title')}</h1>
                         <p className="text-lg text-secondary-100 max-w-md leading-relaxed">
-                            Enter your email address and we'll send you a link to reset your password.
+                            {t('forgot_password_desc')}
                         </p>
                     </div>
                     <div className="text-sm text-secondary-200">
@@ -61,18 +61,18 @@ const CustomerForgotPassword = () => {
                 <div className="mx-auto w-full max-w-sm lg:w-96">
                     <div className="lg:hidden mb-8" onClick={() => navigate('/customer/login')}>
                         <span className="flex items-center gap-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white cursor-pointer transition-colors">
-                            <ArrowLeftIcon className="w-4 h-4" /> Back to Login
+                            <ArrowLeftIcon className="w-4 h-4" /> {t('back_to_login')}
                         </span>
                     </div>
 
                     <div>
                         <h2 className="text-3xl font-bold text-gray-900 dark:text-white font-serif tracking-tight">
-                            Forgot Password
+                            {t('forgot_password_title')}
                         </h2>
                         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                            Remember your password?{' '}
+                            {t('remember_password_text')}{' '}
                             <Link to="/customer/login" className="font-medium text-secondary-600 hover:text-secondary-500 transition-colors">
-                                Sign in
+                                {t('sign_in_button')}
                             </Link>
                         </p>
                     </div>
@@ -99,7 +99,7 @@ const CustomerForgotPassword = () => {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Email Address
+                                    {t('email_label')}
                                 </label>
                                 <div className="mt-2">
                                     <input
@@ -125,7 +125,7 @@ const CustomerForgotPassword = () => {
                                     {loading ? (
                                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                     ) : (
-                                        'Send Reset Link'
+                                        t('send_reset_link_btn')
                                     )}
                                 </button>
                             </div>

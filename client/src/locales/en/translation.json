@@ -435,5 +435,20 @@
     "livestock_deleted_msg": "Livestock deleted successfully!",
     "failed_delete_livestock": "Failed to delete livestock",
     "placeholder_animal_count": "Enter animal count",
-    "placeholder_health_notes": "Enter health observations, conditions, treatments, etc."
+    "placeholder_health_notes": "Enter health observations, conditions, treatments, etc.",
+    "back_to_login": "Back to Login",
+    "forgot_password_title": "Forgot Password",
+    "reset_your_password_title": "Reset Your Password",
+    "create_new_password_title": "Create New Password",
+    "forgot_password_desc": "Enter your email address and we'll send you a link to reset your password.",
+    "enter_new_password_desc": "Enter your new password below",
+    "remember_password_text": "Remember your password?",
+    "create_new_password_desc": "Choose a strong password to secure your account.",
+    "reset_password_btn": "Reset Password",
+    "send_reset_link_btn": "Send Reset Link",
+    "password_reset_sent_success": "Password reset email sent successfully. Please check your inbox.",
+    "password_reset_send_failed": "Failed to send reset email. Please try again.",
+    "password_reset_success_redirect": "Password reset successful! Redirecting to login...",
+    "password_reset_failed": "Failed to reset password. The link may be invalid or expired.",
+    "passwords_do_not_match": "Passwords do not match"
 }

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
 import { EyeIcon, EyeSlashIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import authBg from '../assets/modern_farm_hero.png';
 
 const CustomerResetPassword = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { token } = useParams();
     const [formData, setFormData] = useState({
@@ -28,12 +30,12 @@ const CustomerResetPassword = () => {
         setSuccess('');
 
         if (formData.newPassword !== formData.confirmPassword) {
-            setError('Passwords do not match');
+            setError(t('passwords_do_not_match'));
             return;
         }
 
         if (formData.newPassword.length < 6) {
-            setError('Password must be at least 6 characters long');
+            setError(t('password_min_length_msg'));
             return;
         }
 
@@ -43,14 +45,14 @@ const CustomerResetPassword = () => {
             const response = await api.put(`/customers/reset-password/${token}`, {
                 newPassword: formData.newPassword
             });
-            setSuccess(response.data.message || 'Password reset successful! Redirecting to login...');
+            setSuccess(response.data.message || t('password_reset_success_redirect'));
 
             // Redirect to login after 2 seconds
             setTimeout(() => {
                 navigate('/customer/login');
             }, 2000);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to reset password. The link may be invalid or expired.');
+            setError(err.response?.data?.message || t('password_reset_failed'));
         } finally {
             setLoading(false);
         }
@@ -68,12 +70,12 @@ const CustomerResetPassword = () => {
                 <div className="relative z-10 flex flex-col justify-between p-12 text-white h-full">
                     <div onClick={() => navigate('/customer/login')} className="cursor-pointer flex items-center gap-2 w-fit">
                         <ArrowLeftIcon className="w-5 h-5" />
-                        <span className="text-sm font-medium">Back to Login</span>
+                        <span className="text-sm font-medium">{t('back_to_login')}</span>
                     </div>
                     <div>
-                        <h1 className="text-4xl font-serif font-bold mb-4">Create New Password</h1>
+                        <h1 className="text-4xl font-serif font-bold mb-4">{t('create_new_password_title')}</h1>
                         <p className="text-lg text-secondary-100 max-w-md leading-relaxed">
-                            Choose a strong password to secure your account.
+                            {t('create_new_password_desc')}
                         </p>
                     </div>
                     <div className="text-sm text-secondary-200">
@@ -87,16 +89,16 @@ const CustomerResetPassword = () => {
                 <div className="mx-auto w-full max-w-sm lg:w-96">
                     <div className="lg:hidden mb-8" onClick={() => navigate('/customer/login')}>
                         <span className="flex items-center gap-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white cursor-pointer transition-colors">
-                            <ArrowLeftIcon className="w-4 h-4" /> Back to Login
+                            <ArrowLeftIcon className="w-4 h-4" /> {t('back_to_login')}
                         </span>
                     </div>
 
                     <div>
                         <h2 className="text-3xl font-bold text-gray-900 dark:text-white font-serif tracking-tight">
-                            Reset Password
+                            {t('reset_password_title')}
                         </h2>
                         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                            Enter your new password below
+                            {t('enter_new_password_desc')}
                         </p>
                     </div>
 
@@ -122,7 +124,7 @@ const CustomerResetPassword = () => {
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div>
                                 <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    New Password
+                                    {t('new_password_label')}
                                 </label>
                                 <div className="mt-2 relative">
                                     <input
@@ -147,7 +149,7 @@ const CustomerResetPassword = () => {
 
                             <div>
                                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Confirm Password
+                                    {t('confirm_new_password_label')}
                                 </label>
                                 <div className="mt-2 relative">
                                     <input
@@ -179,7 +181,7 @@ const CustomerResetPassword = () => {
                                     {loading ? (
                                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                     ) : (
-                                        'Reset Password'
+                                        t('reset_password_btn')
                                     )}
                                 </button>
                             </div>
