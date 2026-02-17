@@ -234,11 +234,6 @@ Developed with ❤️ by :
                      Sujith K
                      Sheguvara A
                      Sririthanya S P
-## 🐛 Known Issues
-
-- Port 4000 may occasionally need to be manually cleared on Windows (`taskkill /F /IM node.exe`)
-- PDF reports are generated in English only to avoid font rendering issues with Tamil characters
-
 ## 🔄 Recent Updates
 
 - ✅ Added bilingual support (English/Tamil)
