@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import paymentQr from '../assets/image.png';
+import { QRCodeSVG } from 'qrcode.react';
 import { toast } from 'react-toastify';
 import api from '../services/api';
 
@@ -11,6 +11,9 @@ const CustomerCheckout = () => {
     const navigate = useNavigate();
     const [status, setStatus] = useState('processing');
     const { total } = location.state || { total: '0.00' };
+
+    // Generate UPI string
+    const upiString = `upi://pay?pa=livestock360@upi&pn=Livestock360&am=${total}&cu=INR`;
 
     const handlePaymentConfirmation = async () => {
         try {
@@ -74,8 +77,8 @@ const CustomerCheckout = () => {
                             <p className="text-sm text-gray-400 mt-1">{t('payment_instruction')}</p>
                         </div>
 
-                        <div className="bg-white p-2 rounded-lg inline-block mb-6 border border-gray-200">
-                            <img src={paymentQr} alt="Payment QR Code" className="w-48 h-48 object-contain" />
+                        <div className="bg-white p-4 rounded-lg inline-block mb-6 border border-gray-200">
+                            <QRCodeSVG value={upiString} size={192} />
                         </div>
 
                         <p className="text-xl font-bold text-gray-900 dark:text-white mb-6">
