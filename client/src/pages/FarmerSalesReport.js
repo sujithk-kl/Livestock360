@@ -106,7 +106,7 @@ const FarmerSalesReport = () => {
                                                 ₹{item.price}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-600 dark:text-green-400">
-                                                ₹{item.total}
+                                                ₹{Number(item.total).toFixed(2)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-yellow-500">
                                                 {item.rating ? (
