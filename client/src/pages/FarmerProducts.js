@@ -169,6 +169,7 @@ const FarmerProducts = () => {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('quantity_label')}</label>
                     <input
                       type="number"
+                      step="any"
                       name="quantity"
                       value={quantity}
                       onChange={onChange}
