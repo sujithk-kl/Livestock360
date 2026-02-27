@@ -71,22 +71,6 @@ const ProductDetails = () => {
         }
     };
 
-    const nutritionalData = {
-        'Milk': { 'Serving Size': '100 ml', 'Calories': '42 kcal', 'Carbohydrates': '5 g', 'Protein': '3.4 g', 'Fat': '1 g', 'Calcium': '120 mg', 'Vitamin B12': '0.5 µg' },
-        'Curd': { 'Serving Size': '100 g', 'Calories': '98 kcal', 'Carbohydrates': '3.6 g', 'Protein': '4.3 g', 'Fat': '4 g', 'Calcium': '121 mg', 'Vitamin B12': '0.8 µg', 'Probiotics': 'Present' },
-        'Butter': { 'Serving Size': '100 g', 'Calories': '717 kcal', 'Carbohydrates': '0.1 g', 'Protein': '0.9 g', 'Fat': '81 g', 'Vitamin A': '684 µg', 'Cholesterol': '215 mg' },
-        'Ghee': { 'Serving Size': '100 g', 'Calories': '900 kcal', 'Carbohydrates': '0 g', 'Protein': '0 g', 'Fat': '100 g', 'Vitamin A': '850 µg', 'Omega-3 Fatty Acids': '0.5 g' },
-        'Paneer': { 'Serving Size': '100 g', 'Calories': '265 kcal', 'Carbohydrates': '1.2 g', 'Protein': '18 g', 'Fat': '20 g', 'Calcium': '208 mg', 'Vitamin B12': '1.1 µg' },
-        'Honey': { 'Serving Size': '100 g', 'Calories': '304 kcal', 'Carbohydrates': '82 g', 'Protein': '0.3 g', 'Fat': '0 g', 'Sugars': '82 g', 'Antioxidants': 'Present' },
-        'Eggs': { 'Serving Size': '1 large ~50 g', 'Calories': '72 kcal', 'Protein': '6.3 g', 'Fat': '5 g', 'Carbohydrates': '0.4 g', 'Vitamin D': '1.1 µg', 'Vitamin B12': '0.6 µg' },
-        'Chicken': { 'Serving Size': '100 g', 'Calories': '239 kcal', 'Protein': '27 g', 'Fat': '14 g', 'Carbohydrates': '0 g', 'Iron': '1.3 mg' },
-        'Country Chicken': { 'Serving Size': '100 g', 'Calories': '215 kcal', 'Protein': '25 g', 'Fat': '12 g', 'Carbohydrates': '0 g', 'Iron': '1.6 mg', 'Omega-3': 'Higher than broiler' },
-        'Mutton': { 'Serving Size': '100 g', 'Calories': '294 kcal', 'Protein': '25 g', 'Fat': '21 g', 'Carbohydrates': '0 g', 'Iron': '2.7 mg', 'Vitamin B12': '2.6 µg' },
-        'default': { 'Calories': 'N/A', 'Protein': 'N/A' }
-    };
-
-    const nutrition = nutritionalData[category] || nutritionalData['default'];
-
     useEffect(() => {
         const fetchOfferings = async () => {
             try {
@@ -162,21 +146,6 @@ const ProductDetails = () => {
                             </div>
                         </div>
 
-                        {/* Nutritional Facts */}
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-card p-6 border border-gray-100 dark:border-gray-700">
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                                <span className="w-1 h-6 bg-secondary-500 rounded-full"></span>
-                                {t('nutritional_facts_title')}
-                            </h3>
-                            <div className="space-y-3">
-                                {Object.entries(nutrition).map(([key, value]) => (
-                                    <div key={key} className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                                        <span className="text-gray-600 dark:text-gray-400 text-sm font-medium">{key}</span>
-                                        <span className="text-primary-700 dark:text-primary-400 font-bold text-sm bg-primary-50 dark:bg-primary-900/20 px-2 py-1 rounded-md">{value}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
                     </div>
 
                     {/* Right Column: Vendor Offerings */}
