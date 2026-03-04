@@ -150,7 +150,7 @@ const CustomerProducts = () => {
                     <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
                     <div className="relative z-10 flex justify-between items-center">
                         <div>
-                            <h1 className="text-3xl md:text-4xl font-bold font-serif mb-2">{t('hello_greeting')} {userName},</h1>
+                            <h1 className="text-3xl md:text-4xl font-bold font-serif mb-2">{t('hello_greeting')} {userName} !</h1>
                             <p className="text-secondary-100 text-lg">Find the freshest farm products near you.</p>
                         </div>
                         <div className="hidden md:block relative h-32 w-32">
