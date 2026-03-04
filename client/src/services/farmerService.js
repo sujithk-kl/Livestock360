@@ -230,6 +230,16 @@ const farmerService = {
     return response.data;
   },
 
+  // Get staff stats
+  getStaffStats: async () => {
+    try {
+      const response = await api.get('/staff/stats/dashboard');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to fetch staff stats' };
+    }
+  },
+
 
   // Get dashboard stats
   getDashboardStats: async () => {

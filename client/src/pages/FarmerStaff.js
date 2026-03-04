@@ -53,7 +53,7 @@ const FarmerStaff = () => {
       setLoading(true);
       const [listRes, statsRes] = await Promise.all([
         farmerService.getStaffList(),
-        farmerService.getDashboardStats()
+        farmerService.getStaffStats()
       ]);
 
       setStaffList(listRes.data || []);
