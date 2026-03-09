@@ -55,7 +55,11 @@ const milkProductionRoutes = require('./routes/milkProduction');
 const livestockRoutes = require('./routes/livestock');
 const contactRoutes = require('./routes/contact');
 const reportRoutes = require('./routes/reports');
-// const orderRoutes = require('./routes/orderRoutes'); // REMOVED DUPLICATE
+const subscriptionRoutes = require('./routes/subscriptions');
+const walletRoutes = require('./routes/wallet');
+const clusterRoutes = require('./routes/clusterRoutes');
+const { runNightlyBilling } = require('./jobs/billingJob');
+const { initClusteringJob } = require('./jobs/clusteringJob');
 
 
 const app = express();
@@ -78,6 +82,21 @@ app.use((req, res, next) => {
 // Connect to Database
 connectDB();
 
+// ⏰ Nightly billing cron — runs every night at 11:59 PM
+// Deducts daily subscription cost from each active customer's wallet
+cron.schedule('59 23 * * *', () => {
+  console.log('[Cron] Triggering nightly billing job...');
+  runNightlyBilling();
+}, {
+  timezone: 'Asia/Kolkata'
+});
+console.log('[Cron] Nightly billing job scheduled for 23:59 IST every night.');
+
+// Cluster delivery grouping job — runs at 10:00 PM IST every night
+initClusteringJob();
+
+
+
 // API Routes
 // app.use('/api/auth', authRoutes); // Removed
 app.use('/api/farmers', farmerRoutes);
@@ -92,6 +111,9 @@ app.use('/api/milk-production', milkProductionRoutes);
 app.use('/api/livestock', livestockRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/wallet', walletRoutes);
+app.use('/api/clusters', clusterRoutes);
 
 // Test Route
 app.get('/', (req, res) => {

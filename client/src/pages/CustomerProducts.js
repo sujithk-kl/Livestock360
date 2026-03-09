@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ShoppingBagIcon, MagnifyingGlassIcon, UserCircleIcon, ArrowRightOnRectangleIcon, ShoppingCartIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
+import { ShoppingBagIcon, MagnifyingGlassIcon, UserCircleIcon, ArrowRightOnRectangleIcon, ShoppingCartIcon, ClipboardDocumentListIcon, WalletIcon } from '@heroicons/react/24/outline';
 
 // Import Assets
 import milkImg from '../assets/Milk.jpg';
@@ -102,6 +102,12 @@ const CustomerProducts = () => {
                                             <button onClick={() => navigate('/customer/orders')} className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center">
                                                 <ClipboardDocumentListIcon className="w-4 h-4 mr-2" /> {t('orders_btn')}
                                             </button>
+                                            <button onClick={() => navigate('/customer/subscriptions')} className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center">
+                                                <ClipboardDocumentListIcon className="w-4 h-4 mr-2" /> My Subscriptions
+                                            </button>
+                                            <button onClick={() => navigate('/customer/wallet')} className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center">
+                                                <WalletIcon className="w-4 h-4 mr-2" /> My Wallet
+                                            </button>
                                             <div className="border-t border-gray-100 dark:border-gray-700 my-1"></div>
                                             <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center">
                                                 <ArrowRightOnRectangleIcon className="w-4 h-4 mr-2" /> {t('side_logout')}
@@ -133,6 +139,12 @@ const CustomerProducts = () => {
                     </button>
                     <button onClick={() => navigate('/customer/orders')} className="flex flex-col items-center text-xs text-gray-600 dark:text-gray-300">
                         <ClipboardDocumentListIcon className="w-6 h-6 mb-1" /> {t('orders_btn')}
+                    </button>
+                    <button onClick={() => navigate('/customer/subscriptions')} className="flex flex-col items-center text-xs text-gray-600 dark:text-gray-300">
+                        <ClipboardDocumentListIcon className="w-6 h-6 mb-1" /> Subs
+                    </button>
+                    <button onClick={() => navigate('/customer/wallet')} className="flex flex-col items-center text-xs text-gray-600 dark:text-gray-300">
+                        <WalletIcon className="w-6 h-6 mb-1" /> Wallet
                     </button>
                     <button onClick={() => navigate('/customer/profile')} className="flex flex-col items-center text-xs text-gray-600 dark:text-gray-300">
                         <UserCircleIcon className="w-6 h-6 mb-1" /> {t('side_profile')}

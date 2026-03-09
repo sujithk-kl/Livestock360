@@ -251,6 +251,16 @@ const farmerService = {
     }
   },
 
+  // Get today deliveries
+  getTodayDeliveries: async () => {
+    try {
+      const response = await api.get('/farmers/deliveries/today');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to fetch today deliveries' };
+    }
+  },
+
   getSalesReport: async () => {
     try {
       const response = await api.get('/farmers/sales-report');

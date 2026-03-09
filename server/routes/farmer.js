@@ -70,6 +70,15 @@ router.get(
   farmerController.getDashboardStats
 );
 
+// @route   GET /api/farmers/deliveries/today
+// @desc    Get today's deliveries
+// @access  Private (Farmer only)
+router.get(
+  '/deliveries/today',
+  authorize('farmer', 'admin'),
+  farmerController.getTodayDeliveries
+);
+
 
 // @route   GET /api/farmers/sales-report
 // @desc    Get sales report

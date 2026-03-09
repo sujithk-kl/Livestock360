@@ -1,0 +1,100 @@
+[
+  {
+    "deliveryAddress": {
+      "street": "Sathy - Periyakodivery - Kadambur Road",
+      "city": "Satyamangalam",
+      "state": "Tamil Nadu",
+      "pincode": "638401"
+    },
+    "_id": "69a94436417e1c5d87953b69",
+    "customer": "69841ba28a86efff59a2d8d6",
+    "items": [
+      {
+        "product": "69955fc0d6e3fff92fde1cd3",
+        "productName": "Ghee",
+        "category": "Ghee",
+        "farmer": "6986c11ffbf51079a56ca2f5",
+        "farmerName": "Sujith K",
+        "quantity": 1,
+        "unit": "Litre",
+        "price": 50,
+        "total": 50,
+        "_id": "69a94436417e1c5d87953b6a"
+      }
+    ],
+    "totalAmount": 50,
+    "isAddon": false,
+    "paymentStatus": "Success",
+    "paymentMethod": "Online",
+    "deliveryDate": "2026-03-07T00:00:00.000Z",
+    "deliverySlot": "Morning (6-9 AM)",
+    "deliveryFee": 0,
+    "clusterId": null,
+    "deliveryStatus": "Pending",
+    "paymentDate": "2026-03-05T08:52:06.515Z",
+    "createdAt": "2026-03-05T08:52:06.518Z",
+    "updatedAt": "2026-03-05T08:52:06.518Z",
+    "__v": 0
+  },
+  {
+    "deliveryAddress": {
+      "street": "Sathy - Periyakodivery - Kadambur Road",
+      "city": "Satyamangalam",
+      "state": "Tamil Nadu",
+      "pincode": "638401"
+    },
+    "_id": "69a94411417e1c5d87953ac4",
+    "customer": "69841ba28a86efff59a2d8d6",
+    "items": [
+      {
+        "product": "6972aa199adc2246d476cc5e",
+        "productName": "Milk",
+        "category": "Milk",
+        "farmer": "696f79d9ac9683011417b5da",
+        "farmerName": "Mounesh",
+        "quantity": 1,
+        "unit": "Litre",
+        "price": 34,
+        "total": 34,
+        "_id": "69a94411417e1c5d87953ac5"
+      },
+      {
+        "product": "697c670eeb7b71a5559dbd47",
+        "productName": "Chicken",
+        "category": "Chicken",
+        "farmer": "696f79d9ac9683011417b5da",
+        "farmerName": "Mounesh",
+        "quantity": 1,
+        "unit": "Kg",
+        "price": 298,
+        "total": 298,
+        "_id": "69a94411417e1c5d87953ac6"
+      },
+      {
+        "product": "697c672deb7b71a5559dbd53",
+        "productName": "Country Chicken",
+        "category": "Country Chicken",
+        "farmer": "696f79d9ac9683011417b5da",
+        "farmerName": "Mounesh",
+        "quantity": 1,
+        "unit": "Kg",
+        "price": 600,
+        "total": 600,
+        "_id": "69a94411417e1c5d87953ac7"
+      }
+    ],
+    "totalAmount": 932,
+    "isAddon": false,
+    "paymentStatus": "COD",
+    "paymentMethod": "Cash",
+    "deliveryDate": "2026-03-06T00:00:00.000Z",
+    "deliverySlot": "Evening (5-7 PM)",
+    "deliveryFee": 0,
+    "clusterId": null,
+    "deliveryStatus": "Pending",
+    "paymentDate": "2026-03-05T08:51:29.664Z",
+    "createdAt": "2026-03-05T08:51:29.668Z",
+    "updatedAt": "2026-03-05T08:51:29.668Z",
+    "__v": 0
+  }
+]

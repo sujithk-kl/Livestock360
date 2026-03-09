@@ -5,6 +5,7 @@ const Product = require('../models/Product');
 const MilkProduction = require('../models/MilkProduction');
 const Order = require('../models/Order');
 const Review = require('../models/Review');
+const Subscription = require('../models/Subscription');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { validationResult } = require('express-validator');
@@ -667,6 +668,77 @@ const resetPassword = async (req, res) => {
     }
 };
 
+// @desc    Get deliveries for today (Standard Orders + Subscriptions)
+// @route   GET /api/farmers/deliveries/today
+// @access  Private (Farmer only)
+const getTodayDeliveries = async (req, res) => {
+    try {
+        const farmerId = req.user.id;
+
+        // Get today's start and end date (in local time approximated to UTC)
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+        const endOfToday = new Date();
+        endOfToday.setHours(23, 59, 59, 999);
+        const todayStr = startOfToday.toISOString().split('T')[0];
+
+        // Only Fetch Active Subscriptions for today
+        const subscriptions = await Subscription.find({
+            farmer: farmerId,
+            status: 'Active',
+            startDate: { $lte: endOfToday },
+            endDate: { $gte: startOfToday }
+        }).populate('customer', 'name phone address').populate('product', 'productName unit category');
+
+        const subscriptionDeliveries = [];
+        subscriptions.forEach(sub => {
+            // Check if today is a paused date
+            const isPausedToday = sub.pausedDates && sub.pausedDates.some(d => {
+                try {
+                    return d.toISOString().split('T')[0] === todayStr;
+                } catch (e) {
+                    return String(d).split('T')[0] === todayStr;
+                }
+            });
+
+            if (!isPausedToday) {
+                subscriptionDeliveries.push({
+                    type: 'Subscription',
+                    subId: sub._id,
+                    customer: sub.customer,
+                    productName: sub.product?.productName || 'Milk',
+                    quantity: sub.quantityPerDay,
+                    unit: sub.product?.unit || 'L',
+                    status: 'Active',
+                    deliveryAddress: sub.deliveryAddress || null
+                });
+            }
+        });
+
+        // Group subscriptions by city
+        const allDeliveries = [...subscriptionDeliveries];
+
+        const groupedByCity = {};
+        allDeliveries.forEach(delivery => {
+            const city = delivery.customer?.address?.city || 'Unspecified Location';
+            if (!groupedByCity[city]) {
+                groupedByCity[city] = [];
+            }
+            groupedByCity[city].push(delivery);
+        });
+
+        res.status(200).json({
+            success: true,
+            data: groupedByCity,
+            totalDeliveries: allDeliveries.length
+        });
+
+    } catch (error) {
+        console.error('Error fetching today deliveries:', error);
+        res.status(500).json({ success: false, message: 'Server error fetching deliveries' });
+    }
+};
+
 module.exports = {
     loginFarmer,
     registerFarmer,
@@ -676,5 +748,6 @@ module.exports = {
     getDashboardStats,
     getSalesReport,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    getTodayDeliveries
 };

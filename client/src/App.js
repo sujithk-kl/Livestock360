@@ -14,6 +14,7 @@ import FarmerProfile from './pages/FarmerProfile';
 import FarmerSalesReport from './pages/FarmerSalesReport';
 import FarmerForgotPassword from './pages/FarmerForgotPassword';
 import FarmerResetPassword from './pages/FarmerResetPassword';
+import FarmerDeliveries from './pages/FarmerDeliveries';
 import CustomerLogin from './pages/CustomerLogin';
 import CustomerRegistration from './pages/CustomerRegistration';
 import CustomerProfile from './pages/CustomerProfile';
@@ -24,6 +25,8 @@ import CustomerProducts from './pages/CustomerProducts';
 import Cart from './pages/Cart';
 import CustomerCheckout from './pages/CustomerCheckout';
 import CustomerOrders from './pages/CustomerOrders';
+import CustomerSubscriptions from './pages/CustomerSubscriptions';
+import CustomerWallet from './pages/CustomerWallet';
 import ProductDetails from './pages/ProductDetails';
 import About from './pages/About';
 import Services from './pages/Services';
@@ -74,6 +77,7 @@ function AppContent() {
           <Route path="/farmer/staff" element={<FarmerStaff />} />
           <Route path="/farmer/reports" element={<FarmerReports />} />
           <Route path="/farmer/sales-report" element={<FarmerSalesReport />} />
+          <Route path="/farmer/deliveries" element={<FarmerDeliveries />} />
           <Route path="/farmer/profile" element={<FarmerProfile />} />
         </Route>
 
@@ -84,6 +88,8 @@ function AppContent() {
           <Route path="/customer/cart" element={<Cart />} />
           <Route path="/customer/checkout" element={<CustomerCheckout />} />
           <Route path="/customer/orders" element={<CustomerOrders />} />
+          <Route path="/customer/subscriptions" element={<CustomerSubscriptions />} />
+          <Route path="/customer/wallet" element={<CustomerWallet />} />
           <Route path="/customer/products/:category" element={<ProductDetails />} />
         </Route>
 

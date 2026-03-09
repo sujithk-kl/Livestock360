@@ -174,11 +174,59 @@ const CustomerOrders = () => {
                                         <p className="font-medium text-gray-800 dark:text-white">{new Date(order.createdAt).toLocaleDateString()}</p>
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">{t('total_amount_label')}</p>
-                                        <p className="font-bold text-green-600 text-lg">₹{order.totalAmount}</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                            {order.paymentStatus === 'COD' ? 'To Pay on Delivery' : t('total_amount_label')}
+                                        </p>
+                                        <p className="font-bold text-green-600 text-lg">
+                                            {order.paymentStatus === 'COD'
+                                                ? `₹${order.totalAmount + (order.deliveryFee || 0)}`
+                                                : order.deliveryFee > 0
+                                                    ? `₹${order.totalAmount} paid (+₹${order.deliveryFee} on delivery)`
+                                                    : `₹${order.totalAmount}`}
+                                        </p>
                                     </div>
-                                    <div className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-green-100 text-green-800">
-                                        {order.paymentStatus}
+                                    <div className="flex flex-col gap-2 items-end">
+                                        <div className="flex gap-2">
+                                            <div className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-green-100 text-green-800">
+                                                {order.paymentStatus}
+                                            </div>
+                                            {order.deliveryStatus && (
+                                                <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${order.deliveryStatus === 'Delivered' ? 'bg-purple-100 text-purple-800' :
+                                                    order.deliveryStatus === 'Out for Delivery' ? 'bg-orange-100 text-orange-800' :
+                                                        order.deliveryStatus === 'Clustered' ? 'bg-blue-100 text-blue-800' :
+                                                            'bg-gray-200 text-gray-800 dark:bg-gray-600 dark:text-gray-200'
+                                                    }`}>
+                                                    {order.deliveryStatus}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {order.isAddon && (
+                                            <div className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-blue-100 text-blue-800">
+                                                Add-on Delivery
+                                            </div>
+                                        )}
+
+                                        {order.deliveryFee > 0 && (
+                                            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 text-right">
+                                                + ₹{order.deliveryFee} Cluster Delivery
+                                                {order.clusterId && order.clusterId.slot && (
+                                                    <div className="text-[10px] mt-0.5 opacity-80">
+                                                        {new Date(order.clusterId.deliveryDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })} • {order.clusterId.slot.split(' ')[0]}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                        {order.deliveryStatus === 'Pending' && !order.isAddon && !order.deliveryFee && (
+                                            <div className="text-xs font-medium text-blue-500 dark:text-blue-400 text-right animate-pulse">
+                                                Grouping with nearby orders...
+                                            </div>
+                                        )}
+                                        {order.deliverySlot === 'With Milk Subscription' && (
+                                            <div className="text-xs font-bold text-green-600 dark:text-green-400 text-right mt-1">
+                                                Free Delivery (with Milk)
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="p-4">

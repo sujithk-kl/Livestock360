@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import authService from '../services/authService';
 import farmerService from '../services/farmerService';
+import subscriptionService from '../services/subscriptionService';
 import NotificationBell from '../components/NotificationBell';
 import {
   HomeIcon,
@@ -14,7 +15,8 @@ import {
   ArrowLeftOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,
-  UserCircleIcon
+  UserCircleIcon,
+  TruckIcon
 } from '@heroicons/react/24/outline';
 
 const FarmerDashboard = () => {
@@ -28,7 +30,8 @@ const FarmerDashboard = () => {
     totalLivestock: 0,
     productsListed: 0,
     milkToday: 0,
-    farmSize: 0
+    farmSize: 0,
+    milkReqTomorrow: 0
   });
 
   useEffect(() => {
@@ -40,15 +43,39 @@ const FarmerDashboard = () => {
           return;
         }
 
-        const [profileResponse, statsResponse] = await Promise.all([
+        const [profileResponse, statsResponse, subscriptionsResponse] = await Promise.all([
           farmerService.getMyProfile(),
-          farmerService.getDashboardStats()
+          farmerService.getDashboardStats(),
+          subscriptionService.getFarmerSubscriptions()
         ]);
 
         setFarmerProfile(profileResponse.data.user);
 
         if (statsResponse.success) {
-          setStats(statsResponse.data);
+          const statsData = { ...statsResponse.data };
+
+          // Calculate total milk required tomorrow from active subscriptions
+          let totalMilkTomorrow = 0;
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+          if (subscriptionsResponse.success) {
+            subscriptionsResponse.data.forEach(sub => {
+              // Ensure product exists and is milk
+              // Product details are populated in backend
+              const isMilk = sub.product && (sub.product.category === 'Milk' || String(sub.product.category).toLowerCase() === 'milk');
+              if (isMilk && sub.status === 'Active') {
+                // Check if tomorrow is paused
+                const isPaused = sub.pausedDates && sub.pausedDates.some(d => d.split('T')[0] === tomorrowStr);
+                if (!isPaused) {
+                  totalMilkTomorrow += sub.quantityPerDay;
+                }
+              }
+            });
+          }
+          statsData.milkReqTomorrow = totalMilkTomorrow;
+          setStats(statsData);
         }
 
       } catch (error) {
@@ -71,6 +98,7 @@ const FarmerDashboard = () => {
 
   const navItems = [
     { label: t('side_dashboard'), path: '/farmer/dashboard', icon: HomeIcon },
+    { label: 'Delivery Runs', path: '/farmer/deliveries', icon: TruckIcon },
     { label: t('side_livestock'), path: '/farmer/livestock', icon: CubeIcon },
     { label: t('side_products'), path: '/farmer/products', icon: BeakerIcon },
     { label: t('side_milk'), path: '/farmer/milk-production', icon: ChartBarIcon }, // Changed icon for variety
@@ -198,6 +226,12 @@ const FarmerDashboard = () => {
               value={`${stats.milkToday} L`}
               icon={BeakerIcon} // Could use a specific icon if available
               color="amber"
+            />
+            <StatCard
+              title="Req. Tomorrow (Subs)"
+              value={`${stats.milkReqTomorrow || 0} L`}
+              icon={BeakerIcon}
+              color="blue"
             />
             <StatCard
               title={t('stat_farm_size')}

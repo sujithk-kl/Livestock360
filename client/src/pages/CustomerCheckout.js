@@ -11,7 +11,7 @@ const CustomerCheckout = () => {
     const navigate = useNavigate();
     const [status, setStatus] = useState('processing');
     const paymentMethod = 'Online'; // Fixed to Online
-    const { total } = location.state || { total: '0.00' };
+    const { total, deliverWithMilk, deliveryAddress, deliveryDate, deliverySlot } = location.state || { total: '0.00', deliverWithMilk: false };
 
     // Generate UPI string
     const upiString = `upi://pay?pa=livestock360@upi&pn=Livestock360&am=${total}&cu=INR`;
@@ -43,7 +43,11 @@ const CustomerCheckout = () => {
                 })),
                 totalAmount: total,
                 paymentStatus: 'Success', // Always Success for Online
-                paymentMethod: paymentMethod
+                paymentMethod: paymentMethod,
+                isAddon: deliverWithMilk,
+                deliveryAddress: deliveryAddress || null,
+                deliveryDate: deliveryDate ? new Date(deliveryDate) : null,
+                deliverySlot: deliverySlot || null
             };
 
             // Send to backend

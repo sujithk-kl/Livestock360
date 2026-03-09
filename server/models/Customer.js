@@ -36,6 +36,10 @@ const customerSchema = new mongoose.Schema({
             trim: true
         }
     },
+    walletBalance: {
+        type: Number,
+        default: 0
+    },
     preferences: {
         preferredProducts: [{
             type: String,
