@@ -28,7 +28,8 @@ const ProductDetails = () => {
     const { t } = useTranslation();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [sortOption, setSortOption] = useState('price-asc');
+    const [priceSort, setPriceSort] = useState('asc');
+    const [ratingSort, setRatingSort] = useState('');
 
     // Cart Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -217,10 +218,16 @@ const ProductDetails = () => {
     };
 
     const sortedProducts = [...products].sort((a, b) => {
-        if (sortOption === 'price-asc') return a.price - b.price;
-        if (sortOption === 'price-desc') return b.price - a.price;
-        if (sortOption === 'rating-desc') return (b.averageRating || 0) - (a.averageRating || 0);
-        if (sortOption === 'rating-asc') return (a.averageRating || 0) - (b.averageRating || 0);
+        if (ratingSort) {
+            const ratingA = a.averageRating || 0;
+            const ratingB = b.averageRating || 0;
+            if (ratingA !== ratingB) {
+                return ratingSort === 'desc' ? ratingB - ratingA : ratingA - ratingB;
+            }
+        }
+        if (priceSort) {
+            return priceSort === 'asc' ? a.price - b.price : b.price - a.price;
+        }
         return 0;
     });
 
@@ -273,16 +280,24 @@ const ProductDetails = () => {
                                 {t('farmers_offerings_title')}
                             </h3>
 
-                            <div className="flex gap-2 w-full sm:w-auto">
+                            <div className="flex gap-3 w-full sm:w-auto flex-col sm:flex-row">
                                 <select
-                                    value={sortOption}
-                                    onChange={(e) => setSortOption(e.target.value)}
+                                    value={priceSort}
+                                    onChange={(e) => setPriceSort(e.target.value)}
                                     className="w-full sm:w-auto bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5"
                                 >
-                                    <option value="price-asc">{t('sort_low_high')}</option>
-                                    <option value="price-desc">{t('sort_high_low')}</option>
-                                    <option value="rating-desc">Rating: High to Low</option>
-                                    <option value="rating-asc">Rating: Low to High</option>
+                                    <option value="">Sort by Price: Default</option>
+                                    <option value="asc">Price: {t('sort_low_high')}</option>
+                                    <option value="desc">Price: {t('sort_high_low')}</option>
+                                </select>
+                                <select
+                                    value={ratingSort}
+                                    onChange={(e) => setRatingSort(e.target.value)}
+                                    className="w-full sm:w-auto bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5"
+                                >
+                                    <option value="">Sort by Rating: Default</option>
+                                    <option value="desc">Rating: High to Low</option>
+                                    <option value="asc">Rating: Low to High</option>
                                 </select>
                             </div>
                         </div>
