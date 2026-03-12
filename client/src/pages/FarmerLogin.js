@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
 import farmerService from '../services/farmerService';
 import { useAuth } from '../context/AuthContext';
+import notificationService from '../services/notificationService';
 import { EyeIcon, EyeSlashIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import authBg from '../assets/modern_farm_hero.png';
 
@@ -38,6 +39,8 @@ const FarmerLogin = () => {
       if (response.data && response.data.token) {
         login(response.data, response.data.token);
       }
+      // Subscribe to web push notifications (non-blocking)
+      notificationService.subscribeToPush();
       navigate('/farmer/dashboard');
     } catch (err) {
       setError(err.message || 'Invalid credentials');

@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
 import customerService from '../services/customerService';
 import { useAuth } from '../context/AuthContext';
+import notificationService from '../services/notificationService';
 import { EyeIcon, EyeSlashIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
-import authBg from '../assets/modern_farm_hero.png'; // Reusing hero image for consistent vibe, or could use another
+import authBg from '../assets/modern_farm_hero.png';
 
 const CustomerLogin = () => {
   const navigate = useNavigate();
@@ -38,6 +39,8 @@ const CustomerLogin = () => {
       if (response.data && response.data.token) {
         login(response.data, response.data.token);
       }
+      // Subscribe to web push notifications (non-blocking)
+      notificationService.subscribeToPush();
       navigate('/customer/products');
     } catch (err) {
       setError(err.message || 'Invalid credentials');

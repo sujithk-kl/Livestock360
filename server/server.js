@@ -3,9 +3,17 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const cron = require('node-cron');
+const webpush = require('web-push');
 
 // Load environment variables FIRST, before any other imports
 dotenv.config();
+
+// Configure web-push VAPID keys
+webpush.setVapidDetails(
+  process.env.VAPID_EMAIL || 'mailto:admin@livestock360.com',
+  process.env.VAPID_PUBLIC_KEY,
+  process.env.VAPID_PRIVATE_KEY
+);
 
 // Keep-alive mechanism: Ping server every 14 minutes to prevent sleeping
 if (process.env.BACKEND_URL) {
@@ -58,6 +66,7 @@ const reportRoutes = require('./routes/reports');
 const subscriptionRoutes = require('./routes/subscriptions');
 const walletRoutes = require('./routes/wallet');
 const clusterRoutes = require('./routes/clusterRoutes');
+const pushRoutes = require('./routes/pushRoutes');
 const { runNightlyBilling } = require('./jobs/billingJob');
 const { initClusteringJob } = require('./jobs/clusteringJob');
 
@@ -114,6 +123,7 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/wallet', walletRoutes);
 app.use('/api/clusters', clusterRoutes);
+app.use('/api/push', pushRoutes);
 
 // Test Route
 app.get('/', (req, res) => {
