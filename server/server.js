@@ -59,6 +59,7 @@ const subscriptionRoutes = require('./routes/subscriptions');
 const walletRoutes = require('./routes/wallet');
 const clusterRoutes = require('./routes/clusterRoutes');
 const { runNightlyBilling } = require('./jobs/billingJob');
+const { initClusteringJob } = require('./jobs/clusteringJob');
 
 
 const app = express();
@@ -91,7 +92,9 @@ cron.schedule('59 23 * * *', () => {
 });
 console.log('[Cron] Nightly billing job scheduled for 23:59 IST every night.');
 
-// Cluster delivery grouping job — removed as requested by user
+// Cluster delivery grouping job — runs at 10:00 PM IST every night
+initClusteringJob();
+
 
 
 // API Routes
