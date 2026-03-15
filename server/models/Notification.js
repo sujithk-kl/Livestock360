@@ -12,12 +12,28 @@ const NotificationSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['OOS'], // Out Of Stock
+        enum: [
+            'OOS',          // Out Of Stock
+            'NEW_ORDER',    // Customer placed an order
+            'SUB_NEW',      // New subscription created
+            'SUB_SKIP',     // Customer skipped a single day
+            'SUB_VACATION', // Customer paused a date range
+            'SUB_RESUME',   // Customer resumed / cancelled vacation
+            'SUB_CANCEL'    // Subscription cancelled
+        ],
         default: 'OOS'
     },
     product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product'
+    },
+    subscription: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subscription'
+    },
+    order: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Order'
     },
     isRead: {
         type: Boolean,

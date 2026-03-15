@@ -88,6 +88,11 @@ const orderSchema = new mongoose.Schema({
         type: String,
         enum: ['Pending', 'Clustered', 'Out for Delivery', 'Delivered', 'Self-Pickup'],
         default: 'Pending'
+    },
+    deliveryMethod: {
+        type: String,
+        enum: ['Express', 'Standard', 'Eco Saver'],
+        default: 'Standard'
     }
 }, { timestamps: true });
 

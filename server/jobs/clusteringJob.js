@@ -28,7 +28,8 @@ const runClusteringJob = async () => {
             deliveryStatus: 'Pending',
             deliveryDate: { $gte: tomorrow },
             deliverySlot: { $in: ['Morning (6-9 AM)', 'Evening (5-7 PM)'] },
-            'deliveryAddress.pincode': { $exists: true, $ne: '' }
+            'deliveryAddress.pincode': { $exists: true, $ne: '' },
+            deliveryMethod: { $ne: 'Express' } // Express orders bypass clustering
         }).populate('customer', 'name phone walletBalance')
             .populate('items.farmer', 'name');
 

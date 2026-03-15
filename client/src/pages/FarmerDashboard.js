@@ -15,7 +15,7 @@ import {
   Bars3Icon,
   XMarkIcon,
   UserCircleIcon,
-  TruckIcon
+  ClipboardDocumentListIcon
 } from '@heroicons/react/24/outline';
 
 const FarmerDashboard = () => {
@@ -72,10 +72,10 @@ const FarmerDashboard = () => {
 
   const navItems = [
     { label: t('side_dashboard'), path: '/farmer/dashboard', icon: HomeIcon },
-    { label: 'Delivery Runs', path: '/farmer/deliveries', icon: TruckIcon },
+    { label: 'Subscriptions', path: '/farmer/subscriptions', icon: ClipboardDocumentListIcon },
     { label: t('side_livestock'), path: '/farmer/livestock', icon: CubeIcon },
     { label: t('side_products'), path: '/farmer/products', icon: BeakerIcon },
-    { label: t('side_milk'), path: '/farmer/milk-production', icon: ChartBarIcon }, // Changed icon for variety
+    { label: t('side_milk'), path: '/farmer/milk-production', icon: ChartBarIcon },
     { label: t('side_staff'), path: '/farmer/staff', icon: UserGroupIcon },
     { label: t('side_reports'), path: '/farmer/reports', icon: DocumentTextIcon },
     { label: t('side_sales_report'), path: '/farmer/sales-report', icon: ChartBarIcon },

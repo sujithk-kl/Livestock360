@@ -15,6 +15,7 @@ import FarmerSalesReport from './pages/FarmerSalesReport';
 import FarmerForgotPassword from './pages/FarmerForgotPassword';
 import FarmerResetPassword from './pages/FarmerResetPassword';
 import FarmerDeliveries from './pages/FarmerDeliveries';
+import FarmerSubscriptions from './pages/FarmerSubscriptions';
 import CustomerLogin from './pages/CustomerLogin';
 import CustomerRegistration from './pages/CustomerRegistration';
 import CustomerProfile from './pages/CustomerProfile';
@@ -78,6 +79,7 @@ function AppContent() {
           <Route path="/farmer/reports" element={<FarmerReports />} />
           <Route path="/farmer/sales-report" element={<FarmerSalesReport />} />
           <Route path="/farmer/deliveries" element={<FarmerDeliveries />} />
+          <Route path="/farmer/subscriptions" element={<FarmerSubscriptions />} />
           <Route path="/farmer/profile" element={<FarmerProfile />} />
         </Route>
 

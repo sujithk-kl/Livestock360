@@ -2,6 +2,14 @@ const Subscription = require('../models/Subscription');
 const Product = require('../models/Product');
 const Customer = require('../models/Customer');
 const Transaction = require('../models/Transaction');
+const Notification = require('../models/Notification');
+
+// Helper: silently fire a notification without blocking response
+const notify = (recipient, message, type, extras = {}) => {
+    Notification.create({ recipient, message, type, ...extras }).catch(err =>
+        console.error('[Notification Error]', err.message)
+    );
+};
 
 // @desc    Create a new subscription
 // @route   POST /api/subscriptions
@@ -57,6 +65,16 @@ const createSubscription = async (req, res) => {
             }
         });
 
+        // Notify farmer about new subscription
+        const customerDoc = await Customer.findById(customerId).select('name');
+        const customerName = customerDoc?.name || 'A customer';
+        notify(
+            product.farmer,
+            `📋 New subscription: ${customerName} → ${quantityPerDay}${product.unit} ${product.productName}/day`,
+            'SUB_NEW',
+            { subscription: subscription._id }
+        );
+
         res.status(201).json({
             success: true,
             data: subscription
@@ -98,13 +116,32 @@ const getMySubscriptions = async (req, res) => {
 // @access  Private (Farmer)
 const getFarmerSubscriptions = async (req, res) => {
     try {
-        const subscriptions = await Subscription.find({ farmer: req.user.id, status: 'Active' })
+        const { status } = req.query; // optional ?status=Active filter
+        const filter = { farmer: req.user.id };
+        if (status) filter.status = status;
+
+        const subscriptions = await Subscription.find(filter)
             .populate('customer', 'name phone address city')
-            .sort({ startDate: 1 });
+            .populate('product', 'productName unit price category')
+            .populate('addOns.product', 'productName unit')
+            .sort({ createdAt: -1 });
+
+        // Annotate tomorrowStatus for each subscription
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+        const data = subscriptions.map(sub => {
+            const obj = sub.toObject();
+            obj.tomorrowSkipped = sub.pausedDates.some(
+                d => d.toISOString().split('T')[0] === tomorrowStr
+            );
+            return obj;
+        });
 
         res.status(200).json({
             success: true,
-            data: subscriptions
+            data
         });
     } catch (error) {
         console.error('Error fetching farmer subscriptions:', error);
@@ -169,6 +206,16 @@ const pauseSubscriptionDate = async (req, res) => {
         if (!alreadyPaused) {
             subscription.pausedDates.push(targetDate);
             await subscription.save();
+
+            // Notify farmer
+            const cust = await Customer.findById(req.user.id).select('name');
+            const dateLabel = targetDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+            notify(
+                subscription.farmer,
+                `⏭️ ${cust?.name || 'A customer'} skipped delivery for ${dateLabel} (${subscription.productName})`,
+                'SUB_SKIP',
+                { subscription: subscription._id }
+            );
         }
 
         res.status(200).json({
@@ -236,6 +283,16 @@ const resumeSubscriptionDate = async (req, res) => {
         const dateStr = targetDate.toISOString();
         subscription.pausedDates = subscription.pausedDates.filter(d => d.toISOString() !== dateStr);
         await subscription.save();
+
+        // Notify farmer
+        const custR = await Customer.findById(req.user.id).select('name');
+        const dateLabelR = targetDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+        notify(
+            subscription.farmer,
+            `✅ ${custR?.name || 'A customer'} resumed delivery for ${dateLabelR} (${subscription.productName})`,
+            'SUB_RESUME',
+            { subscription: subscription._id }
+        );
 
         res.status(200).json({
             success: true,
@@ -326,6 +383,17 @@ const pauseSubscriptionRange = async (req, res) => {
 
         if (newPausesAdded) {
             await subscription.save();
+
+            // Notify farmer about vacation range
+            const custV = await Customer.findById(req.user.id).select('name');
+            const startLabel = start.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+            const endLabel = end.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+            notify(
+                subscription.farmer,
+                `🏖️ ${custV?.name || 'A customer'} paused ${subscription.productName} from ${startLabel}–${endLabel}`,
+                'SUB_VACATION',
+                { subscription: subscription._id }
+            );
         }
 
         res.status(200).json({
@@ -379,6 +447,15 @@ const cancelVacationMode = async (req, res) => {
 
         if (datesResumed > 0) {
             await subscription.save();
+
+            // Notify farmer
+            const custC = await Customer.findById(req.user.id).select('name');
+            notify(
+                subscription.farmer,
+                `✅ ${custC?.name || 'A customer'} cancelled vacation — ${datesResumed} delivery days resumed (${subscription.productName})`,
+                'SUB_RESUME',
+                { subscription: subscription._id }
+            );
         }
 
         res.status(200).json({
@@ -452,6 +529,15 @@ const cancelSubscription = async (req, res) => {
         subscription.cancelledAt = new Date();
         subscription.refundAmount = refundAmount;
         await subscription.save();
+
+        // Notify farmer
+        const custCancel = await Customer.findById(req.user.id).select('name');
+        notify(
+            subscription.farmer,
+            `❌ ${custCancel?.name || 'A customer'} cancelled their ${subscription.productName} subscription`,
+            'SUB_CANCEL',
+            { subscription: subscription._id }
+        );
 
         res.status(200).json({
             success: true,

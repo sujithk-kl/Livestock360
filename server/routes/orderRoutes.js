@@ -16,28 +16,33 @@ router.post('/', protect, async (req, res) => {
             paymentStatus,
             deliveryAddress,
             deliveryDate,
-            deliverySlot
+            deliverySlot,
+            deliveryMethod
         } = req.body;
 
         const customer = await Customer.findById(req.user.id);
         if (!customer) return res.status(404).json({ success: false, message: 'Customer not found' });
 
+        const isExpress = deliveryMethod === 'Express';
         const newOrder = new Order({
             customer: req.user.id,
             items,
             totalAmount,
-            paymentStatus: paymentStatus || 'COD', // Accept 'Success' for online, default 'COD'
+            paymentStatus: paymentStatus || 'COD',
             paymentMethod: req.body.paymentMethod || 'Cash',
-
             deliveryAddress: deliveryAddress || null,
             deliveryDate: deliveryDate ? new Date(deliveryDate) : null,
             deliverySlot: deliverySlot || null,
-            deliveryStatus: deliverySlot === 'With Milk Subscription' ? 'Clustered' : 'Pending'
+            deliveryMethod: deliveryMethod || 'Standard',
+            deliveryStatus: isExpress ? 'Out for Delivery'
+                : deliverySlot === 'With Milk Subscription' ? 'Clustered'
+                : 'Pending'
         });
 
         const savedOrder = await newOrder.save();
 
-        // Update product stock and trigger OOS notifications
+        // Update product stock + OOS notifications
+        const farmerNotified = new Set();
         for (const item of items) {
             const product = await Product.findByIdAndUpdate(
                 item.product,
@@ -51,6 +56,17 @@ router.post('/', protect, async (req, res) => {
                     type: 'OOS',
                     product: product._id
                 });
+            }
+            // Fire NEW_ORDER notification once per farmer (group items)
+            if (product && !farmerNotified.has(product.farmer.toString())) {
+                farmerNotified.add(product.farmer.toString());
+                const custName = customer.name || 'A customer';
+                Notification.create({
+                    recipient: product.farmer,
+                    message: `📦 New order from ${custName}: ${item.productName} ×${item.quantity}${item.unit || ''} — ₹${item.total}`,
+                    type: 'NEW_ORDER',
+                    order: savedOrder._id
+                }).catch(e => console.error('[Order Notify Error]', e.message));
             }
         }
 
