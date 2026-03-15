@@ -50,13 +50,13 @@ const runClusteringJob = async () => {
             groups[key].orders.push(order);
         }
 
-        // 3. For each group, create/update a DeliveryCluster and deduct delivery fees
+        // 3. For each group, create/update a DeliveryCluster and assign fixed delivery fees
         for (const key of Object.keys(groups)) {
             const { pincode, slot, dateKey, orders } = groups[key];
 
-            // Calculate per-order fee (shared cost)
-            let perOrderFee = Math.round(TOTAL_CLUSTER_FEE / orders.length);
-            perOrderFee = Math.max(MIN_FEE_PER_ORDER, Math.min(MAX_FEE_PER_ORDER, perOrderFee));
+            // Fixed delivery fees per type (mirrors frontend DELIVERY_OPTIONS)
+            const FIXED_FEES = { 'Express': 29, 'Standard': 19, 'Eco Saver': 14 };
+            const representativeFee = 19; // Standard fee for cluster record
 
             // Collect unique farmers involved
             const farmerIdSet = new Set();
@@ -79,7 +79,7 @@ const runClusteringJob = async () => {
                     $set: {
                         city: orders[0].deliveryAddress?.city || '',
                         totalDeliveryFee: TOTAL_CLUSTER_FEE,
-                        perOrderFee,
+                        perOrderFee: stdFee,
                         farmers: farmerIds,
                         status: 'Confirmed'
                     },
@@ -88,16 +88,17 @@ const runClusteringJob = async () => {
                 { upsert: true, new: true }
             );
 
-            // 4. Update each order with the calculated delivery fee (to be paid on delivery)
+            // 4. Update each order with its fixed delivery fee
             for (const order of orders) {
+                const fee = FIXED_FEES[order.deliveryMethod] || 19;
                 await Order.findByIdAndUpdate(order._id, {
-                    deliveryFee: perOrderFee,
+                    deliveryFee: fee,
                     clusterId: cluster._id,
                     deliveryStatus: 'Clustered'
                 });
             }
 
-            console.log(`[ClusterJob] Cluster ${key}: ${orders.length} orders, ₹${perOrderFee}/order`);
+            console.log(`[ClusterJob] Cluster ${key}: ${orders.length} orders mapped to fixed fees`);
         }
 
         console.log('[ClusterJob] Finished. Clusters formed:', Object.keys(groups).length);

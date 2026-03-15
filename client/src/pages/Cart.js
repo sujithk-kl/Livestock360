@@ -1,8 +1,9 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
+import { QRCodeSVG } from 'qrcode.react';
 import 'react-toastify/dist/ReactToastify.css';
 import subscriptionService from '../services/subscriptionService';
 import api from '../services/api';
@@ -20,10 +21,41 @@ import countryChickenImg from '../assets/country chicken.jpg';
 import muttonImg from '../assets/Mutton.jpg';
 import defaultImg from '../assets/Milk.jpg';
 
-// ── Delivery slots available ───────────────────────────────────────────────────
+// ── Delivery slots ─────────────────────────────────────────────────────────────
 const SLOTS = ['Morning (6-9 AM)', 'Evening (5-7 PM)'];
 
-// Helper: date options tomorrow → +3 days
+// ── Delivery method options ────────────────────────────────────────────────────
+const DELIVERY_OPTIONS = [
+    {
+        id: 'Express',
+        label: 'Express',
+        icon: '⚡',
+        subtitle: 'Direct to you — skips order grouping',
+        eta: '35–40 min',
+        feeLabel: '+₹29',
+        fixedFee: 29,
+    },
+    {
+        id: 'Standard',
+        label: 'Standard',
+        icon: '🟠',
+        subtitle: 'Grouped with nearby orders',
+        eta: '40–45 min',
+        feeLabel: '+₹19',
+        fixedFee: 19,
+    },
+    {
+        id: 'Eco Saver',
+        label: 'Eco Saver',
+        icon: '🍃',
+        subtitle: 'Max grouping — lowest delivery fee',
+        eta: '45–55 min',
+        feeLabel: '+₹14',
+        fixedFee: 14,
+    },
+];
+
+// ── Date options: tomorrow → +3 days ──────────────────────────────────────────
 const getDeliveryDateOptions = () => {
     const opts = [];
     for (let i = 1; i <= 3; i++) {
@@ -43,12 +75,13 @@ const Cart = () => {
     const [hasActiveMilkSub, setHasActiveMilkSub] = useState(false);
 
     const [showCheckout, setShowCheckout] = useState(false);
-    const [checkoutStep, setCheckoutStep] = useState(1); // 1 = address, 2 = slot
+    const [checkoutStep, setCheckoutStep] = useState(1); // 1=address, 2=slot+type, 3=payment
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [locLoading, setLocLoading] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState('COD');
 
-    // Delivery form
+    const [paymentMethod, setPaymentMethod] = useState('COD');
+    const [deliveryMethod, setDeliveryMethod] = useState('Standard');
+
     const [delivery, setDelivery] = useState({
         street: '', city: '', state: '', pincode: '',
         slot: 'Morning (6-9 AM)',
@@ -68,7 +101,6 @@ const Cart = () => {
             case 'Chicken': return chickenImg;
             case 'Country Chicken': return countryChickenImg;
             case 'Mutton': return muttonImg;
-            case 'Meat': return chickenImg;
             default: return defaultImg;
         }
     };
@@ -79,7 +111,6 @@ const Cart = () => {
             try {
                 const user = JSON.parse(userStr);
                 setUserName(user.name || user.firstName || 'Customer');
-                // Pre-fill address from profile
                 if (user.address?.city) setDelivery(d => ({ ...d, city: user.address.city }));
             } catch (e) { console.error(e); }
         }
@@ -139,6 +170,18 @@ const Cart = () => {
     const calculateTotal = () =>
         cartItems.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
 
+    const dateOptions = getDeliveryDateOptions();
+    const selectedDeliveryOption = DELIVERY_OPTIONS.find(o => o.id === deliveryMethod);
+
+    // All delivery types have a fixed fee added upfront
+    const getAdjustedTotal = () => {
+        const base = parseFloat(calculateTotal());
+        const fee = selectedDeliveryOption?.fixedFee || 0;
+        return (base + fee).toFixed(2);
+    };
+
+    const upiString = `upi://pay?pa=livestock360@upi&pn=Livestock360&am=${getAdjustedTotal()}&cu=INR`;
+
     // ── GPS auto-fill ──────────────────────────────────────────────────────────
     const handleUseLocation = () => {
         if (!navigator.geolocation) { toast.error('Geolocation not supported'); return; }
@@ -164,34 +207,8 @@ const Cart = () => {
         }, () => { toast.error('Location access denied'); setLocLoading(false); });
     };
 
-    // ── Place order ────────────────────────────────────────────────────────────
-    const handlePlaceOrder = async () => {
-        if (!delivery.withMilk) {
-            if (!delivery.street || !delivery.city || !delivery.pincode) {
-                toast.error('Please fill in delivery address (street, city, pincode)');
-                return;
-            }
-        }
-
-        if (paymentMethod === 'Online') {
-            navigate('/customer/checkout', {
-                state: {
-                    total: calculateTotal(),
-                    deliverWithMilk: delivery.withMilk,
-                    deliveryAddress: delivery.withMilk ? null : {
-                        street: delivery.street,
-                        city: delivery.city,
-                        state: delivery.state,
-                        pincode: delivery.pincode,
-                    },
-                    deliveryDate: delivery.withMilk ? null : delivery.date,
-                    deliverySlot: delivery.withMilk ? 'With Milk Subscription' : delivery.slot,
-                }
-            });
-            setShowCheckout(false);
-            return;
-        }
-
+    // ── Confirm & place order (called from Step 3) ─────────────────────────────
+    const confirmOrder = async () => {
         setIsSubmitting(true);
         try {
             const items = cartItems.map(item => ({
@@ -208,7 +225,10 @@ const Cart = () => {
 
             const payload = {
                 items,
-                totalAmount: parseFloat(calculateTotal()),
+                totalAmount: parseFloat(getAdjustedTotal()),
+                paymentStatus: paymentMethod === 'Online' ? 'Success' : 'COD',
+                paymentMethod: paymentMethod === 'Online' ? 'Online' : 'Cash',
+                deliveryMethod,
                 deliveryAddress: delivery.withMilk ? null : {
                     street: delivery.street,
                     city: delivery.city,
@@ -221,7 +241,10 @@ const Cart = () => {
 
             const res = await api.post('/orders', payload);
             if (res.data.success) {
-                toast.success('Order placed! Delivery fee will be shared with nearby orders.');
+                const msg = deliveryMethod === 'Express'
+                    ? 'Order placed! Your delivery is on its way.'
+                    : 'Order placed! Delivery fee will be shared with nearby orders tonight.';
+                toast.success(msg);
                 setCartItems([]);
                 localStorage.removeItem('cartItems');
                 setShowCheckout(false);
@@ -236,7 +259,8 @@ const Cart = () => {
         }
     };
 
-    const dateOptions = getDeliveryDateOptions();
+    // Step header titles
+    const stepTitles = ['Step 1: Delivery Address', 'Step 2: Slot & Delivery Type', 'Step 3: Payment'];
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans transition-colors duration-200">
@@ -331,27 +355,27 @@ const Cart = () => {
                 )}
             </div>
 
-            {/* ── Delivery Checkout Modal ─────────────────────────────────────── */}
+            {/* ── Checkout Modal ───────────────────────────────────────────────── */}
             {showCheckout && (
                 <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 flex justify-center items-end sm:items-center p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
 
                         {/* Modal Header */}
-                        <div className="bg-gradient-to-r from-green-600 to-green-700 p-5 flex justify-between items-center">
+                        <div className="bg-gradient-to-r from-green-600 to-green-700 p-5 flex justify-between items-center flex-shrink-0">
                             <div>
-                                <h2 className="text-white font-bold text-lg">
-                                    {checkoutStep === 1 ? 'Step 1: Delivery Address' : 'Step 2: Delivery Options'}
-                                </h2>
-                                <div className="flex gap-1 mt-1.5">
-                                    <span className="h-1.5 w-8 rounded-full bg-white opacity-100" />
-                                    <span className={`h-1.5 w-8 rounded-full ${checkoutStep === 2 ? 'bg-white' : 'bg-white/40'}`} />
+                                <h2 className="text-white font-bold text-lg">{stepTitles[checkoutStep - 1]}</h2>
+                                <div className="flex gap-1.5 mt-1.5">
+                                    {[1, 2, 3].map(s => (
+                                        <span key={s} className={`h-1.5 w-8 rounded-full transition-all ${s <= checkoutStep ? 'bg-white' : 'bg-white/30'}`} />
+                                    ))}
                                 </div>
                             </div>
                             <button onClick={() => setShowCheckout(false)} className="text-white/70 hover:text-white text-2xl leading-none">&times;</button>
                         </div>
 
-                        <div className="p-6 space-y-4">
-                            {/* STEP 1: Address */}
+                        <div className="p-6 space-y-4 overflow-y-auto flex-1">
+
+                            {/* ── STEP 1: Delivery Address ── */}
                             {checkoutStep === 1 && (
                                 <>
                                     <button
@@ -366,12 +390,9 @@ const Cart = () => {
                                         <span className="text-xs text-gray-400 font-medium">OR ENTER MANUALLY</span>
                                         <div className="flex-1 border-t border-gray-200 dark:border-gray-600" />
                                     </div>
-                                    <input
-                                        type="text" placeholder="Street / Area*"
-                                        value={delivery.street}
+                                    <input type="text" placeholder="Street / Area*" value={delivery.street}
                                         onChange={e => setDelivery(d => ({ ...d, street: e.target.value }))}
-                                        className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:border-green-500 outline-none"
-                                    />
+                                        className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:border-green-500 outline-none" />
                                     <div className="grid grid-cols-2 gap-3">
                                         <input type="text" placeholder="City*" value={delivery.city}
                                             onChange={e => setDelivery(d => ({ ...d, city: e.target.value }))}
@@ -385,7 +406,10 @@ const Cart = () => {
                                         className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:border-green-500 outline-none" />
                                     <button
                                         onClick={() => {
-                                            if (!delivery.street || !delivery.city || !delivery.pincode) { toast.error('Please fill street, city, and pincode'); return; }
+                                            if (!delivery.street || !delivery.city || !delivery.pincode) {
+                                                toast.error('Please fill street, city, and pincode');
+                                                return;
+                                            }
                                             setCheckoutStep(2);
                                         }}
                                         className="w-full py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-md transition"
@@ -395,7 +419,7 @@ const Cart = () => {
                                 </>
                             )}
 
-                            {/* STEP 2: Slot + Date */}
+                            {/* ── STEP 2: Slot + Date + Delivery Method ── */}
                             {checkoutStep === 2 && (
                                 <>
                                     {/* Address summary */}
@@ -404,89 +428,175 @@ const Cart = () => {
                                         <button onClick={() => setCheckoutStep(1)} className="text-green-600 font-bold text-xs ml-2 flex-shrink-0">Change</button>
                                     </div>
 
-                                    {/* With milk option */}
+                                    {/* With milk subscription shortcut */}
                                     {hasActiveMilkSub && (
                                         <label className="flex items-center gap-3 bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-700 p-3 rounded-xl cursor-pointer">
-                                            <input type="checkbox" checked={delivery.withMilk} onChange={e => setDelivery(d => ({ ...d, withMilk: e.target.checked }))}
+                                            <input type="checkbox" checked={delivery.withMilk}
+                                                onChange={e => setDelivery(d => ({ ...d, withMilk: e.target.checked }))}
                                                 className="w-5 h-5 text-green-600 rounded border-gray-300" />
                                             <span className="text-sm font-bold text-green-700 dark:text-green-300">
-                                                Deliver with tomorrow's milk subscription — Free delivery!
+                                                🥛 Deliver with tomorrow's milk subscription — Free delivery!
                                             </span>
                                         </label>
                                     )}
 
                                     {!delivery.withMilk && (
                                         <>
-                                            {/* Slot picker */}
+                                            {/* ── Delivery Method ── */}
                                             <div>
-                                                <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Choose Delivery Slot</p>
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    {SLOTS.map(slot => (
-                                                        <button key={slot} onClick={() => setDelivery(d => ({ ...d, slot }))}
-                                                            className={`py-3 px-4 rounded-xl border-2 font-bold text-sm transition ${delivery.slot === slot ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400'}`}>
-                                                            {slot === 'Morning (6-9 AM)' ? '🌅 ' : '🌆 '}{slot}
-                                                        </button>
-                                                    ))}
+                                                <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Choose Delivery Type</p>
+                                                <div className="space-y-2">
+                                                    {DELIVERY_OPTIONS.map(opt => {
+                                                        const isSelected = deliveryMethod === opt.id;
+                                                        return (
+                                                            <label
+                                                                key={opt.id}
+                                                                onClick={() => setDeliveryMethod(opt.id)}
+                                                                className={`flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all ${isSelected ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'}`}
+                                                            >
+                                                                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${isSelected ? 'border-orange-500' : 'border-gray-300 dark:border-gray-500'}`}>
+                                                                    {isSelected && <div className="w-2 h-2 rounded-full bg-orange-500" />}
+                                                                </div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                                        <span className={`font-bold text-sm ${isSelected ? 'text-orange-600 dark:text-orange-400' : 'text-gray-800 dark:text-gray-200'}`}>
+                                                                            {opt.icon} {opt.label}
+                                                                        </span>
+                                                                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                                                                            opt.id === 'Express' ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                                                                            : opt.id === 'Eco Saver' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                                                                            : 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                                        }`}>{opt.feeLabel}</span>
+                                                                    </div>
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{opt.subtitle}</p>
+                                                                </div>
+                                                                <span className={`text-xs font-semibold shrink-0 ${isSelected ? 'text-orange-500' : 'text-gray-500 dark:text-gray-400'}`}>
+                                                                    {opt.eta}
+                                                                </span>
+                                                            </label>
+                                                        );
+                                                    })}
                                                 </div>
-                                            </div>
-
-                                            {/* Date picker */}
-                                            <div>
-                                                <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Choose Delivery Date</p>
-                                                <div className="grid grid-cols-3 gap-2">
-                                                    {dateOptions.map(opt => (
-                                                        <button key={opt.value} onClick={() => setDelivery(d => ({ ...d, date: opt.value }))}
-                                                            className={`py-2 px-3 rounded-xl border-2 font-bold text-xs transition ${delivery.date === opt.value ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400'}`}>
-                                                            {opt.label}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </div>
-
-                                            {/* Payment Method */}
-                                            <div>
-                                                <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Payment Method</p>
-                                                <div className="flex gap-4">
-                                                    <label className={`flex-1 flex items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === 'COD' ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 font-bold' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400'}`}>
-                                                        <input type="radio" value="COD" checked={paymentMethod === 'COD'} onChange={(e) => setPaymentMethod(e.target.value)} className="hidden" />
-                                                        Cash on Delivery
-                                                    </label>
-                                                    <label className={`flex-1 flex items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === 'Online' ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 font-bold' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400'}`}>
-                                                        <input type="radio" value="Online" checked={paymentMethod === 'Online'} onChange={(e) => setPaymentMethod(e.target.value)} className="hidden" />
-                                                        Pay Online (UPI)
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            {/* Cost transparency */}
-                                            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 p-3 rounded-xl text-xs text-blue-700 dark:text-blue-300">
-                                                <strong>{paymentMethod === 'COD' ? 'Cash on Delivery:' : 'Shared Delivery Delivery:'}</strong> Your order is grouped with nearby customers to save money. A small delivery fee (₹15–₹80) is calculated tonight and added to your final bill to be paid on delivery.
                                             </div>
                                         </>
                                     )}
 
-                                    {/* Order summary */}
-                                    <div className="border-t border-gray-100 dark:border-gray-700 pt-3">
-                                        <div className="flex justify-between text-sm text-gray-700 dark:text-gray-300 mb-1">
-                                            <span>Items ({cartItems.length})</span>
-                                            <span className="font-bold">₹{calculateTotal()}</span>
+                                    {/* Payment Method */}
+                                    {!delivery.withMilk && (
+                                        <div>
+                                            <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Payment Method</p>
+                                            <div className="flex gap-3">
+                                                {['COD', 'Online'].map(pm => (
+                                                    <label key={pm}
+                                                        className={`flex-1 flex items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all font-bold text-sm ${paymentMethod === pm ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' : 'border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400'}`}>
+                                                        <input type="radio" value={pm} checked={paymentMethod === pm}
+                                                            onChange={() => setPaymentMethod(pm)} className="hidden" />
+                                                        {pm === 'COD' ? '💵 Cash on Delivery' : '📱 Pay Online (UPI)'}
+                                                    </label>
+                                                ))}
+                                            </div>
                                         </div>
-                                        <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
-                                            <span>Pay on Delivery</span>
-                                            <span>{delivery.withMilk ? '₹' + calculateTotal() : '₹' + calculateTotal() + ' + ₹15–₹80'}</span>
+                                    )}
+
+                                    {/* Total preview */}
+                                    <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 flex justify-between items-center">
+                                        <div>
+                                            <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                                                Items total: ₹{calculateTotal()}
+                                            </p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                                {delivery.withMilk
+                                                    ? 'Delivery: Free (with milk subscription)'
+                                                    : `Delivery fee: ${selectedDeliveryOption?.feeLabel} included`}
+                                            </p>
                                         </div>
+                                        <span className="text-lg font-bold text-gray-900 dark:text-white">₹{getAdjustedTotal()}</span>
                                     </div>
 
                                     <div className="flex gap-3">
-                                        <button onClick={() => setCheckoutStep(1)} className="w-1/3 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-xl transition hover:bg-gray-200">
+                                        <button onClick={() => setCheckoutStep(1)}
+                                            className="w-1/3 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-xl transition hover:bg-gray-200 dark:hover:bg-gray-600">
                                             ← Back
                                         </button>
                                         <button
-                                            onClick={handlePlaceOrder}
+                                            onClick={() => {
+                                                if (!delivery.withMilk && !delivery.slot) { toast.error('Please choose a slot'); return; }
+                                                setCheckoutStep(3);
+                                            }}
+                                            className="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-md transition"
+                                        >
+                                            Continue to Payment →
+                                        </button>
+                                    </div>
+                                </>
+                            )}
+
+                            {/* ── STEP 3: Payment Confirmation ── */}
+                            {checkoutStep === 3 && (
+                                <>
+                                    {/* Order summary */}
+                                    <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2">
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600 dark:text-gray-300">Items ({cartItems.length})</span>
+                                            <span className="font-bold text-gray-900 dark:text-white">₹{calculateTotal()}</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600 dark:text-gray-300">
+                                                {selectedDeliveryOption?.icon} {deliveryMethod} Delivery
+                                            </span>
+                                            <span className="font-semibold text-gray-700 dark:text-gray-200">
+                                                {deliveryMethod === 'Express' ? '+₹29'
+                                                    : deliveryMethod === 'Eco Saver' ? '₹10–₹60 tonight'
+                                                    : '₹15–₹80 tonight'}
+                                            </span>
+                                        </div>
+                                        <div className="border-t border-gray-200 dark:border-gray-600 pt-2 flex justify-between">
+                                            <span className="font-bold text-gray-800 dark:text-gray-100">
+                                                {paymentMethod === 'Online' ? 'Pay Now' : 'Pay on Delivery'}
+                                            </span>
+                                            <span className="font-bold text-lg text-gray-900 dark:text-white">₹{getAdjustedTotal()}
+                                                {deliveryMethod !== 'Express' && <span className="text-xs text-gray-400 ml-1">+ delivery fee</span>}
+                                            </span>
+                                        </div>
+                                        <div className="text-xs text-gray-500 dark:text-gray-400 pt-1">
+                                            📍 {delivery.withMilk ? 'With milk subscription' : `${delivery.city} · ${delivery.slot}`}
+                                            {!delivery.withMilk && ` · ${new Date(delivery.date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}`}
+                                        </div>
+                                    </div>
+
+                                    {/* COD Payment View */}
+                                    {paymentMethod === 'COD' && (
+                                        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl p-3 text-sm text-amber-800 dark:text-amber-300">
+                                            💵 <strong>Cash on Delivery:</strong> Pay ₹{getAdjustedTotal()}
+                                            {deliveryMethod !== 'Express' && ' + delivery fee'} to the delivery person when your order arrives.
+                                        </div>
+                                    )}
+
+                                    {/* UPI Payment View */}
+                                    {paymentMethod === 'Online' && (
+                                        <>
+                                            <p className="text-center text-sm text-gray-500 dark:text-gray-400">Scan & pay ₹{getAdjustedTotal()} to complete your order</p>
+                                            <div className="flex justify-center">
+                                                <div className="bg-white p-4 rounded-xl border border-gray-200 inline-block">
+                                                    <QRCodeSVG value={upiString} size={160} />
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    <div className="flex gap-3">
+                                        <button onClick={() => setCheckoutStep(2)}
+                                            className="w-1/3 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold rounded-xl transition hover:bg-gray-200 dark:hover:bg-gray-600">
+                                            ← Back
+                                        </button>
+                                        <button
+                                            onClick={confirmOrder}
                                             disabled={isSubmitting}
                                             className="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-md transition disabled:opacity-50"
                                         >
-                                            {isSubmitting ? 'Processing...' : paymentMethod === 'Online' ? 'Proceed to Payment →' : 'Place COD Order'}
+                                            {isSubmitting ? 'Processing...'
+                                                : paymentMethod === 'COD' ? '✅ Confirm COD Order'
+                                                : "✅ I've Paid — Confirm Order"}
                                         </button>
                                     </div>
                                 </>
@@ -500,6 +610,3 @@ const Cart = () => {
 };
 
 export default Cart;
-
-
-
