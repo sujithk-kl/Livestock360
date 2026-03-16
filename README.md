@@ -18,6 +18,8 @@ Livestock360 is a comprehensive bilingual (English/Tamil) web application design
 ### 🛒 For Customers
 - **Product Browsing**: Browse fresh farm products by category with detailed information
 - **Smart Cart**: Add products with fractional quantities (e.g., 0.5 kg/L) with real-time price calculation
+- **Unified Checkout & Payments**: Streamlined checkout process with Razorpay integration and COD options
+- **Subscriptions & Add-Ons**: Subscribe to daily deliveries and dynamically attach one-time or recurring add-on products
 - **Product Reviews**: Rate and review purchased products (optional comments)
 - **Order Management**: View order history with detailed item breakdowns
 - **Location-Based Filtering**: Products automatically filtered by customer's city
@@ -243,3 +245,6 @@ Developed with ❤️ by :
 - ✅ Implemented dark mode with theme persistence
 - ✅ Added fractional quantity support for cart items
 - ✅ Improved mobile responsiveness across all pages
+- ✅ Integrated Razorpay for online payments and streamlined the checkout flow
+- ✅ Implemented a recurring subscription model with dynamic add-on products
+- ✅ Added delivery clustering management for enhanced logistics logistics
