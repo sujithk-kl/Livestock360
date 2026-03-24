@@ -70,7 +70,7 @@ const createSubscription = async (req, res) => {
         const customerName = customerDoc?.name || 'A customer';
         notify(
             product.farmer,
-            `📋 New subscription: ${customerName} → ${quantityPerDay}${product.unit} ${product.productName}/day`,
+            `New subscription: ${customerName} \u2192 ${quantityPerDay}${product.unit} ${product.productName}/day`,
             'SUB_NEW',
             { subscription: subscription._id }
         );
@@ -212,7 +212,7 @@ const pauseSubscriptionDate = async (req, res) => {
             const dateLabel = targetDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
             notify(
                 subscription.farmer,
-                `⏭️ ${cust?.name || 'A customer'} skipped delivery for ${dateLabel} (${subscription.productName})`,
+                `${cust?.name || 'A customer'} skipped delivery for ${dateLabel} (${subscription.productName})`,
                 'SUB_SKIP',
                 { subscription: subscription._id }
             );
@@ -289,7 +289,7 @@ const resumeSubscriptionDate = async (req, res) => {
         const dateLabelR = targetDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
         notify(
             subscription.farmer,
-            `✅ ${custR?.name || 'A customer'} resumed delivery for ${dateLabelR} (${subscription.productName})`,
+            `${custR?.name || 'A customer'} resumed delivery for ${dateLabelR} (${subscription.productName})`,
             'SUB_RESUME',
             { subscription: subscription._id }
         );
@@ -390,7 +390,7 @@ const pauseSubscriptionRange = async (req, res) => {
             const endLabel = end.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
             notify(
                 subscription.farmer,
-                `🏖️ ${custV?.name || 'A customer'} paused ${subscription.productName} from ${startLabel}–${endLabel}`,
+                `${custV?.name || 'A customer'} paused ${subscription.productName} from ${startLabel}\u2013${endLabel}`,
                 'SUB_VACATION',
                 { subscription: subscription._id }
             );
@@ -452,7 +452,7 @@ const cancelVacationMode = async (req, res) => {
             const custC = await Customer.findById(req.user.id).select('name');
             notify(
                 subscription.farmer,
-                `✅ ${custC?.name || 'A customer'} cancelled vacation — ${datesResumed} delivery days resumed (${subscription.productName})`,
+                `${custC?.name || 'A customer'} cancelled vacation \u2014 ${datesResumed} delivery days resumed (${subscription.productName})`,
                 'SUB_RESUME',
                 { subscription: subscription._id }
             );
@@ -534,7 +534,7 @@ const cancelSubscription = async (req, res) => {
         const custCancel = await Customer.findById(req.user.id).select('name');
         notify(
             subscription.farmer,
-            `❌ ${custCancel?.name || 'A customer'} cancelled their ${subscription.productName} subscription`,
+            `${custCancel?.name || 'A customer'} cancelled their ${subscription.productName} subscription`,
             'SUB_CANCEL',
             { subscription: subscription._id }
         );

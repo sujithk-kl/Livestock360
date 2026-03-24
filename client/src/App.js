@@ -35,6 +35,7 @@ import Contact from './pages/Contact';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 
 
+import FarmerLayout from './components/FarmerLayout';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -71,16 +72,18 @@ function AppContent() {
 
         {/* Farmer Protected Routes */}
         <Route element={<ProtectedRoute allowedRoles={['farmer']} />}>
-          <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
-          <Route path="/farmer/livestock" element={<FarmerLivestock />} />
-          <Route path="/farmer/products" element={<FarmerProducts />} />
-          <Route path="/farmer/milk-production" element={<FarmerMilkProduction />} />
-          <Route path="/farmer/staff" element={<FarmerStaff />} />
-          <Route path="/farmer/reports" element={<FarmerReports />} />
-          <Route path="/farmer/sales-report" element={<FarmerSalesReport />} />
-          <Route path="/farmer/deliveries" element={<FarmerDeliveries />} />
-          <Route path="/farmer/subscriptions" element={<FarmerSubscriptions />} />
-          <Route path="/farmer/profile" element={<FarmerProfile />} />
+          <Route element={<FarmerLayout />}>
+            <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
+            <Route path="/farmer/livestock" element={<FarmerLivestock />} />
+            <Route path="/farmer/products" element={<FarmerProducts />} />
+            <Route path="/farmer/milk-production" element={<FarmerMilkProduction />} />
+            <Route path="/farmer/staff" element={<FarmerStaff />} />
+            <Route path="/farmer/reports" element={<FarmerReports />} />
+            <Route path="/farmer/sales-report" element={<FarmerSalesReport />} />
+            <Route path="/farmer/deliveries" element={<FarmerDeliveries />} />
+            <Route path="/farmer/subscriptions" element={<FarmerSubscriptions />} />
+            <Route path="/farmer/profile" element={<FarmerProfile />} />
+          </Route>
         </Route>
 
         {/* Customer Protected Routes */}

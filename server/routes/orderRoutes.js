@@ -63,7 +63,7 @@ router.post('/', protect, async (req, res) => {
                 const custName = customer.name || 'A customer';
                 Notification.create({
                     recipient: product.farmer,
-                    message: `📦 New order from ${custName}: ${item.productName} ×${item.quantity}${item.unit || ''} — ₹${item.total}`,
+                    message: `New order from ${custName}: ${item.productName} \u00d7${item.quantity}${item.unit || ''} \u2014 \u20b9${item.total}`,
                     type: 'NEW_ORDER',
                     order: savedOrder._id
                 }).catch(e => console.error('[Order Notify Error]', e.message));
