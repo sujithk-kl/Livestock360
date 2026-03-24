@@ -1,0 +1,88 @@
+%%{init: {"theme": "default", "themeVariables": { "edgeLabelBackground":"#ffffff", "fontSize": "32px", "fontFamily": "sans-serif", "primaryTextColor": "#000000", "lineColor": "#333333" } }}%%
+graph TD
+    classDef startFill fill:#EDE7F6,stroke:#5E35B1,stroke-width:5px,color:#000000,font-weight:bold,font-size:32px;
+    classDef customerFill fill:#E0F7FA,stroke:#00838F,stroke-width:5px,color:#000000,font-weight:bold,font-size:32px;
+    classDef farmerFill fill:#F1F8E9,stroke:#558B2F,stroke-width:5px,color:#000000,font-weight:bold,font-size:32px;
+    classDef orangeFill fill:#FFF3E0,stroke:#EF6C00,stroke-width:5px,color:#000000,font-weight:bold,font-size:32px;
+
+    A((Start Application)):::startFill
+    B{User Type?}:::startFill
+
+    C1[Customer Authentication<br/>Login/Register]:::customerFill
+    C2[Customer<br/>Home/Dashboard]:::customerFill
+    C3[Browse Products<br/>City-based Filter]:::customerFill
+    C4[View Product Details &<br/>Reviews]:::customerFill
+    C5[Add to Smart Cart<br/>Fractional Qty Support]:::customerFill
+    C6[Unified Checkout<br/>Choose Payment Strategy]:::customerFill
+    C7[Online Payment]:::customerFill
+    C8[Cash on Delivery]:::customerFill
+    C9[Order Confirmed]:::customerFill
+
+    C12[Manage Subscriptions]:::customerFill
+    C13[Add/Remove Daily Add-Ons]:::customerFill
+    C14[Subscription Updated]:::customerFill
+
+    C15[View Order History]:::customerFill
+    C16[Leave Product Review]:::customerFill
+
+    F1[Farmer Authentication<br/>Login/Register]:::farmerFill
+    F2[Farmer Dashboard<br/>Real-time Stats]:::farmerFill
+    F3[Livestock Management<br/>Add/Edit/Track]:::farmerFill
+    F4[Milk Production<br/>Log Daily Yield]:::farmerFill
+    F5[Product Management<br/>Inventory & Pricing]:::farmerFill
+    F6[Staff Management<br/>Salary & Tracking]:::farmerFill
+    F7[Order Management<br/>Accept & Fulfill]:::farmerFill
+    F8[Financial & Sales Reports]:::farmerFill
+
+    F9[Order Status]:::orangeFill
+    C10[Order Notification]:::orangeFill
+    C11[Real-time Notifications]:::farmerFill
+    N1((Nightly Cron Job)):::orangeFill
+    N2[Subscription Deductions &<br/>Add-ons]:::orangeFill
+
+    A --> B
+    
+    B -- "Customer" --> C1
+    B -- "Farmer" --> F1
+
+    C1 --> C2
+
+    C2 --> C3
+    C2 --> C12
+    C2 --> C15
+
+    C3 --> C4
+    C4 --> C5
+    C5 --> C6
+    
+    C6 -- "Razorpay" --> C7
+    C6 -- "COD/UPI at Door" --> C8
+    
+    C7 --> C9
+    C8 --> C9
+    
+    C9 -- "Generates" --> C10
+    C10 -.-> C11
+
+    C12 --> C13
+    C13 --> C14
+
+    C15 --> C16
+
+    F1 --> F2
+    
+    F2 --> F3
+    F2 --> F4
+    F2 --> F5
+    F2 --> F6
+    F2 --> F7
+    F2 --> F8
+
+    F7 -- "Updates" --> F9
+    F9 -.-> C15
+
+    N1 -- "Processes" --> N2
+    N2 -.-> C14
+    N2 -.-> C11
+
+    linkStyle default stroke-width:5px;
