@@ -228,8 +228,8 @@ const CustomerSubscriptions = () => {
 
             const addonRows = activeAddons.map(a => {
                 const schedule = a.type === 'one-time'
-                    ? `Once on ${fmtDate(a.deliveryDate)}`
-                    : `Every ${(a.recurringDays || []).join(', ')}`;
+                    ? `${t('sub_once_on')} ${fmtDate(a.deliveryDate)}`
+                    : `${t('sub_every')} ${(a.recurringDays || []).join(', ')}`;
                 return [
                     a.productName || '-',
                     a.type === 'one-time' ? 'One-time' : 'Recurring',
@@ -455,7 +455,7 @@ const CustomerSubscriptions = () => {
                 <div className="flex justify-between items-center mb-6 sm:mb-8 gap-3">
                     <h1 className="text-xl sm:text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2 sm:gap-3">
                         <CalendarDaysIcon className="w-6 h-6 sm:w-8 sm:h-8 text-secondary-500 flex-shrink-0" />
-                        <span className="truncate">My Subscriptions</span>
+                        <span className="truncate">{t('sub_title_my')}</span>
                     </h1>
                     <button
                         onClick={() => navigate('/customer/products')}
@@ -469,7 +469,7 @@ const CustomerSubscriptions = () => {
                     <div className="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-4 rounded-r-lg shadow-sm">
                         <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
                             <ClockIcon className="w-5 h-5 flex-shrink-0" />
-                            <p className="text-sm font-medium">It's past 10 PM. Changes to tomorrow's delivery are no longer accepted. The farm is already preparing your order.</p>
+                            <p className="text-sm font-medium">{t('sub_past_cutoff_msg')}</p>
                         </div>
                     </div>
                 )}
@@ -477,12 +477,12 @@ const CustomerSubscriptions = () => {
                 {subscriptions.length === 0 ? (
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-12 text-center border border-dashed border-gray-200 dark:border-gray-700">
                         <CalendarDaysIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <p className="text-gray-500 dark:text-gray-400 text-lg mb-4">You don't have any active subscriptions yet.</p>
+                        <p className="text-gray-500 dark:text-gray-400 text-lg mb-4">{t('sub_no_active_msg')}</p>
                         <button
                             onClick={() => navigate('/customer/products')}
                             className="bg-secondary-600 text-white px-6 py-2 rounded-lg hover:bg-secondary-700 transition shadow-md"
                         >
-                            Subscribe to Daily Milk
+                            {t('sub_subscribe_btn')}
                         </button>
                     </div>
                 ) : (
@@ -508,29 +508,29 @@ const CustomerSubscriptions = () => {
                                                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                                                     {sub.product?.productName || 'Milk Subscription'}
                                                     {sub.status === 'Cancelled' && (
-                                                        <span className="ml-3 px-2 py-0.5 bg-red-100 text-red-800 text-xs rounded-full uppercase tracking-wider">Cancelled</span>
+                                                        <span className="ml-3 px-2 py-0.5 bg-red-100 text-red-800 text-xs rounded-full uppercase tracking-wider">{t('sub_status_cancelled')}</span>
                                                     )}
                                                 </h3>
                                                 <p className="text-gray-500 text-sm">Farmer: {sub.farmer?.name}</p>
                                             </div>
                                             {sub.status === 'Active' && (
                                                 <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-green-100 text-green-800">
-                                                    Active
+                                                    {t('sub_status_active')}
                                                 </span>
                                             )}
                                         </div>
 
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 mb-6">
                                             <div className="bg-gray-50 dark:bg-gray-700/40 p-2.5 sm:p-3 rounded-xl border border-transparent dark:border-gray-700/50">
-                                                <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 font-bold uppercase tracking-wider truncate">Daily Delivery</p>
+                                                <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 font-bold uppercase tracking-wider truncate">{t('sub_daily_delivery')}</p>
                                                 <p className="font-bold text-gray-900 dark:text-white text-sm sm:text-base md:text-lg">{sub.quantityPerDay} {sub.product?.unit}</p>
                                             </div>
                                             <div className="bg-gray-50 dark:bg-gray-700/40 p-2.5 sm:p-3 rounded-xl border border-transparent dark:border-gray-700/50">
-                                                <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 font-bold uppercase tracking-wider truncate">Start Date</p>
+                                                <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 font-bold uppercase tracking-wider truncate">{t('sub_start_date')}</p>
                                                 <p className="font-bold text-gray-900 dark:text-white text-sm sm:text-base md:text-lg">{new Date(sub.startDate).toLocaleDateString()}</p>
                                             </div>
                                             <div className="bg-gray-50 dark:bg-gray-700/40 p-2.5 sm:p-3 rounded-xl border border-transparent dark:border-gray-700/50">
-                                                <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 font-bold uppercase tracking-wider truncate">End Date</p>
+                                                <p className="text-[10px] text-gray-500 dark:text-gray-400 mb-1 font-bold uppercase tracking-wider truncate">{t('sub_end_date')}</p>
                                                 <p className="font-bold text-gray-900 dark:text-white text-sm sm:text-base md:text-lg">{new Date(sub.endDate).toLocaleDateString()}</p>
                                             </div>
                                             <div className="bg-secondary-50 dark:bg-secondary-900/20 p-2.5 sm:p-3 rounded-xl border border-secondary-100 dark:border-secondary-800/50">
@@ -545,13 +545,13 @@ const CustomerSubscriptions = () => {
                                                     const billAmount = billableDays * dailyCost;
                                                     return (
                                                         <>
-                                                            <p className="text-[10px] text-secondary-600 dark:text-secondary-400 mb-1 font-bold uppercase tracking-wider truncate">Monthly Bill</p>
+                                                            <p className="text-[10px] text-secondary-600 dark:text-secondary-400 mb-1 font-bold uppercase tracking-wider truncate">{t('sub_monthly_bill')}</p>
                                                             <p className="font-extrabold text-secondary-700 dark:text-secondary-300 text-sm sm:text-base">
                                                                 ₹{billAmount.toFixed(0)}
                                                             </p>
                                                             {pausedDays > 0 && (
                                                                 <div className="inline-block mt-1 bg-green-100 dark:bg-green-900/30 px-1.5 py-0.5 rounded text-[10px] font-bold text-green-700 dark:text-green-400">
-                                                                    Saved ₹{savedAmount.toFixed(0)}
+                                                                    {t('sub_saved')} ₹{savedAmount.toFixed(0)}
                                                                 </div>
                                                             )}
                                                         </>
@@ -562,7 +562,7 @@ const CustomerSubscriptions = () => {
 
                                         {sub.pausedDates?.length > 0 && sub.status === 'Active' && (
                                             <div className="mt-4">
-                                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Paused Dates ({sub.pausedDates.length})</p>
+                                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('sub_paused_dates')} ({sub.pausedDates.length})</p>
                                                 <div className="flex flex-wrap gap-2">
                                                     {sub.pausedDates.map((date, idx) => {
                                                         return (
@@ -578,8 +578,8 @@ const CustomerSubscriptions = () => {
                                         {sub.status === 'Cancelled' && sub.refundAmount !== undefined && (
                                             <div className="mt-4 bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-100 dark:border-red-800/50">
                                                 <p className="text-sm text-red-800 dark:text-red-200">
-                                                    <strong>Cancelled on:</strong> {new Date(sub.cancelledAt || sub.updatedAt).toLocaleDateString()}<br />
-                                                    <strong>Refund to Wallet:</strong> ₹{sub.refundAmount.toFixed(2)}
+                                                    <strong>{t('sub_cancelled_on')}</strong> {new Date(sub.cancelledAt || sub.updatedAt).toLocaleDateString()}<br />
+                                                    <strong>{t('sub_refund_wallet')}</strong> ₹{sub.refundAmount.toFixed(2)}
                                                 </p>
                                             </div>
                                         )}
@@ -587,7 +587,7 @@ const CustomerSubscriptions = () => {
                                         {/* Add-Ons Display */}
                                         {sub.addOns?.filter(a => a.status === 'Active').length > 0 && (
                                             <div className="mt-5 pt-4 border-t border-gray-100 dark:border-gray-700/50">
-                                                <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3">Extra Deliveries</p>
+                                                <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3">{t('sub_extra_deliveries')}</p>
                                                 <div className="space-y-2">
                                                     {sub.addOns.filter(a => a.status === 'Active').map(addon => (
                                                         <div key={addon._id} className="flex items-center justify-between bg-secondary-50 dark:bg-secondary-900/20 px-3 py-2 rounded-lg border border-secondary-100 dark:border-secondary-800/50">
@@ -596,8 +596,8 @@ const CustomerSubscriptions = () => {
                                                                 <p className="text-[11px] text-gray-500 dark:text-gray-400">
                                                                     {addon.quantity}{addon.unit} · ₹{addon.costPerDelivery.toFixed(2)} ·{' '}
                                                                     {addon.type === 'one-time'
-                                                                        ? `Once on ${new Date(addon.deliveryDate).toLocaleDateString()}`
-                                                                        : `Every ${addon.recurringDays.join(', ')}`
+                                                                        ? `${t('sub_once_on')} ${new Date(addon.deliveryDate).toLocaleDateString()}`
+                                                                        : `${t('sub_every')} ${addon.recurringDays.join(', ')}`
                                                                     }
                                                                 </p>
                                                             </div>
@@ -618,23 +618,17 @@ const CustomerSubscriptions = () => {
                                                     onClick={() => openAddonModal(sub)}
                                                     className="flex items-center gap-2 text-sm font-bold text-secondary-600 dark:text-secondary-400 hover:text-secondary-700 transition"
                                                 >
-                                                    <PlusCircleIcon className="w-5 h-5" />
-                                                    Add Extra Items
-                                                </button>
+                                                    <PlusCircleIcon className="w-5 h-5" />{t('sub_add_extra_items')}</button>
                                                 <div className="flex items-center gap-3">
                                                     <button
                                                         onClick={() => downloadSubscriptionBill(sub)}
                                                         className="flex items-center gap-1.5 text-xs font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 transition"
                                                     >
-                                                        <ArrowDownTrayIcon className="w-4 h-4" />
-                                                        Download Bill
-                                                    </button>
+                                                        <ArrowDownTrayIcon className="w-4 h-4" />{t('sub_download_bill')}</button>
                                                     <button
                                                         onClick={() => setCancellingSub(sub)}
                                                         className="text-xs font-bold text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition underline underline-offset-2"
-                                                    >
-                                                        Cancel Subscription
-                                                    </button>
+                                                    >{t('sub_cancel_subscription')}</button>
                                                 </div>
                                             </div>
                                         )}
@@ -644,9 +638,7 @@ const CustomerSubscriptions = () => {
                                                     onClick={() => downloadSubscriptionBill(sub)}
                                                     className="flex items-center gap-2 text-sm font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 transition"
                                                 >
-                                                    <ArrowDownTrayIcon className="w-4 h-4" />
-                                                    Download Final Bill
-                                                </button>
+                                                    <ArrowDownTrayIcon className="w-4 h-4" />{t('sub_download_final_bill')}</button>
                                             </div>
                                         )}
                                     </div>
@@ -654,21 +646,19 @@ const CustomerSubscriptions = () => {
                                     {/* Actions Container */}
                                     {isActive && (
                                         <div className="border-t md:border-t-0 md:border-l border-gray-100 dark:border-gray-700 pt-5 md:pt-0 md:pl-6 lg:pl-8 flex flex-col justify-start w-full md:w-[240px] lg:w-[280px] flex-shrink-0">
-                                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 text-left">Smart Controls</h4>
+                                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 text-left">{t('sub_smart_controls')}</h4>
 
                                             {isPausedTomorrow ? (
                                                 <div className="space-y-3 mb-4">
                                                     <div className="bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 p-3 rounded-xl text-sm flex items-center gap-2 border border-green-200 dark:border-green-800/50 shadow-sm">
                                                         <CheckCircleIcon className="w-5 h-5 flex-shrink-0" />
-                                                        <span className="font-medium">Tomorrow's delivery is paused.</span>
+                                                        <span className="font-medium">{t('sub_tomorrow_paused_msg')}</span>
                                                     </div>
                                                     <button
                                                         onClick={() => handleResumeTomorrow(sub._id)}
                                                         disabled={!isActive || isPastCutoff()}
                                                         className="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-2.5 sm:py-3.5 px-3 sm:px-4 rounded-xl shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm sm:text-base"
-                                                    >
-                                                        Resume Tomorrow
-                                                    </button>
+                                                    >{t('sub_resume_tomorrow')}</button>
                                                 </div>
                                             ) : (
                                                 <div className="mb-4">
@@ -677,16 +667,14 @@ const CustomerSubscriptions = () => {
                                                         disabled={!isActive || isPastCutoff()}
                                                         className="w-full bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800/50 hover:bg-red-100 dark:hover:bg-red-800/40 text-red-600 dark:text-red-400 font-bold py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group text-sm sm:text-base"
                                                     >
-                                                        <ExclamationTriangleIcon className="w-5 h-5 group-hover:animate-pulse" />
-                                                        Skip Tomorrow
-                                                    </button>
+                                                        <ExclamationTriangleIcon className="w-5 h-5 group-hover:animate-pulse" />{t('sub_skip_tomorrow')}</button>
                                                 </div>
                                             )}
 
                                             <p className="text-xs text-gray-500 dark:text-gray-400 text-center md:text-left leading-relaxed">
                                                 {isPastCutoff() && !isPausedTomorrow ? (
-                                                    <span className="text-orange-500">Cut-off time (10 PM) passed. Adjustments for tomorrow are disabled.</span>
-                                                ) : "Pause delivery if you're out of town or simply have plenty of milk remaining."}
+                                                    <span className="text-orange-500">{t('sub_cutoff_passed_desc')}</span>
+                                                ) : t('sub_pause_desc')}
                                             </p>
 
                                             {/* Vacation Mode UI */}
@@ -695,9 +683,7 @@ const CustomerSubscriptions = () => {
                                                     <button
                                                         onClick={() => handleCancelVacation(sub._id)}
                                                         className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 mb-3 text-[13px] sm:text-base"
-                                                    >
-                                                        End Vacation Early
-                                                    </button>
+                                                    >{t('sub_end_vacation')}</button>
                                                 )}
 
                                                 {!vacationForms[sub._id]?.show ? (
@@ -708,15 +694,13 @@ const CustomerSubscriptions = () => {
                                                         }))}
                                                         className="w-full bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 font-bold py-2.5 sm:py-3 px-3 sm:px-4 rounded-xl hover:bg-primary-100 dark:hover:bg-primary-800/40 border border-primary-200 dark:border-primary-800/50 transition-colors flex items-center justify-center gap-1.5 sm:gap-2 text-[13px] sm:text-sm shadow-sm"
                                                     >
-                                                        <CalendarDaysIcon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                                                        Pause Multiple Days
-                                                    </button>
+                                                        <CalendarDaysIcon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />{t('sub_pause_multiple')}</button>
                                                 ) : (
                                                     <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-600 shadow-lg overflow-hidden relative">
                                                         <div className="bg-gray-50 dark:bg-gray-700/50 px-4 py-3 border-b border-gray-200 dark:border-gray-600 flex justify-between items-center">
                                                             <h5 className="text-sm font-bold text-gray-800 dark:text-white flex items-center gap-2">
                                                                 <CalendarDaysIcon className="w-4 h-4 text-primary-500" />
-                                                                Vacation Mode
+                                                                {t('sub_vacation_mode')}
                                                             </h5>
                                                             <button
                                                                 onClick={() => setVacationForms(prev => ({
@@ -734,7 +718,7 @@ const CustomerSubscriptions = () => {
                                                             <div className="space-y-4">
                                                                 <div>
                                                                     <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5 flex justify-between">
-                                                                        <span>From Date</span>
+                                                                        <span>{t('sub_from_date')}</span>
                                                                     </label>
                                                                     <input
                                                                         type="date"
@@ -748,7 +732,7 @@ const CustomerSubscriptions = () => {
                                                                 </div>
                                                                 <div>
                                                                     <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5 flex justify-between">
-                                                                        <span>To Date (Inclusive)</span>
+                                                                        <span>{t('sub_to_date')}</span>
                                                                     </label>
                                                                     <input
                                                                         type="date"
@@ -766,9 +750,7 @@ const CustomerSubscriptions = () => {
                                                                 onClick={() => handlePauseRange(sub._id)}
                                                                 disabled={!isActive}
                                                                 className="w-full bg-primary-600 text-white font-bold py-3 mt-5 rounded-xl text-sm hover:bg-primary-700 transition shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                                                            >
-                                                                Confirm Dates
-                                                            </button>
+                                                            >{t('sub_confirm_dates')}</button>
                                                         </div>
                                                     </div>
                                                 )}
@@ -788,31 +770,27 @@ const CustomerSubscriptions = () => {
                     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full shadow-2xl border border-gray-100 dark:border-gray-700">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                             <ExclamationTriangleIcon className="w-6 h-6 text-red-500 flex-shrink-0" />
-                            Cancel Subscription?
+                            {t('sub_cancel_modal_title')}
                         </h3>
                         <p className="text-gray-600 dark:text-gray-300 mb-5 text-sm leading-relaxed">
-                            Are you sure you want to permanently cancel your <strong>{cancellingSub.product?.productName || 'Milk'}</strong> subscription?
+                            {t('sub_cancel_modal_desc1')} <strong>{cancellingSub.product?.productName || 'Milk'}</strong> subscription?
                             This action cannot be undone. Any unused prepaid balance will be instantly
-                            refunded to your <strong>Livestock360 Wallet</strong>.
+                            refunded to your <strong>{t('sub_cancel_modal_wallet')}</strong>.
                         </p>
                         <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl mb-6">
                             <p className="text-xs text-red-600 dark:text-red-400 font-medium leading-relaxed">
-                                * The exact prorated refund will be calculated based on the number of days already delivered versus the total amount paid.
+                                {t('sub_cancel_modal_note')}
                             </p>
                         </div>
                         <div className="flex gap-3 justify-end items-center">
                             <button
                                 onClick={() => setCancellingSub(null)}
                                 className="px-5 py-2.5 font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition text-sm"
-                            >
-                                Keep it
-                            </button>
+                            >{t('sub_close')}</button>
                             <button
                                 onClick={confirmCancelSubscription}
                                 className="px-5 py-2.5 font-bold bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl shadow-md transition text-sm"
-                            >
-                                Confirm Cancellation
-                            </button>
+                            >{t('sub_confirm_cancel')}</button>
                         </div>
                     </div>
                 </div>
@@ -825,7 +803,7 @@ const CustomerSubscriptions = () => {
                         {/* Header */}
                         <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800 z-10">
                             <div>
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Add Extra Items</h3>
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('sub_add_extra_items')}</h3>
                                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">From {addonModal.sub.farmer?.name}'s farm</p>
                             </div>
                             <button onClick={() => setAddonModal(null)} className="p-2 text-gray-400 hover:text-gray-700 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition">

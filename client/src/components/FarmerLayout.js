@@ -68,7 +68,7 @@ const FarmerLayout = () => {
 
   const navItems = [
     { label: t('side_dashboard'), path: '/farmer/dashboard', icon: HomeIcon },
-    { label: 'Subscriptions', path: '/farmer/subscriptions', icon: ClipboardDocumentListIcon },
+    { label: t('side_subscriptions'), path: '/farmer/subscriptions', icon: ClipboardDocumentListIcon },
     { label: t('side_livestock'), path: '/farmer/livestock', icon: CubeIcon },
     { label: t('side_products'), path: '/farmer/products', icon: BeakerIcon },
     { label: t('side_milk'), path: '/farmer/milk-production', icon: ChartBarIcon },

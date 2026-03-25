@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 
 const statusColors = {
@@ -10,6 +11,7 @@ const statusColors = {
 };
 
 const FarmerSubscriptions = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [subscriptions, setSubscriptions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -57,13 +59,13 @@ const FarmerSubscriptions = () => {
               onClick={() => navigate('/farmer/dashboard')}
               className="text-sm text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 flex items-center gap-1 mb-2"
             >
-              ← Dashboard
+              ← {t('sub_back_dashboard')}
             </button>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white font-serif">
-              Customer Subscriptions
+              {t('sub_title_customer')}
             </h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
-              {subscriptions.length} subscription{subscriptions.length !== 1 ? 's' : ''} found
+              {subscriptions.length} {subscriptions.length !== 1 ? t('sub_subscriptions_found') : t('sub_subscription_found')}
             </p>
           </div>
         </div>
@@ -72,7 +74,7 @@ const FarmerSubscriptions = () => {
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <input
             type="text"
-            placeholder="Search by customer or product..."
+            placeholder={t('sub_search_placeholder')}
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400 text-sm"
@@ -88,7 +90,7 @@ const FarmerSubscriptions = () => {
                     : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
               >
-                {s}
+                {s === 'All' ? t('sub_filter_all') : t('sub_status_' + s.toLowerCase())}
               </button>
             ))}
           </div>
@@ -102,8 +104,8 @@ const FarmerSubscriptions = () => {
         ) : filtered.length === 0 ? (
           <div className="text-center py-20 text-gray-400 dark:text-gray-500">
             <div className="text-5xl mb-4">📋</div>
-            <p className="text-lg font-medium">No subscriptions found</p>
-            <p className="text-sm mt-1">Try a different filter or search term</p>
+            <p className="text-lg font-medium">{t('sub_no_found')}</p>
+            <p className="text-sm mt-1">{t('sub_try_filter')}</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -129,11 +131,11 @@ const FarmerSubscriptions = () => {
                             {sub.customer?.name || '—'}
                           </span>
                           <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${statusColors[sub.status] || ''}`}>
-                            {sub.status}
+                            {t(`sub_status_${sub.status.toLowerCase()}`)}
                           </span>
                           {sub.tomorrowSkipped && (
                             <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
-                              ⏭ Skipped Tomorrow
+                              ⏭ {t('sub_skipped_tomorrow')}
                             </span>
                           )}
                         </div>
@@ -148,20 +150,20 @@ const FarmerSubscriptions = () => {
                       {/* Dates + Cost */}
                       <div className="flex gap-6 text-right shrink-0">
                         <div>
-                          <p className="text-xs text-gray-400 dark:text-gray-500">Period</p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500">{t('sub_period')}</p>
                           <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
                             {formatDateShort(sub.startDate)} – {formatDateShort(sub.endDate)}
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-400 dark:text-gray-500">Daily</p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500">{t('sub_daily')}</p>
                           <p className="text-sm font-bold text-gray-900 dark:text-white">
                             ₹{sub.productCostPerDay?.toFixed(0)}
                           </p>
                         </div>
                         {activeAddOns.length > 0 && (
                           <div>
-                            <p className="text-xs text-gray-400 dark:text-gray-500">Add-Ons</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500">{t('sub_addons')}</p>
                             <p className="text-sm font-semibold text-blue-600 dark:text-blue-400">
                               {activeAddOns.length} 📦
                             </p>
@@ -184,20 +186,20 @@ const FarmerSubscriptions = () => {
 
                         {/* Delivery Address */}
                         <div>
-                          <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Delivery Address</h4>
+                          <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">{t('sub_delivery_address')}</h4>
                           {sub.deliveryAddress?.street ? (
                             <p className="text-sm text-gray-700 dark:text-gray-300">
                               {sub.deliveryAddress.street}, {sub.deliveryAddress.city}<br />
                               {sub.deliveryAddress.state} – {sub.deliveryAddress.pincode}
                             </p>
                           ) : (
-                            <p className="text-sm text-gray-400">No address on file</p>
+                            <p className="text-sm text-gray-400">{t('sub_no_address')}</p>
                           )}
                         </div>
 
                         {/* Paused Dates (upcoming only) */}
                         <div>
-                          <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Upcoming Skips</h4>
+                          <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">{t('sub_upcoming_skips')}</h4>
                           {(() => {
                             const today = new Date();
                             today.setHours(0,0,0,0);
@@ -214,7 +216,7 @@ const FarmerSubscriptions = () => {
                                 ))}
                               </div>
                             ) : (
-                              <p className="text-sm text-gray-400">No upcoming skips</p>
+                              <p className="text-sm text-gray-400">{t('sub_no_skips')}</p>
                             );
                           })()}
                         </div>
@@ -222,7 +224,7 @@ const FarmerSubscriptions = () => {
                         {/* Add-Ons */}
                         {activeAddOns.length > 0 && (
                           <div className="md:col-span-2">
-                            <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Active Add-Ons</h4>
+                            <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">{t('sub_active_addons')}</h4>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                               {activeAddOns.map(addon => (
                                 <div key={addon._id} className="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 rounded-xl px-4 py-3 border border-blue-100 dark:border-blue-800">
@@ -237,7 +239,7 @@ const FarmerSubscriptions = () => {
                                       ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
                                       : 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400'
                                   }`}>
-                                    {addon.type === 'recurring' ? '🔄 Recurring' : '1️⃣ One-time'}
+                                    {addon.type === 'recurring' ? `🔄 ${t('sub_type_recurring')}` : `1️⃣ ${t('sub_type_onetime')}`}
                                   </span>
                                 </div>
                               ))}

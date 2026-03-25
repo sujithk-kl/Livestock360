@@ -284,14 +284,16 @@ const FarmerMilkProduction = () => {
               {/* Notes */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('form_notes')}</label>
-                <input
-                  type="text"
+                <select
                   name="notes"
                   value={formData.notes}
                   onChange={handleInputChange}
-                  placeholder={t('placeholder_notes')}
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 dark:text-white"
-                />
+                >
+                  <option value="">{t('select_session')}</option>
+                  <option value="Morning">{t('session_morning')}</option>
+                  <option value="Evening">{t('session_evening')}</option>
+                </select>
               </div>
 
               {/* Buttons */}
@@ -365,7 +367,7 @@ const FarmerMilkProduction = () => {
                         ₹{record.totalAmount.toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
-                        {record.notes || '-'}
+                        {record.notes === 'Morning' ? t('session_morning') : record.notes === 'Evening' ? t('session_evening') : record.notes || '-'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button
