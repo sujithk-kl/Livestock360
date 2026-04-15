@@ -511,7 +511,14 @@ const CustomerSubscriptions = () => {
                                                         <span className="ml-3 px-2 py-0.5 bg-red-100 text-red-800 text-xs rounded-full uppercase tracking-wider">{t('sub_status_cancelled')}</span>
                                                     )}
                                                 </h3>
-                                                <p className="text-gray-500 text-sm">Farmer: {sub.farmer?.name}</p>
+                                                <p className="text-gray-500 text-sm flex items-center gap-2">
+                                                    Farmer: {sub.farmer?.name}
+                                                    {sub.timing && (
+                                                        <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                                                            {sub.timing}
+                                                        </span>
+                                                    )}
+                                                </p>
                                             </div>
                                             {sub.status === 'Active' && (
                                                 <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-green-100 text-green-800">

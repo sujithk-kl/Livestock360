@@ -40,6 +40,7 @@ const ProductDetails = () => {
     const [isSubModalOpen, setIsSubModalOpen] = useState(false);
     const [subQuantity, setSubQuantity] = useState(1);
     const [subDuration, setSubDuration] = useState(30);
+    const [milkTiming, setMilkTiming] = useState('Morning');
     const [mySubscriptions, setMySubscriptions] = useState([]);
 
     // Address Modal State (shown BEFORE subscription modal)
@@ -192,6 +193,7 @@ const ProductDetails = () => {
     const openSubscribeFlow = (product) => {
         setSelectedProduct(product);
         setSubQuantity(1);
+        setMilkTiming('Morning');
         setIsAddressModalOpen(true); // Show address step first
     };
 
@@ -752,7 +754,9 @@ const ProductDetails = () => {
                                 <div className="mb-6">
                                     {/* Daily quantity selector */}
                                     <div className="flex justify-between items-center mb-4">
-                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Daily Quantity</span>
+                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                                            {category.toLowerCase() === 'milk' ? 'Quantity (per delivery)' : 'Daily Quantity'}
+                                        </span>
                                         <div className="flex items-center gap-2">
                                             <input
                                                 type="number"
@@ -766,6 +770,22 @@ const ProductDetails = () => {
                                         </div>
                                     </div>
 
+                                    {/* Timing selector for Milk */}
+                                    {category.toLowerCase() === 'milk' && (
+                                        <div className="flex justify-between items-center mb-4">
+                                            <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Delivery Timing</span>
+                                            <select
+                                                value={milkTiming}
+                                                onChange={(e) => setMilkTiming(e.target.value)}
+                                                className="w-40 rounded-lg border border-gray-300 dark:border-gray-600 py-1.5 px-2 dark:bg-gray-800 dark:text-white text-sm font-bold focus:ring-primary-500 focus:border-primary-500"
+                                            >
+                                                <option value="Morning">Morning</option>
+                                                <option value="Evening">Evening</option>
+                                                <option value="Both">Morning & Evening</option>
+                                            </select>
+                                        </div>
+                                    )}
+
                                     {/* Pricing Breakdown Card */}
                                     <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-600">
                                         {/* Header */}
@@ -778,10 +798,10 @@ const ProductDetails = () => {
                                             <div className="flex justify-between items-center">
                                                 <div>
                                                     <p className="text-sm text-gray-700 dark:text-gray-200">🥛 Milk Cost</p>
-                                                    <p className="text-xs text-gray-400">₹{selectedProduct.price} × {subQuantity} {selectedProduct.unit} × 30 days</p>
+                                                    <p className="text-xs text-gray-400">₹{selectedProduct.price} × {subQuantity} {selectedProduct.unit} × {milkTiming === 'Both' ? '2 deliveries/day × ' : ''}30 days</p>
                                                 </div>
                                                 <span className="font-bold text-gray-900 dark:text-white">
-                                                    ₹{(selectedProduct.price * parseFloat(subQuantity || 0) * 30).toFixed(0)}
+                                                    ₹{(selectedProduct.price * parseFloat(subQuantity || 0) * (milkTiming === 'Both' ? 2 : 1) * 30).toFixed(0)}
                                                 </span>
                                             </div>
 
@@ -789,9 +809,9 @@ const ProductDetails = () => {
                                             <div className="flex justify-between items-center">
                                                 <div>
                                                     <p className="text-sm text-gray-700 dark:text-gray-200">🚚 Monthly Delivery</p>
-                                                    <p className="text-xs text-gray-400">₹10/day × 30 days (flat rate)</p>
+                                                    <p className="text-xs text-gray-400">₹{milkTiming === 'Both' ? 20 : 10}/day × 30 days (flat rate)</p>
                                                 </div>
-                                                <span className="font-bold text-gray-900 dark:text-white">₹300</span>
+                                                <span className="font-bold text-gray-900 dark:text-white">₹{milkTiming === 'Both' ? 600 : 300}</span>
                                             </div>
 
                                             {/* Divider */}
@@ -800,14 +820,14 @@ const ProductDetails = () => {
                                                 <div className="flex justify-between items-center">
                                                     <p className="text-xs text-gray-500 dark:text-gray-400">Daily Cost</p>
                                                     <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">
-                                                        ₹{(selectedProduct.price * parseFloat(subQuantity || 0) + 10).toFixed(0)}/day
+                                                        ₹{((selectedProduct.price * parseFloat(subQuantity || 0) + 10) * (milkTiming === 'Both' ? 2 : 1)).toFixed(0)}/day
                                                     </span>
                                                 </div>
                                                 {/* Monthly total */}
                                                 <div className="flex justify-between items-center">
                                                     <p className="text-base font-extrabold text-gray-900 dark:text-white">Total Monthly</p>
                                                     <span className="text-xl font-extrabold text-secondary-600 dark:text-secondary-400">
-                                                        ₹{(selectedProduct.price * parseFloat(subQuantity || 0) * 30 + 300).toFixed(0)}
+                                                        ₹{((selectedProduct.price * parseFloat(subQuantity || 0) + 10) * (milkTiming === 'Both' ? 2 : 1) * 30).toFixed(0)}
                                                     </span>
                                                 </div>
                                             </div>
@@ -843,6 +863,7 @@ const ProductDetails = () => {
                                                 await subscriptionService.createSubscription({
                                                     productId: selectedProduct._id,
                                                     quantityPerDay: parseFloat(subQuantity),
+                                                    timing: category.toLowerCase() === 'milk' ? milkTiming : undefined,
                                                     startDate,
                                                     endDate,
                                                     deliveryCostPerDay: 10,

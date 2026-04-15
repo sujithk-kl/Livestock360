@@ -29,6 +29,11 @@ const subscriptionSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    timing: {
+        type: String,
+        enum: ['Morning', 'Evening', 'Both'],
+        default: 'Morning'
+    },
     productCostPerDay: {
         type: Number,
         required: true

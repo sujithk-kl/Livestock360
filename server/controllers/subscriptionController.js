@@ -16,12 +16,15 @@ const notify = (recipient, message, type, extras = {}) => {
 // @access  Private (Customer)
 const createSubscription = async (req, res) => {
     try {
-        const { productId, quantityPerDay, startDate, endDate, deliveryAddress } = req.body;
+        const { productId, quantityPerDay, startDate, endDate, deliveryAddress, timing } = req.body;
         const customerId = req.user.id;
+
+        const effectiveTiming = timing || 'Morning';
+        const timingMultiplier = effectiveTiming === 'Both' ? 2 : 1;
 
         // ── Enforce delivery cost server-side ──────────────────────────────────
         // ₹300/month = ₹10/day flat rate. Never trust client-sent value.
-        const DELIVERY_COST_PER_DAY = 10;
+        const DELIVERY_COST_PER_DAY = 10 * timingMultiplier;
 
         const product = await Product.findById(productId);
         if (!product) {
@@ -29,7 +32,7 @@ const createSubscription = async (req, res) => {
         }
 
         // --- Wallet Balance Guardrail ---
-        const dailyCost = (product.price * quantityPerDay) + DELIVERY_COST_PER_DAY;
+        const dailyCost = (product.price * quantityPerDay * timingMultiplier) + DELIVERY_COST_PER_DAY;
         const minimumRequired = dailyCost * 3; // Require at least 3 days of funds
         const customer = await Customer.findById(customerId);
         const currentBalance = customer?.walletBalance || 0;
@@ -52,7 +55,8 @@ const createSubscription = async (req, res) => {
             productName: product.productName,
             quantityPerDay,
             unit: product.unit,
-            productCostPerDay: product.price * quantityPerDay,
+            timing: effectiveTiming,
+            productCostPerDay: product.price * quantityPerDay * timingMultiplier,
             deliveryCostPerDay: DELIVERY_COST_PER_DAY,
             startDate,
             endDate,

@@ -139,8 +139,13 @@ const FarmerSubscriptions = () => {
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                          {sub.productName} &middot; {sub.quantityPerDay} {sub.unit}/day
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 flex items-center gap-2 flex-wrap">
+                          <span>{sub.productName} &middot; {sub.quantityPerDay} {sub.unit}/day</span>
+                          {sub.timing && (
+                            <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                                {sub.timing}
+                            </span>
+                          )}
                         </p>
                         {sub.customer?.phone && (
                           <p className="text-xs text-gray-400 mt-0.5">📞 {sub.customer.phone}</p>
